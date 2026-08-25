@@ -1,42 +1,46 @@
-# AGENTS.md
+# TripoCodexUnityPackage - Codex Bootstrap
 
-Version: 0.4.0
-Project: Geurts Game Forge
-Purpose: Repository-level AI agent instructions for Codex and compatible coding agents.
+**Version:** 0.5.0  
+**Canonical documentation repository:** `https://github.com/Geurtsy/GeurtsGameForge_Documentation.git`  
+**Canonical branch:** `main`
 
-## Primary Rule
+## Pre-Code Lock
 
-Before doing technical work, read and follow the latest valid Geurts technique documents.
+Before creating, modifying, moving, renaming, or deleting project files:
 
-Use the highest semantic version if multiple copies exist. Prefer canonical paths when versions tie.
+1. Run `powershell -NoProfile -ExecutionPolicy Bypass -File Tools/BootstrapGeurtsInstructions.ps1`.
+2. Confirm the script reports `SYNC OK`.
+3. Read `.geurts/upstream/AI_READ_FIRST.md`.
+4. Follow the reading order and task routing defined there.
+5. Inspect the existing project implementation before creating replacements.
+6. Only then plan and implement the requested change.
 
-## Technique Sources
+If synchronization fails, do not silently continue with stale instructions. Report the failure unless the user or package policy explicitly permits fallback use.
 
-- Technical standards: `Docs/GeurtsTechnicalTechnique.md`
-- Folder and asset placement: `Docs/GeurtsFolderStructureTechnique.md`
-- AI setup rules: `Docs/GeurtsAIAgentSetupTechnique.md`
-- Game design discovery: `Docs/GeurtsGameDesignDocumentationTechnique.md`
-- Game design index, when present: `Docs/GameDesign/GameDesignManifest.md`
+## Canonical Configuration
 
-## Strict Technical Priority Order
+Repository settings are stored in:
 
-1. Extendibility
-2. Readability
-3. Efficiency
-4. Updated
-5. Documented
+`Tools/GeurtsRepository.json`
 
-For multiplayer systems, network efficiency overrides all other priorities.
+Do not hard-code a second canonical repository URL elsewhere in the Unity project.
 
-## Unity Work Rules
+## Synced Documentation
 
-- Treat this as a Unity project unless the repository clearly says otherwise.
-- Put first-party Unity content under `Assets/_Project/` according to the folder structure technique.
-- Add the required Geurts compliance header to every generated or modified Unity C# script.
-- Route runtime debugging and commands through the project-approved console system when relevant.
+The bootstrap stores the upstream documentation at:
 
-## Game Design Context
+`.geurts/upstream/`
 
-When work changes gameplay, balance, UX, narrative, level flow, enemy behaviour, AI behaviour, progression, or player-facing content, consult `Docs/GameDesign/GameDesignManifest.md` and relevant design docs first.
+Treat this as read-only reference material. Do not modify synchronized documentation as part of normal Unity implementation work.
 
-If needed design docs are missing, state the assumption before implementation.
+## Required Sequence
+
+`SYNC -> READ -> INSPECT -> PLAN -> IMPLEMENT -> VALIDATE -> REPORT`
+
+## Important Classification
+
+`GeurtsAIResponseControlTechnique_V1.1.md` is a chat-response technique, not a Unity coding standard, unless the current upstream manifest explicitly reclassifies it.
+
+## Validation
+
+After implementation, perform relevant compilation/tests/checks, verify folder placement, review against the current Geurts Definition of Done, and report changed files plus unresolved issues.
