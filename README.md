@@ -1,99 +1,60 @@
-# Geurts Game Forge Technique Package
+# Geurts Game Forge Documentation
 
-**Version:** 0.4.0  
+**Version:** 0.5.0  
 **Status:** Draft technique package  
 **Audience:** AI agents and human developers  
+**Canonical repository:** `Geurtsy/GeurtsGameForge_Documentation`
 
-> **Version Selection Notice:** If multiple copies of this package, README, technique document, or batch file are found during an AI agent build process, use the copy with the highest semantic version number. If two copies share the same version number, prefer the copy in the canonical project paths shown below.
+## AI: Start Here
 
----
+If you are an AI agent, Codex session, or automated development tool, begin with:
 
-## What This Package Is
+`AI_READ_FIRST.md`
 
-This package contains the broad-scope technique set for **Geurts Game Forge**.
+Do not start implementation from this README. `AI_READ_FIRST.md` defines the mandatory reading order, task routing, authority hierarchy, and pre-code lock.
 
-It defines major standards, priorities, project structure, AI agent setup, and game design documentation discovery without turning the project into a pile of tiny preference rules.
+## What This Repository Is
 
----
+This repository is the canonical upstream source for Geurts Game Forge development techniques. Unity projects and TripoCodexUnityPackage consumers should synchronize this repository rather than maintaining independent copies of the technique set.
 
-## Canonical File Locations
+The intended flow is:
 
-Place the package contents in the Unity project root like this:
+`GitHub canonical docs -> project bootstrap -> local read-only cache -> AGENTS.md -> Codex -> Unity implementation`
 
-```text
-ProjectRoot/
-├── README.md
-├── AGENTS.md                         created by Tools/CreateAIAgentInstructionFiles.bat
-├── .github/                          created by Tools/CreateAIAgentInstructionFiles.bat
-│   ├── copilot-instructions.md
-│   └── instructions/
-│       ├── geurts-unity.instructions.md
-│       └── geurts-game-design.instructions.md
-├── Docs/
-│   ├── GeurtsTechnicalTechnique.md
-│   ├── GeurtsFolderStructureTechnique.md
-│   ├── GeurtsAIAgentSetupTechnique.md
-│   ├── GeurtsGameDesignDocumentationTechnique.md
-│   └── GameDesign/
-│       ├── README.md                  created by Tools/CreateAIAgentInstructionFiles.bat
-│       └── GameDesignManifest.md       created by Tools/CreateAIAgentInstructionFiles.bat
-└── Tools/
-    ├── CreateGeurtsFolderStructure.bat
-    ├── CreateAIAgentInstructionFiles.bat
-    └── AIAgentInstructionTemplates/
-```
+## Core Entry Points
 
----
+- `AI_READ_FIRST.md` - primary AI documentation entry point.
+- `AGENTS.md` - repository-level Codex instructions for this documentation repository.
+- `GeurtsTechniqueManifest.md` - current package/version index and instruction classifications.
+- `Docs/GeurtsAIAgentSetupTechnique.md` - AI integration and bootstrap rules.
+- `Docs/GeurtsTechnicalTechnique.md` - implementation standards.
+- `Docs/GeurtsFolderStructureTechnique.md` - Unity folder and asset placement standards.
+- `Docs/GeurtsGameDesignDocumentationTechnique.md` - rules for discovering player-facing design context.
+- `Docs/GameDesign/GameDesignManifest.md` - design-document index when present.
 
-## Setup Instructions
+## TripoCodexUnityPackage Integration
 
-1. Copy `Docs/` into the Unity project root.
-2. Copy `Tools/` into the Unity project root.
-3. Run `Tools/CreateGeurtsFolderStructure.bat`.
-4. Run `Tools/CreateAIAgentInstructionFiles.bat`.
+The package should configure this repository as its canonical documentation source:
 
-Both batch files must stay inside `ProjectRoot/Tools/`.
+`https://github.com/Geurtsy/GeurtsGameForge_Documentation.git`
 
----
+Canonical branch:
 
-## What the Batch Files Do
+`main`
 
-### `Tools/CreateGeurtsFolderStructure.bat`
+The package bootstrap should synchronize the repository before Codex changes target-project files, store the synchronized copy at `.geurts/upstream/`, and direct Codex to `.geurts/upstream/AI_READ_FIRST.md`.
 
-Creates the Unity project folder structure from `Docs/GeurtsFolderStructureTechnique.md`.
+If synchronization is required and fails, the package must fail visibly rather than silently pretending stale instructions are current.
 
-### `Tools/CreateAIAgentInstructionFiles.bat`
+## Required AI Sequence
 
-Creates missing AI-native instruction files for:
+`SYNC -> READ -> INSPECT -> PLAN -> IMPLEMENT -> VALIDATE -> REPORT`
 
-- GitHub Copilot.
-- Codex.
-- Compatible agents that read `AGENTS.md` or `.github` instruction files.
+The mandatory and conditional documents for each task are defined in `AI_READ_FIRST.md` and `GeurtsTechniqueManifest.md`.
 
-It also creates the starting `Docs/GameDesign/` manifest files.
+## Technical Priority
 
----
-
-## Batch File Safety
-
-The batch files are safe to run multiple times.
-
-They must:
-
-- Create missing folders or files only.
-- Keep existing files and folders intact.
-- Never delete files.
-- Never overwrite files.
-- Never rename files.
-- Never move files.
-
-If either `.bat` is not inside a folder named `Tools`, it will stop and show an error instead of guessing.
-
----
-
-## Strict Priority Standards
-
-The Geurts Technical Technique uses this strict default priority order:
+The default Geurts technical priority remains:
 
 1. **Extendibility**
 2. **Readability**
@@ -101,73 +62,33 @@ The Geurts Technical Technique uses this strict default priority order:
 4. **Updated**
 5. **Documented**
 
-These priorities are not equal. If a decision has a trade-off, the higher priority wins unless a newer technique version says otherwise.
-
-### Multiplayer Exception
-
 For multiplayer systems, **network efficiency overrides all other priorities**.
 
----
+## Important Classification
 
-## Game Design Documentation Rule
+`GeurtsAIResponseControlTechnique_V1.1.md` controls chat-response behaviour. It is not a Unity coding, architecture, engineering, or implementation standard unless a later manifest explicitly reclassifies it.
 
-When a task affects gameplay, balance, progression, UX, narrative, level design, AI behaviour, enemies, or player-facing content, AI agents must check:
+## Version Selection
 
-```text
-Docs/GameDesign/GameDesignManifest.md
-```
-
-If no relevant design document exists, the AI agent must state the assumption before implementation.
-
----
-
-## AI Agent Build Process Rule
-
-Before generating, modifying, moving, or organising files, AI agents must:
-
-1. Locate the available Geurts technique documents.
-2. Select the highest semantic version of each technique.
-3. Prefer canonical paths when versions are tied.
-4. Follow `Docs/GeurtsTechnicalTechnique.md` for technical rules.
-5. Follow `Docs/GeurtsFolderStructureTechnique.md` for folder placement.
-6. Follow `Docs/GeurtsAIAgentSetupTechnique.md` for AI-native instruction setup.
-7. Follow `Docs/GeurtsGameDesignDocumentationTechnique.md` when design context matters.
-
-If ambiguity remains, the AI agent must state the assumption before making changes.
-
----
+When multiple versions of the same technique exist, use the highest semantic version. When versions tie, prefer the canonical repository/path declared by the technique or manifest.
 
 ## Changelog
+
+### v0.5.0
+
+- Made GitHub the canonical upstream documentation authority.
+- Added `AI_READ_FIRST.md` as the single AI documentation entry point.
+- Added a root repository `AGENTS.md`.
+- Added a pre-code lock and the `SYNC -> READ -> INSPECT -> PLAN -> IMPLEMENT -> VALIDATE -> REPORT` workflow.
+- Classified the response-control technique as chat-only rather than a coding standard.
+- Updated Codex bootstrap guidance for TripoCodexUnityPackage.
 
 ### v0.4.0
 
 - Renamed package terminology to Technique throughout.
-- Renamed core document files to use `Technique` in their filenames.
-- Updated Copilot, Codex, README, manifest, and design-discovery references to point at the Technique documents.
+- Updated Copilot, Codex, README, manifest, and design-discovery references to Technique documents.
 - Corrected the response-control document filename and bumped it to v1.1.
 
-### v0.3.0
+## Maintenance
 
-- Added `Docs/GeurtsAIAgentSetupTechnique.md`.
-- Added `Docs/GeurtsGameDesignDocumentationTechnique.md`.
-- Added `Tools/CreateAIAgentInstructionFiles.bat`.
-- Added templates for `AGENTS.md`, `.github/copilot-instructions.md`, and `.github/instructions/*.instructions.md`.
-- Added starter `Docs/GameDesign/` README and manifest templates.
-- Updated technical technique to reference native AI instruction setup and game design documentation discovery.
-
-### v0.2.1
-
-- Updated the folder-creation batch file so it must live in and run from the `Tools/` folder.
-- Added root `README.md` for clear setup and AI-agent usage.
-
-### v0.2.0
-
-- Added versioning to technique documents and batch file.
-- Added latest-version selection notes.
-- Added strict priority order.
-
----
-
-## Notes
-
-This package is still a draft. It is expected to evolve as Geurts Game Forge grows.
+When a technique changes, update `GeurtsTechniqueManifest.md` and any affected entry-point references in the same change. Keep native AI instruction files short and route agents to authoritative documentation rather than copying entire standards into every project.
