@@ -1,0 +1,7 @@
+{
+  "repositoryUrl": "https://github.com/Geurtsy/GeurtsGameForge_Documentation.git",
+  "branch": "main",
+  "localSyncPath": ".geurts/upstream",
+  "entryPointPath": "AI_READ_FIRST.md",
+  "manifestPath": "GeurtsTechniqueManifest.md"
+}
