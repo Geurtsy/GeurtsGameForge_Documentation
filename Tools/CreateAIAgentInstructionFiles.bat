@@ -2,12 +2,11 @@
 setlocal
 
 rem CreateAIAgentInstructionFiles.bat
-rem Version: 0.4.0
-rem Creates native AI instruction files for GitHub Copilot, Codex, and compatible agents.
-rem Safe to run multiple times. This script creates missing files only.
-rem It does not delete, move, overwrite, or rename existing files.
+rem Version: 0.5.0
+rem Creates native AI instruction files and synchronizes the canonical Geurts documentation.
+rem Safe to run multiple times. Existing project-specific instruction files are not overwritten.
 
-set "GEURTS_AGENT_SETUP_VERSION=0.4.0"
+set "GEURTS_AGENT_SETUP_VERSION=0.5.0"
 set "SCRIPT_DIR=%~dp0"
 for %%I in ("%SCRIPT_DIR%.") do set "SCRIPT_FOLDER=%%~nxI"
 
@@ -33,14 +32,44 @@ echo Project root: %PROJECT_ROOT%
 echo.
 
 call :CopyIfMissing "%TEMPLATE_DIR%\AGENTS.md" "%PROJECT_ROOT%\AGENTS.md" "AGENTS.md"
+if errorlevel 1 exit /b 1
+
 call :CopyIfMissing "%TEMPLATE_DIR%\copilot-instructions.md" "%PROJECT_ROOT%\.github\copilot-instructions.md" ".github\copilot-instructions.md"
+if errorlevel 1 exit /b 1
+
 call :CopyIfMissing "%TEMPLATE_DIR%\instructions\geurts-unity.instructions.md" "%PROJECT_ROOT%\.github\instructions\geurts-unity.instructions.md" ".github\instructions\geurts-unity.instructions.md"
+if errorlevel 1 exit /b 1
+
 call :CopyIfMissing "%TEMPLATE_DIR%\instructions\geurts-game-design.instructions.md" "%PROJECT_ROOT%\.github\instructions\geurts-game-design.instructions.md" ".github\instructions\geurts-game-design.instructions.md"
-call :CopyIfMissing "%TEMPLATE_DIR%\GameDesign\README.md" "%PROJECT_ROOT%\Docs\GameDesign\README.md" "Docs\GameDesign\README.md"
-call :CopyIfMissing "%TEMPLATE_DIR%\GameDesign\GameDesignManifest.md" "%PROJECT_ROOT%\Docs\GameDesign\GameDesignManifest.md" "Docs\GameDesign\GameDesignManifest.md"
+if errorlevel 1 exit /b 1
+
+if not exist "%SCRIPT_DIR%BootstrapGeurtsInstructions.ps1" (
+    echo ERROR: Missing Tools\BootstrapGeurtsInstructions.ps1
+    exit /b 1
+)
+
+if not exist "%SCRIPT_DIR%GeurtsRepository.json" (
+    echo ERROR: Missing Tools\GeurtsRepository.json
+    exit /b 1
+)
 
 echo.
-echo AI agent instruction file creation complete.
+echo Synchronizing canonical Geurts documentation before Codex work...
+pushd "%PROJECT_ROOT%"
+powershell -NoProfile -ExecutionPolicy Bypass -File "Tools\BootstrapGeurtsInstructions.ps1"
+set "BOOTSTRAP_EXIT=%ERRORLEVEL%"
+popd
+
+if not "%BOOTSTRAP_EXIT%"=="0" (
+    echo.
+    echo ERROR: Geurts documentation synchronization failed.
+    echo Codex should not modify project files until this is resolved.
+    exit /b %BOOTSTRAP_EXIT%
+)
+
+echo.
+echo AI agent setup complete. SYNC OK.
+echo Codex should read AGENTS.md, then .geurts\upstream\AI_READ_FIRST.md.
 echo.
 exit /b 0
 
