@@ -1,10 +1,10 @@
 # Geurts Folder Structure Technique
 
 **Unity Project Structure - AI and Human Developer Reference**  
-**Version:** 0.4.0  
+**Version:** 0.5.0  
 **Status:** Draft supporting technique  
 **Audience:** AI systems and human developers  
-**Canonical path:** `Docs/GeurtsFolderStructureTechnique.md`
+**Canonical path:** `GeurtsTechniques/GeurtsFolderStructureTechnique.md`
 
 > **Version Selection Notice:** If multiple copies of this document are found during an AI agent build process, use the copy with the highest semantic version number. If two copies share the same version number, prefer the copy in the canonical path shown above.
 
@@ -23,7 +23,7 @@ The structure is optimised for:
 - Safe refactoring.
 - Clear separation between first-party, third-party, generated, and external content.
 
-This document is the authority for folder layout and asset placement. The main technical rules remain in `Docs/GeurtsTechnicalTechnique.md`. AI agent setup files are governed by `Docs/GeurtsAIAgentSetupTechnique.md`.
+This document is the authority for folder layout and asset placement. The main technical rules remain in `GeurtsTechniques/GeurtsTechnicalTechnique.md`. AI agent setup files are governed by `GeurtsTechniques/GeurtsAIAgentSetupTechnique.md`.
 
 ---
 
@@ -47,7 +47,7 @@ Tools/CreateGeurtsFolderStructure.bat
 
 The batch file is safe to run multiple times. It creates missing folders only and must not delete, overwrite, rename, or move existing files.
 
-AI agent instruction files and game design documentation placeholders can be created with:
+AI agent instruction files can be created and the canonical documentation synchronized with:
 
 ```text
 Tools/CreateAIAgentInstructionFiles.bat
@@ -66,6 +66,7 @@ ProjectRoot/
 ├── ProjectSettings/
 ├── UserSettings/
 ├── Docs/
+├── GeurtsGameForgeDocumentation/
 ├── Builds/
 ├── Tools/
 └── External/
@@ -81,12 +82,32 @@ Project documentation.
 
 Examples:
 
-- Design docs.
-- Technical docs.
+- Project-specific design docs.
 - Naming conventions.
 - Onboarding notes.
-- AI instructions.
 - Game design documentation under `Docs/GameDesign/`.
+
+Canonical Geurts implementation techniques do not belong here. They are synchronized into `GeurtsGameForgeDocumentation/`.
+
+### GeurtsGameForgeDocumentation/
+
+Plugin-managed, synchronized Geurts Game Forge reference documentation.
+
+Required core layout:
+
+```text
+GeurtsGameForgeDocumentation/
+├── AI_READ_FIRST.md
+├── GeurtsTechniqueManifest.md
+└── GeurtsTechniques/
+```
+
+Rules:
+
+- Treat this directory as read-only synchronized reference material.
+- Do not store project-specific GDD files here.
+- Keep project-specific game design documentation under `Docs/GameDesign/`.
+- Do not replace this directory with a hidden or nested substitute path unless the user explicitly changes the contract.
 
 ### Builds/
 

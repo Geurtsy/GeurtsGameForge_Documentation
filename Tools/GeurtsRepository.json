@@ -1,7 +1,14 @@
 {
+  "schemaVersion": "0.6.0",
   "repositoryUrl": "https://github.com/Geurtsy/GeurtsGameForge_Documentation.git",
   "branch": "main",
-  "localSyncPath": ".geurts/upstream",
+  "localSyncPath": "GeurtsGameForgeDocumentation",
   "entryPointPath": "AI_READ_FIRST.md",
-  "manifestPath": "GeurtsTechniqueManifest.md"
+  "manifestPath": "GeurtsTechniqueManifest.md",
+  "techniquesPath": "GeurtsTechniques",
+  "sparsePaths": [
+    "/AI_READ_FIRST.md",
+    "/GeurtsTechniqueManifest.md",
+    "/GeurtsTechniques/"
+  ]
 }

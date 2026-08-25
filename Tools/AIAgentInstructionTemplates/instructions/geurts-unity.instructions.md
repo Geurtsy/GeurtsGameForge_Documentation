@@ -4,22 +4,20 @@ applyTo: "Assets/**/*.cs,Assets/**/*.asmdef,Assets/**/*.shader,Assets/**/*.shade
 
 # Geurts Unity Implementation Instructions
 
-Version: 0.4.0
+**Version:** 0.6.0
 
-Follow the latest Geurts Technical Technique and Folder Structure Technique documents before editing Unity project files.
+Before editing Unity project files, read:
 
-- Technical authority: `Docs/GeurtsTechnicalTechnique.md`
-- Folder authority: `Docs/GeurtsFolderStructureTechnique.md`
-- AI setup authority: `Docs/GeurtsAIAgentSetupTechnique.md`
+`GeurtsGameForgeDocumentation/AI_READ_FIRST.md`
 
-Use this strict priority order for technical trade-offs:
+Then follow the current techniques indexed by:
 
-1. Extendibility
-2. Readability
-3. Efficiency
-4. Updated
-5. Documented
+`GeurtsGameForgeDocumentation/GeurtsTechniqueManifest.md`
 
-For multiplayer code, network efficiency overrides all other priorities.
+Key authorities are under:
 
-Every generated or modified Unity C# script must include the required Geurts compliance header from the technical technique document.
+`GeurtsGameForgeDocumentation/GeurtsTechniques/`
+
+For multiplayer code, network efficiency overrides all other technical priorities.
+
+Every generated or modified Unity C# script must include the compliance header required by the current Technical Technique.

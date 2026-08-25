@@ -1,5 +1,7 @@
 # Geurts Game Forge Documentation Repository Instructions
 
+**Version:** 0.6.0  
+
 This repository is the canonical Geurts Game Forge documentation authority.
 
 Before making changes, read `AI_READ_FIRST.md` and then follow the reading order it defines.
@@ -7,11 +9,12 @@ Before making changes, read `AI_READ_FIRST.md` and then follow the reading order
 ## Mandatory rules
 
 - Treat `GeurtsTechniqueManifest.md` as the version and package index.
+- Treat `GeurtsTechniques/` as the canonical directory for Geurts implementation techniques.
 - Keep native AI instruction files concise. They should route agents to authoritative documentation instead of duplicating entire techniques.
 - Preserve semantic versioning and canonical paths.
-- Do not treat `GeurtsAIResponseControlTechnique_V1.1.md` as a coding standard.
+- Do not treat `GeurtsTechniques/GeurtsAIResponseControlTechnique_V1.1.md` as a coding standard.
 - When changing a technique, update the manifest and any affected entry-point references in the same change.
-- When changing instructions consumed by TripoCodexUnityPackage, keep the bootstrap contract documented in `AI_READ_FIRST.md` compatible or clearly version the breaking change.
+- When changing instructions consumed by a Geurts-compatible Unity AI integration package, keep the bootstrap contract documented in `AI_READ_FIRST.md` compatible or clearly version the breaking change.
 
 ## Workflow
 
