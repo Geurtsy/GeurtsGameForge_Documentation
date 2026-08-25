@@ -2,11 +2,11 @@
 setlocal
 
 rem CreateAIAgentInstructionFiles.bat
-rem Version: 0.5.0
+rem Version: 0.6.0
 rem Creates native AI instruction files and synchronizes the canonical Geurts documentation.
 rem Safe to run multiple times. Existing project-specific instruction files are not overwritten.
 
-set "GEURTS_AGENT_SETUP_VERSION=0.5.0"
+set "GEURTS_AGENT_SETUP_VERSION=0.6.0"
 set "SCRIPT_DIR=%~dp0"
 for %%I in ("%SCRIPT_DIR%.") do set "SCRIPT_FOLDER=%%~nxI"
 
@@ -54,7 +54,7 @@ if not exist "%SCRIPT_DIR%GeurtsRepository.json" (
 )
 
 echo.
-echo Synchronizing canonical Geurts documentation before Codex work...
+echo Synchronizing canonical Geurts documentation...
 pushd "%PROJECT_ROOT%"
 powershell -NoProfile -ExecutionPolicy Bypass -File "Tools\BootstrapGeurtsInstructions.ps1"
 set "BOOTSTRAP_EXIT=%ERRORLEVEL%"
@@ -63,13 +63,13 @@ popd
 if not "%BOOTSTRAP_EXIT%"=="0" (
     echo.
     echo ERROR: Geurts documentation synchronization failed.
-    echo Codex should not modify project files until this is resolved.
+    echo AI agents should not modify project files until this is resolved.
     exit /b %BOOTSTRAP_EXIT%
 )
 
 echo.
 echo AI agent setup complete. SYNC OK.
-echo Codex should read AGENTS.md, then .geurts\upstream\AI_READ_FIRST.md.
+echo AI agents should read AGENTS.md, then GeurtsGameForgeDocumentation\AI_READ_FIRST.md.
 echo.
 exit /b 0
 

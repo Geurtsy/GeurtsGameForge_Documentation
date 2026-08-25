@@ -1,10 +1,10 @@
 # Geurts Technical Technique
 
 **Unity Game Development - AI Instruction Manual**  
-**Version:** 0.4.0  
+**Version:** 0.5.0  
 **Status:** Draft master technique  
 **Audience:** AI systems and human developers  
-**Canonical path:** `Docs/GeurtsTechnicalTechnique.md`
+**Canonical path:** `GeurtsTechniques/GeurtsTechnicalTechnique.md`
 
 > **Version Selection Notice:** If multiple copies of this document are found during an AI agent build process, use the copy with the highest semantic version number. If two copies share the same version number, prefer the copy in the canonical path shown above.
 
@@ -32,17 +32,17 @@ The following documents are part of the Geurts Game Forge technique set:
 
 | Document | Purpose |
 |---|---|
-| `Docs/GeurtsTechnicalTechnique.md` | Main technical, coding, AI, debugging, performance, and priority standards. |
-| `Docs/GeurtsFolderStructureTechnique.md` | Folder layout, asset placement, project structure, and naming rules. |
-| `Docs/GeurtsAIAgentSetupTechnique.md` | Native AI agent instruction setup for GitHub Copilot, Codex, and future coding agents. |
-| `Docs/GeurtsGameDesignDocumentationTechnique.md` | How AI agents and developers should locate and use project game design documentation when a task depends on design intent. |
-| `Docs/GameDesign/GameDesignManifest.md` | Optional project-specific index of current game design documents. |
+| `GeurtsTechniques/GeurtsTechnicalTechnique.md` | Main technical, coding, AI, debugging, performance, and priority standards. |
+| `GeurtsTechniques/GeurtsFolderStructureTechnique.md` | Folder layout, asset placement, project structure, and naming rules. |
+| `GeurtsTechniques/GeurtsAIAgentSetupTechnique.md` | Native AI agent instruction setup for GitHub Copilot, Codex, and future coding agents. |
+| `GeurtsTechniques/GeurtsGameDesignDocumentationTechnique.md` | How AI agents and developers should locate and use project game design documentation when a task depends on design intent. |
+| `<ProjectRoot>/Docs/GameDesign/GameDesignManifest.md` | Optional project-specific index of current game design documents. |
 
 AI systems and human developers must follow the latest valid versions of the relevant documents when generating, modifying, moving, or organising files.
 
-When creating new files, scripts, scenes, assets, tools, or documentation, folder placement must follow `Docs/GeurtsFolderStructureTechnique.md`.
+When creating new files, scripts, scenes, assets, tools, or documentation, folder placement must follow `GeurtsTechniques/GeurtsFolderStructureTechnique.md`.
 
-When a task affects gameplay design, player-facing behaviour, balance, progression, narrative, levels, UX, or content intent, the AI agent must also consult the current game design documentation listed in `Docs/GameDesign/GameDesignManifest.md` when that file exists.
+When a task affects gameplay design, player-facing behaviour, balance, progression, narrative, levels, UX, or content intent, the AI agent must also consult the target Unity project’s current game design documentation listed in `<ProjectRoot>/Docs/GameDesign/GameDesignManifest.md` when that file exists.
 
 ---
 
@@ -67,10 +67,10 @@ For multiplayer systems, **network efficiency overrides all other priorities**.
 ### Document Authority
 
 - Project-specific Geurts Game Forge rules override general Unity habits or AI defaults.
-- `Docs/GeurtsTechnicalTechnique.md` is the authority for technical implementation.
-- `Docs/GeurtsFolderStructureTechnique.md` is the authority for folder structure and asset placement.
-- `Docs/GeurtsAIAgentSetupTechnique.md` is the authority for AI agent instruction files.
-- `Docs/GeurtsGameDesignDocumentationTechnique.md` is the authority for locating and using design documentation.
+- `GeurtsTechniques/GeurtsTechnicalTechnique.md` is the authority for technical implementation.
+- `GeurtsTechniques/GeurtsFolderStructureTechnique.md` is the authority for folder structure and asset placement.
+- `GeurtsTechniques/GeurtsAIAgentSetupTechnique.md` is the authority for AI agent instruction files.
+- `GeurtsTechniques/GeurtsGameDesignDocumentationTechnique.md` is the authority for locating and using design documentation.
 - Native AI instruction files such as `.github/copilot-instructions.md` and `AGENTS.md` are entry points that point agents back to the latest Geurts technique documents.
 - If ambiguity remains, AI systems must state their assumption before generating or modifying code.
 
@@ -103,12 +103,12 @@ These files must remain short and must point agents back to the Geurts technique
 AI systems must insert the following comment at the beginning of every Unity C# script they generate or modify:
 
 ```csharp
-// IMPORTANT: This script must comply with Docs/GeurtsTechnicalTechnique.md and folder placement rules in Docs/GeurtsFolderStructureTechnique.md.
+// IMPORTANT: This script must comply with GeurtsGameForgeDocumentation/GeurtsTechniques/GeurtsTechnicalTechnique.md and folder placement rules in GeurtsGameForgeDocumentation/GeurtsTechniques/GeurtsFolderStructureTechnique.md.
 ```
 
 All code suggestions, refactoring, and automated completions must comply with the requirements for modularity, readability, efficiency, documentation, AI integration, runtime debugging, project structure, and game design awareness described in the Geurts technique documents.
 
-In case of ambiguity or conflict, the rules in `Docs/GeurtsTechnicalTechnique.md` take precedence unless the matter is specifically about folder structure, AI agent setup, or game design document discovery.
+In case of ambiguity or conflict, the rules in `GeurtsTechniques/GeurtsTechnicalTechnique.md` take precedence unless the matter is specifically about folder structure, AI agent setup, or game design document discovery.
 
 Copilot, Codex, and other AI instruction files should be reviewed regularly to ensure ongoing compliance with the latest technique documents.
 
@@ -132,7 +132,7 @@ Exception: For multiplayer systems, network efficiency overrides all other prior
 
 ## Folder Structure and Asset Placement
 
-Folder structure is governed by `Docs/GeurtsFolderStructureTechnique.md`.
+Folder structure is governed by `GeurtsTechniques/GeurtsFolderStructureTechnique.md`.
 
 AI systems must check the folder structure technique before creating:
 
@@ -175,16 +175,16 @@ AI agents and human developers should consult game design documentation when wor
 - Accessibility decisions.
 - Player-facing debug, cheat, or tuning tools.
 
-The default design documentation location is:
+The target Unity project’s default design documentation location is:
 
 ```text
-Docs/GameDesign/
+<ProjectRoot>/Docs/GameDesign/
 ```
 
-The optional design index is:
+The target Unity project’s optional design index is:
 
 ```text
-Docs/GameDesign/GameDesignManifest.md
+<ProjectRoot>/Docs/GameDesign/GameDesignManifest.md
 ```
 
 If a task requires design intent and no relevant design document exists, the AI agent must state the assumption it is making before implementation.
@@ -526,7 +526,7 @@ Performance.SetPosition [TopLeft|TopRight|BottomLeft|BottomRight]
 A generated or modified Unity C# script is complete only when it:
 
 - Includes the required compliance comment at the top.
-- Uses the correct folder location according to `Docs/GeurtsFolderStructureTechnique.md`.
+- Uses the correct folder location according to `GeurtsTechniques/GeurtsFolderStructureTechnique.md`.
 - Follows naming conventions.
 - Includes tooltips for all `[SerializeField]` fields.
 - Includes XML summaries for public methods.

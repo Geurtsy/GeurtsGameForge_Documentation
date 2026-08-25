@@ -1,42 +1,60 @@
 # Geurts Game Design Documentation Technique
 
 **Game Design Documentation Discovery - AI and Human Developer Reference**  
-**Version:** 0.4.0  
+**Version:** 0.5.0  
 **Status:** Draft supporting technique  
 **Audience:** AI systems and human developers  
-**Canonical path:** `Docs/GeurtsGameDesignDocumentationTechnique.md`
+**Canonical path:** `GeurtsTechniques/GeurtsGameDesignDocumentationTechnique.md`
 
-> **Version Selection Notice:** If multiple copies of this document are found during an AI agent build process, use the copy with the highest semantic version number. If two copies share the same version number, prefer the copy in the canonical path shown above.
+> **Version Selection Notice:** If multiple copies of this document are found during an AI agent build process, use the copy with the highest semantic version number. If two copies share the same version number, prefer the canonical path shown above.
 
 ---
 
 ## Purpose
 
-This document defines how AI agents and human developers should find and use game design documentation when a technical task depends on design intent.
+This document defines how AI agents and human developers should find and use project-specific game design documentation when a technical task depends on design intent.
 
-The Technical Technique document defines how to build systems. Game design documentation defines what those systems should feel like, support, or express to the player.
+The Technical Technique defines how to build systems. Project-specific game design documentation defines what those systems should feel like, support, or express to the player.
+
+---
+
+## Documentation Boundary
+
+Synchronized Geurts Game Forge techniques belong at:
+
+```text
+<ProjectRoot>/GeurtsGameForgeDocumentation/
+```
+
+Project-specific game design documentation belongs at:
+
+```text
+<ProjectRoot>/Docs/GameDesign/
+```
+
+Never use a template or example inside `GeurtsGameForgeDocumentation/` as the target game's design authority.
 
 ---
 
 ## Canonical Game Design Directory
 
-Use this directory for project-specific game design documentation:
+Use this target-project directory for project-specific game design documentation:
 
 ```text
-Docs/GameDesign/
+<ProjectRoot>/Docs/GameDesign/
 ```
 
 Use this manifest as the design index when it exists:
 
 ```text
-Docs/GameDesign/GameDesignManifest.md
+<ProjectRoot>/Docs/GameDesign/GameDesignManifest.md
 ```
 
 ---
 
 ## When AI Agents Must Consult Game Design Docs
 
-AI agents must check the game design documentation when a task affects:
+AI agents must check the project-specific game design documentation when a task affects:
 
 - Core mechanics.
 - Player abilities.
@@ -57,7 +75,7 @@ AI agents must check the game design documentation when a task affects:
 These files are optional starting points. Create only what the project actually needs.
 
 ```text
-Docs/GameDesign/
+<ProjectRoot>/Docs/GameDesign/
 ├── GameDesignManifest.md
 ├── GameDesignOverview.md
 ├── GameplayPillars.md
@@ -75,7 +93,7 @@ Docs/GameDesign/
 
 ## Manifest Rules
 
-`Docs/GameDesign/GameDesignManifest.md` should list the current game design documents and explain when each one matters.
+`<ProjectRoot>/Docs/GameDesign/GameDesignManifest.md` should list the current project-specific design documents and explain when each one matters.
 
 If multiple design documents conflict, AI agents should prefer:
 
@@ -88,11 +106,11 @@ If ambiguity remains, the AI agent must state the assumption before implementati
 
 ---
 
-## Relationship to Technical Technique
+## Relationship to Other Techniques
 
-- Technical Technique defines implementation standards.
-- Game design docs define player-facing intent.
-- Folder Structure Technique defines where files belong.
-- AI Agent Setup Technique defines how agents discover the above documents.
+- `GeurtsTechnicalTechnique.md` defines implementation standards.
+- Project-specific game design docs define player-facing intent.
+- `GeurtsFolderStructureTechnique.md` defines where files belong.
+- `GeurtsAIAgentSetupTechnique.md` defines how agents discover and synchronize the documentation.
 
 Game design documents should not silently override technical safety, performance, or multiplayer network-efficiency requirements. If design intent conflicts with technical standards, the AI agent must state the conflict.
