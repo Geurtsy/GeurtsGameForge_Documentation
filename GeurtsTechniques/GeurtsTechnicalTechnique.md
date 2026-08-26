@@ -1,9 +1,10 @@
 # Geurts Technical Technique
 
 **Unity Game Development - AI Instruction Manual**  
-**Version:** 0.5.0  
+**Version:** 0.7.0
 **Status:** Draft master technique  
-**Audience:** AI systems and human developers  
+**Primary audience:** AI coding agents and automated development systems
+**Secondary audience:** Human developers
 **Canonical path:** `GeurtsTechniques/GeurtsTechnicalTechnique.md`
 
 > **Version Selection Notice:** If multiple copies of this document are found during an AI agent build process, use the copy with the highest semantic version number. If two copies share the same version number, prefer the copy in the canonical path shown above.
@@ -12,7 +13,7 @@
 
 ## Purpose
 
-This document instructs AI systems and human developers on how to create, edit, refactor, and maintain Unity game code for Geurts Game Forge.
+This document instructs AI coding agents, automated development systems, and human developers on how to create, edit, refactor, and maintain Unity game code for Geurts Game Forge.
 
 It exists to ensure:
 
@@ -24,6 +25,8 @@ It exists to ensure:
 
 This document is currently the temporary master technical technique. Later, it may be split into specialised documents.
 
+Interpret its requirements deterministically. Explicit rules, literal paths, stable terminology, and testable outcomes take precedence over stylistic elegance when the two conflict.
+
 ---
 
 ## Related Technique Documents
@@ -34,15 +37,17 @@ The following documents are part of the Geurts Game Forge technique set:
 |---|---|
 | `GeurtsTechniques/GeurtsTechnicalTechnique.md` | Main technical, coding, AI, debugging, performance, and priority standards. |
 | `GeurtsTechniques/GeurtsFolderStructureTechnique.md` | Folder layout, asset placement, project structure, and naming rules. |
+| `GeurtsTechniques/GeurtsFolderStructureDefinition.json` | Machine-readable authority for automated folder creation. |
 | `GeurtsTechniques/GeurtsAIAgentSetupTechnique.md` | Native AI agent instruction setup for GitHub Copilot, Codex, and future coding agents. |
 | `GeurtsTechniques/GeurtsGameDesignDocumentationTechnique.md` | How AI agents and developers should locate and use project game design documentation when a task depends on design intent. |
-| `<ProjectRoot>/Docs/GameDesign/GameDesignManifest.md` | Optional project-specific index of current game design documents. |
+| `GeurtsTechniques/GeurtsGameForgeIntelligenceIntegrationContract.md` | Reusable contract for documentation synchronization, folder generation, native entries, and GDD automation. |
+| `<ProjectRoot>/Docs/GameDesign/GameDesignManifest.md` | Project-specific index read at initialization when it exists. |
 
 AI systems and human developers must follow the latest valid versions of the relevant documents when generating, modifying, moving, or organising files.
 
-When creating new files, scripts, scenes, assets, tools, or documentation, folder placement must follow `GeurtsTechniques/GeurtsFolderStructureTechnique.md`.
+When creating new files, scripts, scenes, assets, tools, or documentation, placement must follow `GeurtsTechniques/GeurtsFolderStructureTechnique.md`. Automation that creates folders must also follow `GeurtsTechniques/GeurtsFolderStructureDefinition.json`.
 
-When a task affects gameplay design, player-facing behaviour, balance, progression, narrative, levels, UX, or content intent, the AI agent must also consult the target Unity project’s current game design documentation listed in `<ProjectRoot>/Docs/GameDesign/GameDesignManifest.md` when that file exists.
+At session or project initialization, read `<ProjectRoot>/Docs/GameDesign/GameDesignManifest.md` once when it exists and retain a version/hash/timestamp fingerprint. Re-read it when the fingerprint changes. When a task affects gameplay design, player-facing behaviour, balance, progression, narrative, levels, UX, or content intent, load every relevant current design document listed by that manifest before implementation. Do not load unrelated full design documents for a purely technical task.
 
 ---
 
@@ -53,8 +58,8 @@ The **Core Principles** are a strict priority order, not an unordered list of pr
 When a decision requires a trade-off, apply this priority order:
 
 1. **Extendibility** - Code must be modular and easy to expand.
-2. **Readability** - Code must be easy for humans and AI agents to understand.
-3. **Efficiency** - Runtime performance, especially stable FPS, is more important than loading-time convenience.
+2. **Efficiency** - Avoid unnecessary runtime cost; when efficiency genuinely conflicts with readability, runtime efficiency wins.
+3. **Readability** - Code should remain clear to humans and AI agents without imposing avoidable runtime cost.
 4. **Updated** - Follow current Unity and AI framework practices where practical.
 5. **Documented** - Major components, public APIs, and serialized fields must be clear and documented.
 
@@ -69,8 +74,10 @@ For multiplayer systems, **network efficiency overrides all other priorities**.
 - Project-specific Geurts Game Forge rules override general Unity habits or AI defaults.
 - `GeurtsTechniques/GeurtsTechnicalTechnique.md` is the authority for technical implementation.
 - `GeurtsTechniques/GeurtsFolderStructureTechnique.md` is the authority for folder structure and asset placement.
+- `GeurtsTechniques/GeurtsFolderStructureDefinition.json` is the authority for automated folder creation.
 - `GeurtsTechniques/GeurtsAIAgentSetupTechnique.md` is the authority for AI agent instruction files.
 - `GeurtsTechniques/GeurtsGameDesignDocumentationTechnique.md` is the authority for locating and using design documentation.
+- `GeurtsTechniques/GeurtsGameForgeIntelligenceIntegrationContract.md` is the reusable authority for compatible integration behaviour.
 - Native AI instruction files such as `.github/copilot-instructions.md` and `AGENTS.md` are entry points that point agents back to the latest Geurts technique documents.
 - If ambiguity remains, AI systems must state their assumption before generating or modifying code.
 
@@ -80,13 +87,13 @@ For multiplayer systems, **network efficiency overrides all other priorities**.
 
 GitHub Copilot, Codex, ChatGPT, and any other AI coding assistant must follow the standards specified in the latest valid Geurts technique documents.
 
-The native AI instruction files for this repository are created by:
+The native AI instruction files for a target project are safely managed by:
 
 ```text
-Tools/CreateAIAgentInstructionFiles.bat
+Tools/ManageGeurtsAgentInstructions.ps1
 ```
 
-This script creates or refreshes the expected AI entry points when they are missing:
+The managed updater creates missing entries, refreshes Geurts-owned sections when their template version changes, preserves user-owned content, backs up legacy files before replacement, and reports created, updated, preserved, skipped, and conflicted results:
 
 ```text
 ProjectRoot/
@@ -99,6 +106,8 @@ ProjectRoot/
 ```
 
 These files must remain short and must point agents back to the Geurts technique documents instead of duplicating every rule.
+
+Every native entry must route through `GeurtsGameForgeDocumentation/AI_READ_FIRST.md`. A required documentation update or synchronization failure blocks project modification unless an explicit fallback policy permits use of the last valid copy.
 
 AI systems must insert the following comment at the beginning of every Unity C# script they generate or modify:
 
@@ -119,8 +128,8 @@ Copilot, Codex, and other AI instruction files should be reviewed regularly to e
 The following principles are listed in strict priority order:
 
 1. **Extendibility** - Code must be modular and easy to expand.
-2. **Readability** - Use descriptive names, clear structure, and comments for clarity.
-3. **Efficiency** - Prioritise runtime performance over loading times.
+2. **Efficiency** - Prioritise runtime performance and avoid unnecessary runtime cost.
+3. **Readability** - Use descriptive names, clear structure, and comments when they do not impose avoidable runtime cost.
 4. **Updated** - Follow current Unity and AI framework practices where practical.
 5. **Documented** - Every major component must include appropriate comments and tooltips.
 
@@ -132,7 +141,7 @@ Exception: For multiplayer systems, network efficiency overrides all other prior
 
 ## Folder Structure and Asset Placement
 
-Folder structure is governed by `GeurtsTechniques/GeurtsFolderStructureTechnique.md`.
+Folder placement is explained by `GeurtsTechniques/GeurtsFolderStructureTechnique.md`. Automated folder creation is governed by `GeurtsTechniques/GeurtsFolderStructureDefinition.json`. A contradiction between them is a validation failure; automation must stop rather than guess.
 
 AI systems must check the folder structure technique before creating:
 
@@ -148,13 +157,13 @@ AI systems must check the folder structure technique before creating:
 - Documentation.
 - External or third-party content.
 
-The project folder structure can be generated using:
+The project folder structure can be generated from the definition using:
 
 ```text
-Tools/CreateGeurtsFolderStructure.bat
+Tools/CreateGeurtsFolderStructure.ps1
 ```
 
-The batch file must only create missing folders. It must not delete, move, overwrite, or rename existing files.
+The tool may create only definition entries that permit automation creation. It must not delete project content, including when a path disappears from a later definition.
 
 ---
 
@@ -181,13 +190,13 @@ The target Unity project’s default design documentation location is:
 <ProjectRoot>/Docs/GameDesign/
 ```
 
-The target Unity project’s optional design index is:
+The target Unity project’s design index, when present, is:
 
 ```text
 <ProjectRoot>/Docs/GameDesign/GameDesignManifest.md
 ```
 
-If a task requires design intent and no relevant design document exists, the AI agent must state the assumption it is making before implementation.
+Use `Tools/UpdateGameDesignManifest.ps1` for deterministic manifest maintenance under `GeurtsTechniques/GeurtsGameDesignDocumentationTechnique.md`. If a task requires design intent and no relevant design document exists, the AI agent must state the assumption it is making before implementation. It must not invent mechanics, narrative, balance values, progression, characters, or other game-design facts.
 
 
 Do not create vague folders such as:
@@ -534,3 +543,5 @@ A generated or modified Unity C# script is complete only when it:
 - Avoids expensive logic inside `Update()` unless justified.
 - Routes runtime debug output through Quantum Console where relevant.
 - Preserves multiplayer network efficiency where relevant.
+- Loaded every relevant project-specific design document before changing player-facing behaviour, or explicitly stated the missing-design assumption.
+- Used a valid local documentation copy and recorded the synchronized commit/version when the host integration supplies it.

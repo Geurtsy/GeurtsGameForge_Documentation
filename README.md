@@ -1,8 +1,9 @@
 # Geurts Game Forge Documentation
 
-**Version:** 0.6.0  
+**Version:** 0.7.0
 **Status:** Draft technique package  
-**Audience:** AI agents and human developers  
+**Primary audience:** AI coding agents and automated development systems
+**Secondary audience:** Human developers
 **Canonical repository:** `Geurtsy/GeurtsGameForge_Documentation`
 
 ## AI: Start Here
@@ -16,6 +17,8 @@ Do not start implementation from this README. `AI_READ_FIRST.md` defines the man
 ## What This Repository Is
 
 This repository is the canonical source for Geurts Game Forge development techniques. Unity projects and compatible AI integration packages should synchronize this repository rather than maintaining independent copies of the technique set.
+
+The package is AI-first. Documentation favours deterministic interpretation, explicit requirements, literal paths, stable terminology, machine-readable data, and automated validation. Human readability remains important, but human elegance does not override reliable machine interpretation.
 
 The intended flow is:
 
@@ -47,12 +50,18 @@ ProjectRoot/Docs/GameDesign/
 - `GeurtsTechniques/GeurtsAIAgentSetupTechnique.md` - AI integration and bootstrap rules.
 - `GeurtsTechniques/GeurtsTechnicalTechnique.md` - implementation standards.
 - `GeurtsTechniques/GeurtsFolderStructureTechnique.md` - Unity folder and asset placement standards.
+- `GeurtsTechniques/GeurtsFolderStructureDefinition.json` - machine-readable folder-creation authority.
 - `GeurtsTechniques/GeurtsGameDesignDocumentationTechnique.md` - rules for discovering player-facing design context.
+- `GeurtsTechniques/GeurtsGameForgeIntelligenceIntegrationContract.md` - reusable synchronization, managed-entry, folder-generation, and GDD automation contract.
 - `<ProjectRoot>/Docs/GameDesign/GameDesignManifest.md` - target game's design-document index when present.
 
-## Unity Integration
+## Game Forge Intelligence Integration
 
-A compatible package should configure this repository as its canonical documentation source:
+**Game Forge Intelligence** is the current concrete Unity plugin. **Geurts-compatible Unity AI integration package** is the generic category used for reusable contracts.
+
+This repository contains documentation contracts and platform-neutral tooling, not the Game Forge Intelligence Unity plugin source. Plugin-specific Unity implementation belongs in its own source repository.
+
+The canonical repository is:
 
 `https://github.com/Geurtsy/GeurtsGameForge_Documentation.git`
 
@@ -60,13 +69,25 @@ Canonical branch:
 
 `main`
 
-The package should synchronize the repository before an AI agent changes target-project files, store the synchronized copy at `GeurtsGameForgeDocumentation/`, and direct the agent to `GeurtsGameForgeDocumentation/AI_READ_FIRST.md`.
+The repository currently uses an authenticated private distribution strategy. Integrations must provide actionable authentication guidance and must not assume anonymous cloning works.
 
-If synchronization is required and fails, the package must fail visibly rather than silently pretending stale instructions are current.
+Normal prompts use the last validated local copy at `GeurtsGameForgeDocumentation/`. They do not contact GitHub on every prompt.
+
+At Unity launch or AI-session initialization, the integration performs one lightweight commit/version check. When an update exists, it reports the current and available identifiers and follows package policy to request approval or update automatically. The manual action is named **Update Geurts Game Forge Documentation**.
+
+Updates must be staged, validated, and swapped safely. A successful update reports the exact synchronized commit. A failed update preserves the last valid copy and reports authentication, network, checkout, validation, or file-lock failure accurately. v0.7.0 has no approved bundled fallback. Explicit policy may permit the last validated local copy as potentially stale; its version and commit must be visible, and it never outranks a newer successfully synchronized canonical copy.
+
+Every generated native AI entry routes through `GeurtsGameForgeDocumentation/AI_READ_FIRST.md`. The full reusable contract is `GeurtsTechniques/GeurtsGameForgeIntelligenceIntegrationContract.md`.
+
+## Game Design Discovery
+
+At session or project initialization, read `<ProjectRoot>/Docs/GameDesign/GameDesignManifest.md` once when it exists and retain a version/hash/timestamp fingerprint. Re-read it when the fingerprint changes.
+
+Do not load every full GDD for every task. Purely technical work may proceed after lightweight discovery; player-facing work must load every relevant design document first. If required intent is missing, state the assumption before changing behaviour. Never fabricate game-design facts.
 
 ## Required AI Sequence
 
-`SYNC -> READ -> INSPECT -> PLAN -> IMPLEMENT -> VALIDATE -> REPORT`
+`CHECK LOCAL DOCS -> UPDATE WHEN REQUIRED -> READ -> INSPECT -> PLAN -> IMPLEMENT -> VALIDATE -> REPORT`
 
 The mandatory and conditional documents for each task are defined in `AI_READ_FIRST.md` and `GeurtsTechniqueManifest.md`.
 
@@ -75,12 +96,28 @@ The mandatory and conditional documents for each task are defined in `AI_READ_FI
 The current default Geurts technical priority is:
 
 1. **Extendibility**
-2. **Readability**
-3. **Efficiency**
+2. **Efficiency**
+3. **Readability**
 4. **Updated**
 5. **Documented**
 
+Higher-numbered principles must not silently override lower-numbered principles. Runtime efficiency wins when it genuinely conflicts with readability, while readability remains desirable when it does not add avoidable runtime cost.
+
 For multiplayer systems, **network efficiency overrides all other priorities**.
+
+## Automation Tools
+
+- `Tools/BootstrapGeurtsInstructions.ps1` - use `-Mode Check` for initialization, `-Mode Update` for safe synchronization, and `-Mode Validate` for local validation.
+- `Tools/CreateGeurtsFolderStructure.ps1` - create allowed folders from the machine-readable definition without deleting user content.
+- `Tools/ManageGeurtsAgentInstructions.ps1` - safely create, migrate, and update managed native AI-entry sections.
+- `Tools/UpdateGameDesignManifest.ps1` - deterministically maintain the project GDD manifest.
+
+`Tools/ManageGeurtsAgentInstructions.ps1` creates missing `Docs/GameDesign/README.md` and `Docs/GameDesign/GameDesignManifest.md` from controlled templates without overwriting project-specific content.
+
+## Supporting Documents
+
+- `Ideas/GameForgeIntelligenceIdeas.md` - non-normative proposals, open decisions, and deferred plugin work.
+- `Migrations/v0.7.0.md` - migration from legacy synchronized layouts and native instruction files.
 
 ## Important Classification
 
@@ -91,6 +128,15 @@ For multiplayer systems, **network efficiency overrides all other priorities**.
 When multiple versions of the same technique exist, use the highest semantic version. When versions tie, prefer the canonical repository/path declared by the technique or manifest.
 
 ## Changelog
+
+### v0.7.0
+
+- Made AI coding agents and automated development systems the primary audience.
+- Changed the strict technical priority to Extendibility, Efficiency, Readability, Updated, and Documented while retaining the multiplayer override.
+- Added machine-readable folder creation, lightweight GDD discovery, deterministic manifest maintenance, and safe GDD scaffolding contracts.
+- Added safe managed native-entry upgrades and check/update modes that preserve the last valid synchronized copy.
+- Named Game Forge Intelligence as the current plugin and documented authenticated private distribution.
+- Added the integration contract, ideas document, migration guide, and automated validation coverage.
 
 ### v0.6.0
 

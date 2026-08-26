@@ -1,11 +1,20 @@
 {
-  "schemaVersion": "0.6.0",
+  "schemaVersion": "0.7.0",
+  "packageVersion": "0.7.0",
+  "distributionStrategy": "authenticated-private-repository",
   "repositoryUrl": "https://github.com/Geurtsy/GeurtsGameForge_Documentation.git",
   "branch": "main",
   "localSyncPath": "GeurtsGameForgeDocumentation",
   "entryPointPath": "AI_READ_FIRST.md",
   "manifestPath": "GeurtsTechniqueManifest.md",
   "techniquesPath": "GeurtsTechniques",
+  "folderDefinitionPath": "GeurtsTechniques/GeurtsFolderStructureDefinition.json",
+  "fallbackPolicy": "none",
+  "requiredEntries": [
+    { "path": "AI_READ_FIRST.md", "type": "file" },
+    { "path": "GeurtsTechniqueManifest.md", "type": "file" },
+    { "path": "GeurtsTechniques", "type": "directory" }
+  ],
   "sparsePaths": [
     "/AI_READ_FIRST.md",
     "/GeurtsTechniqueManifest.md",

@@ -1,59 +1,25 @@
-# Geurts Game Forge - Codex Bootstrap
+<!-- GEURTS-MANAGED-BEGIN id="agents-body" version="0.7.0" sha256="4226bad26176eea2b0187cb4d7d1e3439255840aeb1ce6f9f26e09a01081a0dc" -->
+# Geurts Game Forge - Codex Entry
 
-**Version:** 0.6.0  
+**Version:** 0.7.0
 **Canonical documentation repository:** `https://github.com/Geurtsy/GeurtsGameForge_Documentation.git`  
 **Canonical branch:** `main`
 
-## Pre-Code Lock
+At AI-session initialization, run the lightweight documentation check:
+
+`powershell.exe -NoProfile -ExecutionPolicy Bypass -File Tools/BootstrapGeurtsInstructions.ps1 -Mode Check`
+
+If an update is available, notify the user and follow package policy or the manual **Update Geurts Game Forge Documentation** action. Do not contact GitHub again for every prompt.
 
 Before creating, modifying, moving, renaming, or deleting project files:
 
-1. Run `powershell -NoProfile -ExecutionPolicy Bypass -File Tools/BootstrapGeurtsInstructions.ps1`.
-2. Confirm the script reports `SYNC OK`.
-3. Read `GeurtsGameForgeDocumentation/AI_READ_FIRST.md`.
-4. Follow the reading order and task routing defined there.
-5. Inspect the existing project implementation before creating replacements.
-6. Only then plan and implement the requested change.
+1. Confirm a valid synchronized copy exists at `GeurtsGameForgeDocumentation/`.
+2. Read `GeurtsGameForgeDocumentation/AI_READ_FIRST.md`.
+3. Follow its reading order, authority rules, task routing, path boundary, and pre-code lock.
+4. At session initialization, read `Docs/GameDesign/GameDesignManifest.md` once when it exists; re-read it only when its timestamp, hash, or version changes.
+5. Load complete project-specific design documents only when relevant to a player-facing task.
 
-If synchronization fails, do not silently continue with stale instructions. Report the failure unless the user or package policy explicitly permits fallback use.
+If required synchronization fails, do not modify project code unless an explicit fallback policy permits the last valid copy. Project-specific GDD files remain under `Docs/GameDesign/`; synchronized techniques remain under `GeurtsGameForgeDocumentation/GeurtsTechniques/`.
 
-## Canonical Configuration
-
-Repository settings are stored in:
-
-`Tools/GeurtsRepository.json`
-
-Do not hard-code a second canonical repository URL or project-local documentation path elsewhere in the Unity project.
-
-## Synchronized Documentation
-
-The bootstrap stores the canonical documentation at:
-
-`GeurtsGameForgeDocumentation/`
-
-The required visible layout is:
-
-```text
-GeurtsGameForgeDocumentation/
-├── AI_READ_FIRST.md
-├── GeurtsTechniqueManifest.md
-└── GeurtsTechniques/
-```
-
-Treat this directory as read-only reference material. Do not modify synchronized documentation as part of normal Unity implementation work.
-
-Project-specific game design documents remain under:
-
-`Docs/GameDesign/`
-
-## Required Sequence
-
-`SYNC -> READ -> INSPECT -> PLAN -> IMPLEMENT -> VALIDATE -> REPORT`
-
-## Important Classification
-
-`GeurtsGameForgeDocumentation/GeurtsTechniques/GeurtsAIResponseControlTechnique_V1.1.md` is a chat-response technique, not a Unity coding standard, unless the current manifest explicitly reclassifies it.
-
-## Validation
-
-After implementation, perform relevant compilation/tests/checks, verify folder placement, review against the current Geurts Definition of Done, and report changed files plus unresolved issues.
+`GeurtsGameForgeDocumentation/GeurtsTechniques/GeurtsAIResponseControlTechnique_V1.1.md` is chat-only unless the current manifest explicitly reclassifies it.
+<!-- GEURTS-MANAGED-END id="agents-body" -->

@@ -1,31 +1,20 @@
-# Geurts Game Design Manifest
+<!-- GEURTS-SCAFFOLD-BEGIN version="0.7.0" -->
+# Project Game Design Manifest
 
-**Version:** 0.4.0  
-**Status:** Draft design index  
+**Template Version:** 0.7.0
+**Manifest Format Version:** 0.7.0
 **Canonical path:** `Docs/GameDesign/GameDesignManifest.md`
 
-> **Version Selection Notice:** If multiple copies of this manifest are found during an AI agent build process, use the copy with the highest semantic version number. If two copies share the same version number, prefer the canonical path shown above.
+This manifest is the lightweight session-start index for project-specific design documents. Unknown design facts remain explicitly unprovided.
+<!-- GEURTS-SCAFFOLD-END -->
 
----
+## Managed Document Index
 
-## Purpose
+<!-- GEURTS-GDD-MANIFEST-BEGIN version="0.7.0" -->
+| ID | Path | Purpose | Status | Version | Authority | Tags | SHA256 |
+|---|---|---|---|---|---|---|---|
+<!-- GEURTS-GDD-MANIFEST-END -->
 
-This manifest tells AI agents and human developers where to find current game design documentation.
+## Project Notes
 
----
-
-## Current Design Documents
-
-Add project-specific design documents here as they are created.
-
-| Document | Purpose | Status |
-|---|---|---|
-| `Docs/GameDesign/README.md` | Explains this directory. | Active |
-
----
-
-## AI Agent Rule
-
-When a task affects gameplay, balance, progression, narrative, UX, level design, enemies, AI behaviour, or player-facing content, consult the listed design documents before implementation.
-
-If no relevant document exists, state the design assumption before changing behaviour.
+Add manually authored notes outside the managed index markers. Automation preserves content outside those markers.

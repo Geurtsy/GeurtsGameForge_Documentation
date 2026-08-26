@@ -1,0 +1,611 @@
+{
+  "schemaVersion": "1.0.0",
+  "definitionVersion": "0.7.0",
+  "packageVersion": "0.7.0",
+  "canonicalPath": "GeurtsTechniques/GeurtsFolderStructureDefinition.json",
+  "pathBase": "<ProjectRoot>",
+  "pathSeparator": "/",
+  "managedFolderCount": 71,
+  "projectStructureFolderCount": 67,
+  "explanatoryAuthority": "GeurtsTechniques/GeurtsFolderStructureTechnique.md",
+  "automationAuthority": "GeurtsTechniques/GeurtsFolderStructureDefinition.json",
+  "contentCategories": [
+    "unity-project",
+    "generated-content",
+    "tooling",
+    "documentation",
+    "third-party-content"
+  ],
+  "creationProfiles": [
+    {
+      "id": "full-project-structure",
+      "owner": "folder-structure-tool",
+      "purpose": "Creates exactly the 67 project-structure folders historically managed by CreateGeurtsFolderStructure."
+    },
+    {
+      "id": "native-entry",
+      "owner": "native-entry-manager",
+      "purpose": "Creates only directories needed for generated native AI entry files."
+    },
+    {
+      "id": "gdd-scaffolding",
+      "owner": "native-entry-manager",
+      "purpose": "Creates Docs and Docs/GameDesign only when required for missing project GDD scaffolding."
+    },
+    {
+      "id": "documentation-sync",
+      "owner": "documentation-synchronizer",
+      "purpose": "Creates only the synchronized Geurts documentation root and technique directory."
+    }
+  ],
+  "managedFolders": [
+    {
+      "path": "Assets",
+      "requirement": "required",
+      "purpose": "Unity asset database root.",
+      "contentCategory": "unity-project",
+      "parent": null,
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Packages",
+      "requirement": "required",
+      "purpose": "Unity Package Manager manifests and package configuration.",
+      "contentCategory": "unity-project",
+      "parent": null,
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "ProjectSettings",
+      "requirement": "required",
+      "purpose": "Unity project-wide settings.",
+      "contentCategory": "unity-project",
+      "parent": null,
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "UserSettings",
+      "requirement": "optional",
+      "purpose": "Unity user-local editor settings.",
+      "contentCategory": "unity-project",
+      "parent": null,
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Docs",
+      "requirement": "required",
+      "purpose": "Project-authored documentation root, separate from synchronized Geurts documentation.",
+      "contentCategory": "documentation",
+      "parent": null,
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure", "gdd-scaffolding"], "delegatedOwners": { "gdd-scaffolding": "native-entry-manager" } }
+    },
+    {
+      "path": "Docs/GameDesign",
+      "requirement": "required",
+      "purpose": "Project-specific game design documents and GameDesignManifest.md.",
+      "contentCategory": "documentation",
+      "parent": "Docs",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure", "gdd-scaffolding"], "delegatedOwners": { "gdd-scaffolding": "native-entry-manager" } }
+    },
+    {
+      "path": "Builds",
+      "requirement": "optional",
+      "purpose": "Generated playable builds.",
+      "contentCategory": "generated-content",
+      "parent": null,
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Tools",
+      "requirement": "required",
+      "purpose": "Project automation, validation, build, and integration tooling.",
+      "contentCategory": "tooling",
+      "parent": null,
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "External",
+      "requirement": "optional",
+      "purpose": "Third-party or raw source material not yet integrated into Unity.",
+      "contentCategory": "third-party-content",
+      "parent": null,
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project",
+      "requirement": "required",
+      "purpose": "Root for first-party production assets.",
+      "contentCategory": "unity-project",
+      "parent": "Assets",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_ThirdParty",
+      "requirement": "optional",
+      "purpose": "Imported Unity plugins, packages, and vendor assets.",
+      "contentCategory": "third-party-content",
+      "parent": "Assets",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Addressables",
+      "requirement": "optional",
+      "purpose": "Optional grouping layer for addressable-managed assets.",
+      "contentCategory": "unity-project",
+      "parent": "Assets",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Generated",
+      "requirement": "optional",
+      "purpose": "Procedurally generated or tool-generated Unity assets.",
+      "contentCategory": "generated-content",
+      "parent": "Assets",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/Gizmos",
+      "requirement": "optional",
+      "purpose": "Unity editor gizmo textures and icons.",
+      "contentCategory": "unity-project",
+      "parent": "Assets",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Art",
+      "requirement": "required",
+      "purpose": "First-party visual source assets and imported art.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Art/2D",
+      "requirement": "optional",
+      "purpose": "Two-dimensional art assets.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project/Art",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Art/3D",
+      "requirement": "optional",
+      "purpose": "Three-dimensional models and related art assets.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project/Art",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Art/Animations",
+      "requirement": "optional",
+      "purpose": "Animation clips, controllers, masks, and related art assets.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project/Art",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Art/Sprites",
+      "requirement": "optional",
+      "purpose": "Sprite assets and sprite atlases.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project/Art",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Art/Textures",
+      "requirement": "optional",
+      "purpose": "Texture source and imported texture assets.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project/Art",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Art/Concept",
+      "requirement": "optional",
+      "purpose": "First-party concept art retained inside the Unity asset pipeline.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project/Art",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Audio",
+      "requirement": "required",
+      "purpose": "First-party audio assets.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Audio/Music",
+      "requirement": "optional",
+      "purpose": "Music tracks and music source assets.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project/Audio",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Audio/SFX",
+      "requirement": "optional",
+      "purpose": "Sound-effect assets.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project/Audio",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Audio/Ambience",
+      "requirement": "optional",
+      "purpose": "Ambient audio assets.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project/Audio",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Audio/Dialogue",
+      "requirement": "optional",
+      "purpose": "Dialogue and voice audio assets.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project/Audio",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Audio/Mixers",
+      "requirement": "optional",
+      "purpose": "Unity audio mixer assets.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project/Audio",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Data",
+      "requirement": "required",
+      "purpose": "ScriptableObjects and other structured first-party gameplay data.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Data/Items",
+      "requirement": "optional",
+      "purpose": "Item definitions and item data.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project/Data",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Data/Enemies",
+      "requirement": "optional",
+      "purpose": "Enemy definitions and enemy data.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project/Data",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Data/Weapons",
+      "requirement": "optional",
+      "purpose": "Weapon definitions and weapon data.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project/Data",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Data/Progression",
+      "requirement": "optional",
+      "purpose": "Progression, reward, unlock, and economy data.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project/Data",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Data/Tuning",
+      "requirement": "optional",
+      "purpose": "Shared balance and runtime tuning data.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project/Data",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Materials",
+      "requirement": "optional",
+      "purpose": "Shared first-party material assets.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Prefabs",
+      "requirement": "required",
+      "purpose": "Reusable first-party prefab assets.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Prefabs/Characters",
+      "requirement": "optional",
+      "purpose": "Character prefabs.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project/Prefabs",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Prefabs/Environment",
+      "requirement": "optional",
+      "purpose": "Environment prefabs.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project/Prefabs",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Prefabs/Props",
+      "requirement": "optional",
+      "purpose": "Prop prefabs.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project/Prefabs",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Prefabs/UI",
+      "requirement": "optional",
+      "purpose": "Reusable user-interface prefabs.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project/Prefabs",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Prefabs/Weapons",
+      "requirement": "optional",
+      "purpose": "Weapon prefabs.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project/Prefabs",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Prefabs/Systems",
+      "requirement": "optional",
+      "purpose": "Reusable system prefabs.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project/Prefabs",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Scenes",
+      "requirement": "required",
+      "purpose": "First-party Unity scene files grouped by function.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Scenes/Boot",
+      "requirement": "optional",
+      "purpose": "Initialization and bootstrap scenes.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project/Scenes",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Scenes/Frontend",
+      "requirement": "optional",
+      "purpose": "Menus, shell, and meta-system scenes.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project/Scenes",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Scenes/Gameplay",
+      "requirement": "optional",
+      "purpose": "Shipping gameplay scenes.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project/Scenes",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Scenes/Test",
+      "requirement": "optional",
+      "purpose": "Feature validation scenes.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project/Scenes",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Scenes/Sandbox",
+      "requirement": "optional",
+      "purpose": "Experimental scenes isolated from shipping content.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project/Scenes",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Scripts",
+      "requirement": "required",
+      "purpose": "All first-party Unity code.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Scripts/Core",
+      "requirement": "optional",
+      "purpose": "Foundational runtime systems.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project/Scripts",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Scripts/Gameplay",
+      "requirement": "optional",
+      "purpose": "Player, enemy, combat, objective, and gameplay-domain code.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project/Scripts",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Scripts/AI",
+      "requirement": "optional",
+      "purpose": "Decision logic and AI behaviours.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project/Scripts",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Scripts/UI",
+      "requirement": "optional",
+      "purpose": "User-interface presentation and interaction code.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project/Scripts",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Scripts/Audio",
+      "requirement": "optional",
+      "purpose": "Runtime audio systems.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project/Scripts",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Scripts/Networking",
+      "requirement": "optional",
+      "purpose": "Replicated systems and transport integration code.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project/Scripts",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Scripts/Editor",
+      "requirement": "optional",
+      "purpose": "Unity editor-only first-party tools and integrations.",
+      "contentCategory": "tooling",
+      "parent": "Assets/_Project/Scripts",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Scripts/Tools",
+      "requirement": "optional",
+      "purpose": "Runtime-safe first-party utilities and tooling code.",
+      "contentCategory": "tooling",
+      "parent": "Assets/_Project/Scripts",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Scripts/Testing",
+      "requirement": "optional",
+      "purpose": "Automated tests and test helper code.",
+      "contentCategory": "tooling",
+      "parent": "Assets/_Project/Scripts",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Settings",
+      "requirement": "optional",
+      "purpose": "Configuration assets and project-level runtime settings.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Shaders",
+      "requirement": "optional",
+      "purpose": "Custom shaders and shader graphs.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/UI",
+      "requirement": "required",
+      "purpose": "User-interface assets that are not stored in another domain folder.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/UI/Fonts",
+      "requirement": "optional",
+      "purpose": "Font assets used by project UI.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project/UI",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/UI/Icons",
+      "requirement": "optional",
+      "purpose": "Icon assets used by project UI.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project/UI",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/UI/Layouts",
+      "requirement": "optional",
+      "purpose": "Reusable UI layout assets.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project/UI",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/UI/Themes",
+      "requirement": "optional",
+      "purpose": "Shared UI theme assets.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project/UI",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/UI/Screens",
+      "requirement": "optional",
+      "purpose": "Screen-level UI assets.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project/UI",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/VFX",
+      "requirement": "optional",
+      "purpose": "Particles, visual effects, flipbooks, and effect prefabs.",
+      "contentCategory": "unity-project",
+      "parent": "Assets/_Project",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": "Assets/_Project/Testing",
+      "requirement": "optional",
+      "purpose": "Test scenes, test data, mocks, and QA helpers.",
+      "contentCategory": "tooling",
+      "parent": "Assets/_Project",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure"] }
+    },
+    {
+      "path": ".github",
+      "requirement": "optional",
+      "purpose": "GitHub-native repository configuration and generated Copilot entry files.",
+      "contentCategory": "tooling",
+      "parent": null,
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "native-entry-manager", "creationProfiles": ["native-entry"] }
+    },
+    {
+      "path": ".github/instructions",
+      "requirement": "optional",
+      "purpose": "Path-scoped generated GitHub Copilot instruction files.",
+      "contentCategory": "tooling",
+      "parent": ".github",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "native-entry-manager", "creationProfiles": ["native-entry"] }
+    },
+    {
+      "path": "GeurtsGameForgeDocumentation",
+      "requirement": "required",
+      "purpose": "Read-only synchronized local cache of canonical Geurts Game Forge documentation.",
+      "contentCategory": "documentation",
+      "parent": null,
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "documentation-synchronizer", "creationProfiles": ["documentation-sync"] }
+    },
+    {
+      "path": "GeurtsGameForgeDocumentation/GeurtsTechniques",
+      "requirement": "required",
+      "purpose": "Synchronized canonical techniques, definitions, and integration contracts.",
+      "contentCategory": "documentation",
+      "parent": "GeurtsGameForgeDocumentation",
+      "automation": { "mayCreate": true, "mayRemove": false, "owner": "documentation-synchronizer", "creationProfiles": ["documentation-sync"] }
+    }
+  ]
+}

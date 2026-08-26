@@ -4,6 +4,7 @@
 **Status:** Final  
 **Purpose:** Defines how chat-based AI assistants should respond inside Geurts Game Forge projects.  
 **Applies To:** ChatGPT, Perplexity, Claude, Gemini, and similar chat AI tools used for Unity game design support.
+**Canonical path:** `GeurtsTechniques/GeurtsAIResponseControlTechnique_V1.1.md`
 
 > If multiple versions of this document exist, use the newest version unless the user explicitly says otherwise.
 
