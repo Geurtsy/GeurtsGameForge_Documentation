@@ -1,6 +1,6 @@
 # Game Forge Intelligence Integration Contract
 
-**Version:** 0.8.0
+**Version:** 0.9.0
 **Status:** Approved integration contract
 **Primary audience:** Game Forge Intelligence, AI coding agents, and automated development systems
 **Secondary audience:** Human developers and package maintainers
@@ -12,7 +12,7 @@
 
 ## 1. Purpose and Authority
 
-This document defines the exact boundary between the Geurts Game Forge documentation package and Game Forge Intelligence. It is normative for integrations that claim v0.8.0 compatibility.
+This document defines the exact boundary between the Geurts Game Forge documentation package and Game Forge Intelligence. It is normative for integrations that claim v0.9.0 compatibility.
 
 The primary audience is AI coding agents and automated development systems. Requirements use stable names, literal paths, explicit states, and deterministic failure behaviour. Human readability remains important but does not override machine precision.
 
@@ -42,7 +42,7 @@ The only permitted write inside `GeurtsGameForgeDocumentation/` is the atomic re
 
 Game Forge Intelligence must not create, modify, move, rename, or delete project-specific GDD files or `GameDesignManifest.md`. It may discover them, read them, detect drift, report missing scaffolding, and hand a user-approved authoring task to a developer or AI coding agent outside the plugin's automatic lifecycle.
 
-Plugin-owned configuration, cache data, rollback state, fingerprints, and audit records must remain outside both documentation domains. The limited folder-creation permissions in Section 7 and managed native-entry permissions in Section 8 apply only to their explicitly declared integration surfaces; they do not grant permission to edit documentation content.
+Plugin-owned configuration, cache data, rollback state, fingerprints, and audit records must remain outside both documentation domains. The limited folder-creation permissions in Section 7, managed native-entry permissions in Section 8, and project-root `.gitignore` permissions in Section 9 apply only to their explicitly declared integration surfaces; they do not grant permission to edit documentation content.
 
 Unity plugin source is not present in this documentation repository. Do not fabricate Unity implementation files here.
 
@@ -64,9 +64,9 @@ The canonical branch is:
 main
 ```
 
-Repository visibility was verified during v0.8.0 preparation as **public**. Game Forge Intelligence must treat anonymous read-only access as the default and must not require a GitHub sign-in merely to check, clone, or synchronize the canonical documentation.
+Repository visibility was verified during v0.9.0 preparation as **public**. Game Forge Intelligence must treat anonymous read-only access as the default and must not require a GitHub sign-in merely to check, clone, or synchronize the canonical documentation.
 
-### 2.2 v0.8.0 distribution strategy
+### 2.2 v0.9.0 distribution strategy
 
 The distribution strategy is:
 
@@ -76,7 +76,7 @@ public canonical repository + validated local synchronized copy
 
 No credential is required for normal read-only synchronization. If a user has optionally configured a GitHub authentication provider, Game Forge Intelligence may use it for applicable GitHub operations, but it must not log, copy, or persist credentials itself. Failure of optional authentication must not prevent an anonymous read-only attempt against the public canonical repository when that fallback is safe and permitted by policy.
 
-There is no approved bundled fallback snapshot in v0.8.0. A future bundled fallback requires an explicit owner decision and must record its package version and commit, display that it may be stale, and remain lower authority than any newer successfully synchronized canonical copy.
+There is no approved bundled fallback snapshot in v0.9.0. A future bundled fallback requires an explicit owner decision and must record its package version and commit, display that it may be stale, and remain lower authority than any newer successfully synchronized canonical copy.
 
 The integration must not change repository visibility.
 
@@ -130,7 +130,7 @@ This action must always remain available. When invoked, it must:
 5. re-run contract reconciliation even when the documentation commit is unchanged, because the user explicitly requested a full refresh; and
 6. report the documentation result and contract-reintegration result separately.
 
-A changed contract must be processed before the candidate documentation becomes active for AI use. When the change is within the installed plugin's declared data-driven capabilities, Game Forge Intelligence must reapply its plugin-owned configuration, routing, watchers, folder-definition consumers, managed native entries, validation rules, and audit presentation from the updated contract.
+A changed contract must be processed before the candidate documentation becomes active for AI use. When the change is within the installed plugin's declared data-driven capabilities, Game Forge Intelligence must reapply its plugin-owned configuration, routing, watchers, folder-definition consumers, managed native entries, project-root `.gitignore` setup state, validation rules, and audit presentation from the updated contract.
 
 When a changed contract requires plugin source or binary changes, Game Forge Intelligence must not edit its own source, silently execute arbitrary instructions from Markdown, or falsely claim reintegration. It must either initiate a user-approved reintegration task for the configured AI coding agent against the Game Forge Intelligence repository, or report `PLUGIN_UPDATE_REQUIRED` with the unsupported requirements. Until a compatible plugin is installed, preserve the previous valid documentation and integration state for AI use.
 
@@ -371,9 +371,65 @@ Every contract reconciliation must reclassify these targets and apply only the m
 
 ---
 
-## 9. Audit Record Contract
+## 9. Project-Root `.gitignore` Provisioning
 
-Game Forge Intelligence must retain a machine-readable audit record for documentation checks, synchronization, validation, contract compatibility, reintegration, folder creation, native-entry migration, GDD discovery and drift detection, external-maintainer handoff, and AI-session initialization.
+The canonical custom Unity project `.gitignore` payload is owned by:
+
+```text
+GeurtsGameForgeDocumentation/GeurtsTechniques/GeurtsGitIgnoreTechnique.md
+```
+
+The only automatic target is:
+
+```text
+<ProjectRoot>/.gitignore
+```
+
+Game Forge Intelligence must run this setup surface during explicit plugin setup and keep it available as a separately rerunnable project-setup action. Contract reconciliation must also re-evaluate the source and target while applying the same preservation rules below.
+
+### 9.1 Custom-source extraction and validation
+
+The plugin must read the technique from the last validated synchronized documentation copy as valid UTF-8. A byte-order mark is permitted only at the beginning of the Markdown document and is removed before parsing. The plugin must extract only the single `gitignore` fenced payload immediately enclosed by these marker forms:
+
+```text
+<!-- GEURTS-GITIGNORE-BEGIN version="<version>" target=".gitignore" sha256="<sha256>" -->
+<!-- GEURTS-GITIGNORE-END -->
+```
+
+The begin marker must be a complete line with the exact attribute order shown. Its immediately following line must consist of three backticks followed by `gitignore`. The payload begins after that line's newline. A line consisting of exactly three backticks must immediately follow the payload's terminal newline, and the exact end marker must immediately follow the closing fence. Reject indentation, extra attributes, extra in-region prose or blank lines, reversed or duplicate markers, any additional in-region fence, or any other grammar.
+
+Normalize the extracted payload to UTF-8 without a byte-order mark, LF newlines, and exactly one terminal LF. The payload itself must not begin with a byte-order mark. The normalized SHA-256 must equal the lowercase 64-hex marker value. The marker version must equal the technique metadata version and the manifest registry version and must be supported by the plugin. The target must equal `.gitignore` using ordinal comparison. Prose, examples, or code outside that marked payload are not ignore rules.
+
+The v1.0.0 custom payload has normalized SHA-256:
+
+```text
+7223a9449718942d3a5cad00cf4d4e0dee9c89eb64951541fa4ebfb803acb45b
+```
+
+If the custom technique is unavailable, unreadable, unsupported, malformed, or fails its hash check, the plugin must select its installed, versioned Unity `.gitignore` default and report `DEFAULT_FALLBACK`. A valid documentation payload is reported as `CUSTOM_DOCUMENTATION`. The installed default is a plugin-owned template asset, not a bundled Geurts documentation fallback snapshot. It must independently declare a version and normalized SHA-256 and use the same UTF-8, newline, and terminal-newline contract. If both sources are unavailable or invalid, do not write the target and report source result `SOURCE_FAILED` with category `VALIDATION` or `CONFIGURATION` as applicable.
+
+Use of the default does not make an incomplete or malformed v0.9.0 synchronized documentation candidate valid; documentation synchronization validation and project `.gitignore` source selection remain separate results.
+
+### 9.2 Target preservation and write behaviour
+
+The setup operation must:
+
+1. Resolve `<ProjectRoot>/.gitignore` without following any symbolic link, junction, or other reparse point. A target that is a directory, reparse point, non-regular file, or path outside the project root is a conflict.
+2. Select and validate the custom documentation payload, or select the versioned default fallback as defined above.
+3. If the target is missing, write the selected payload through a project-scoped temporary file using create-new semantics, validate it, recheck that the target is absent, and atomically create the target without replacement with result `CREATED`. If another process creates the target first, never overwrite it; classify the new target through the remaining steps.
+4. If an existing regular target is valid UTF-8, with or without a leading byte-order mark, and is normalized-text-equivalent to the selected payload, leave its bytes and timestamp unchanged with result `UNCHANGED`.
+5. If the existing target differs or is not valid UTF-8 text, preserve its bytes and timestamp with result `PRESERVED` and identify that user-authored ignore rules were not overwritten.
+6. If the target cannot be handled safely, leave it untouched and report `CONFLICT` or the applicable filesystem failure category.
+
+The setup must never append, merge, replace, or reformat a differing existing `.gitignore`; any merge or replacement is a separate user-owned editing task outside this automatic integration surface. A later custom-template version never updates a pre-existing target. The setup must not run Git commands that track, untrack, stage, commit, or remove files, because `.gitignore` does not change files already tracked by Git.
+
+The source technique remains read-only synchronized documentation. The target `.gitignore` is project-owned after creation and is never part of `GeurtsGameForgeDocumentation/`.
+
+---
+
+## 10. Audit Record Contract
+
+Game Forge Intelligence must retain a machine-readable audit record for documentation checks, synchronization, validation, contract compatibility, reintegration, folder creation, native-entry migration, project-root `.gitignore` setup, GDD discovery and drift detection, external-maintainer handoff, and AI-session initialization.
 
 Each record contains:
 
@@ -387,6 +443,7 @@ Each record contains:
 - package, contract, definition, and managed-region versions when applicable;
 - previous and active contract fingerprints when applicable;
 - contract reconciliation result and affected plugin-owned integration surfaces;
+- `.gitignore` source selection, source path, template version, normalized hash, target result, and fallback version when applicable;
 - whether any fallback was used;
 - validation check identifiers and outcomes;
 - stable failure category when unsuccessful;
@@ -396,7 +453,7 @@ Audit storage is plugin-owned and must not be placed inside `GeurtsGameForgeDocu
 
 ---
 
-## 10. Repository Responsibility Boundary
+## 11. Repository Responsibility Boundary
 
 ### Implemented in this documentation repository
 
@@ -414,6 +471,7 @@ Audit storage is plugin-owned and must not be placed inside `GeurtsGameForgeDocu
 - Integration-contract loading, validation, version and fingerprint comparison, compatibility preflight, reconciliation, rollback, and reporting.
 - A user-approved AI coding-agent handoff for contract changes that require Game Forge Intelligence source changes, or an explicit `PLUGIN_UPDATE_REQUIRED` result when no such handoff is available.
 - Folder creation UI driven by the synchronized JSON definition.
+- Project-root `.gitignore` setup and rerunnable action driven by the synchronized custom payload, with a versioned default fallback.
 - Read-only GDD discovery, manifest drift detection, and optional handoff to the external authoring or maintenance workflow.
 - Duplicate/conflict resolution UI for plugin-owned integration surfaces.
 - Managed native-entry upgrade UI and opt-out controls.
@@ -423,13 +481,13 @@ Audit storage is plugin-owned and must not be placed inside `GeurtsGameForgeDocu
 
 The plugin should invoke or faithfully implement the applicable platform-neutral contracts. It must not maintain an independent hard-coded copy of the complete folder hierarchy, native templates, GDD reconciliation algorithm, or integration contract.
 
-The plugin must not automatically invoke documentation-authoring or GDD-maintenance tools. It must never claim that enforcement grants ownership of documentation content. Contract reintegration may alter only plugin-owned state, allowed project folders, and explicitly managed native AI-entry regions.
+The plugin must not automatically invoke documentation-authoring or GDD-maintenance tools. It must never claim that enforcement grants ownership of documentation content. Contract reintegration may alter only plugin-owned state, allowed project folders, explicitly managed native AI-entry regions, and a missing project-root `.gitignore` under Section 9.
 
 ---
 
-## 11. Conformance Conditions
+## 12. Conformance Conditions
 
-Game Forge Intelligence is v0.8.0-compatible only when it:
+Game Forge Intelligence is v0.9.0-compatible only when it:
 
 - uses anonymous read-only access to the public canonical repository by default;
 - uses local validated documentation for normal prompts;
@@ -447,5 +505,6 @@ Game Forge Intelligence is v0.8.0-compatible only when it:
 - detects GDD manifest drift without automatically writing the manifest or invoking the external maintainer;
 - consumes the folder JSON and never automatically deletes managed folders;
 - safely classifies and migrates native AI entry files while preserving user-owned content;
+- provisions a missing project-root `.gitignore` from the validated custom documentation payload, uses and reports its versioned default when that payload cannot be used, and preserves every differing existing target;
 - records the exact documentation commit, package version, contract version, and contract fingerprint used by AI; and
 - keeps project GDD files, synchronized Geurts documentation, and plugin-owned state in separate domains.

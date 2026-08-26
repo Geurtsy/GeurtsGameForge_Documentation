@@ -1,5 +1,5 @@
 # ManageGeurtsAgentInstructions.ps1
-# Version: 0.7.0
+# Version: 0.8.0
 
 [CmdletBinding()]
 param(
@@ -221,8 +221,8 @@ function Get-GddScaffoldingDefinition([string]$Root) {
 
     try { $definition = Get-Content -LiteralPath $definitionPath -Raw | ConvertFrom-Json }
     catch { throw "The authoritative folder definition is invalid JSON: $($_.Exception.Message)" }
-    if ([string]$definition.definitionVersion -ne "0.7.0" -or [string]$definition.packageVersion -ne "0.7.0") {
-        throw "The GDD scaffolding delegation requires the v0.7.0 folder definition."
+    if ([string]$definition.definitionVersion -ne "0.7.0" -or [string]$definition.packageVersion -ne "0.8.0") {
+        throw "The GDD scaffolding delegation requires folder definition v0.7.0 from package v0.8.0."
     }
 
     foreach ($profileId in @("native-entry", "gdd-scaffolding")) {

@@ -1,7 +1,7 @@
 {
   "schemaVersion": "0.7.0",
-  "packageVersion": "0.7.0",
-  "distributionStrategy": "authenticated-private-repository",
+  "packageVersion": "0.8.0",
+  "distributionStrategy": "public-repository",
   "repositoryUrl": "https://github.com/Geurtsy/GeurtsGameForge_Documentation.git",
   "branch": "main",
   "localSyncPath": "GeurtsGameForgeDocumentation",

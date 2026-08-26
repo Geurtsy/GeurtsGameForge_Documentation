@@ -1,5 +1,5 @@
 # BootstrapGeurtsInstructions.ps1
-# Version: 0.7.0
+# Version: 0.8.0
 
 [CmdletBinding()]
 param(
@@ -145,7 +145,7 @@ function Invoke-GitRequired([string[]]$Arguments, [string]$DefaultCategory, [str
         $category = Get-GitFailureCategory -Output $result.Output -DefaultCategory $DefaultCategory
         $guidance = ""
         if ($category -eq "AUTHENTICATION") {
-            $guidance = " Authenticated private-repository access is required. Sign in for github.com through the Git credential manager or credential provider configured on this machine, then retry. Never place a token in the repository URL or logs."
+            $guidance = " Optional authentication failed against the public repository. Retry using anonymous read-only access without embedding credentials in the repository URL or logs."
         }
         Stop-Bootstrap -Category $category -Message ("{0} failed. {1}{2}" -f $Operation, $result.Output, $guidance)
     }
@@ -213,12 +213,70 @@ function Get-SynchronizedDeclaredVersion([string]$FilePath) {
     return $versionMatch.Groups["Version"].Value
 }
 
+function Test-SynchronizedGitIgnoreTechnique([string]$Path) {
+    $relativePath = "GeurtsTechniques/GeurtsGitIgnoreTechnique.md"
+    $techniquePath = Join-Path $Path $relativePath
+    if (-not (Test-Path -LiteralPath $techniquePath -PathType Leaf)) {
+        Stop-Bootstrap "VALIDATION" "The synchronized custom .gitignore technique is missing."
+    }
+
+    $bytes = [System.IO.File]::ReadAllBytes($techniquePath)
+    $offset = 0
+    if ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF) { $offset = 3 }
+    $strictUtf8 = New-Object System.Text.UTF8Encoding($false, $true)
+    try { $text = $strictUtf8.GetString($bytes, $offset, $bytes.Length - $offset) }
+    catch { Stop-Bootstrap "VALIDATION" "The synchronized custom .gitignore technique is not valid UTF-8." }
+
+    if ([regex]::Matches($text, 'GEURTS-GITIGNORE-BEGIN').Count -ne 1 -or [regex]::Matches($text, 'GEURTS-GITIGNORE-END').Count -ne 1) {
+        Stop-Bootstrap "VALIDATION" "The synchronized custom .gitignore technique must contain exactly one marker pair."
+    }
+
+    $pattern = '(?ms)^<!-- GEURTS-GITIGNORE-BEGIN version="(?<Version>[0-9]+\.[0-9]+\.[0-9]+)" target="(?<Target>[^"]+)" sha256="(?<Hash>[0-9a-f]{64})" -->\r?\n```gitignore\r?\n(?<Payload>.*?)^```\r?\n<!-- GEURTS-GITIGNORE-END -->(?:\r?\n)?\z'
+    $matches = @([regex]::Matches($text, $pattern))
+    if ($matches.Count -ne 1) {
+        Stop-Bootstrap "VALIDATION" "The synchronized custom .gitignore marker and fence grammar is invalid."
+    }
+
+    $match = $matches[0]
+    $declaredVersion = Get-SynchronizedDeclaredVersion -FilePath $techniquePath
+    if ($declaredVersion -cne "1.0.0" -or $match.Groups["Version"].Value -cne $declaredVersion -or $match.Groups["Target"].Value -cne ".gitignore") {
+        Stop-Bootstrap "VALIDATION" "The synchronized custom .gitignore version or target is invalid."
+    }
+
+    $payload = $match.Groups["Payload"].Value
+    if ($payload.Length -gt 0 -and $payload[0] -eq [char]0xFEFF) {
+        Stop-Bootstrap "VALIDATION" "The synchronized custom .gitignore payload must not contain a byte-order mark."
+    }
+    $normalized = $payload -replace "`r`n", "`n" -replace "`r", "`n"
+    if (-not $normalized.EndsWith("`n") -or $normalized.EndsWith("`n`n") -or [regex]::Matches($normalized, "`n").Count -ne 376) {
+        Stop-Bootstrap "VALIDATION" "The synchronized custom .gitignore payload must contain 376 logical lines and exactly one terminal newline."
+    }
+
+    $sha = [System.Security.Cryptography.SHA256]::Create()
+    try {
+        $actualHash = ([System.BitConverter]::ToString($sha.ComputeHash($strictUtf8.GetBytes($normalized)))).Replace("-", "").ToLowerInvariant()
+    }
+    finally { $sha.Dispose() }
+    $expectedHash = "7223a9449718942d3a5cad00cf4d4e0dee9c89eb64951541fa4ebfb803acb45b"
+    if ($match.Groups["Hash"].Value -cne $expectedHash -or $actualHash -cne $expectedHash) {
+        Stop-Bootstrap "VALIDATION" "The synchronized custom .gitignore payload hash is invalid."
+    }
+
+    $contractPath = Join-Path $Path "GeurtsTechniques/GeurtsGameForgeIntelligenceIntegrationContract.md"
+    $contractText = [System.IO.File]::ReadAllText($contractPath)
+    foreach ($requiredText in @($relativePath, "CUSTOM_DOCUMENTATION", "DEFAULT_FALLBACK", "<ProjectRoot>/.gitignore")) {
+        if ($contractText.IndexOf($requiredText, [System.StringComparison]::Ordinal) -lt 0) {
+            Stop-Bootstrap "VALIDATION" "The integration contract does not point to the complete custom .gitignore setup contract."
+        }
+    }
+}
+
 function Test-SynchronizedPackageContent([string]$Path) {
     $manifestPath = Join-Path $Path "GeurtsTechniqueManifest.md"
     $manifestText = [System.IO.File]::ReadAllText($manifestPath)
     $packageVersion = Get-SynchronizedDeclaredVersion -FilePath $manifestPath
-    if ($packageVersion -cne "0.7.0") {
-        Stop-Bootstrap "VALIDATION" "The candidate manifest must declare package version 0.7.0."
+    if ($packageVersion -cne "0.8.0") {
+        Stop-Bootstrap "VALIDATION" "The candidate manifest must declare package version 0.8.0."
     }
 
     $beginMarker = '<!-- GEURTS-PACKAGE-FILES:BEGIN -->'
@@ -294,11 +352,13 @@ function Test-SynchronizedPackageContent([string]$Path) {
         }
     }
 
+    Test-SynchronizedGitIgnoreTechnique -Path $Path
+
     $folderDefinitionPath = Join-Path $Path "GeurtsTechniques/GeurtsFolderStructureDefinition.json"
     try { $folderDefinition = Get-Content -LiteralPath $folderDefinitionPath -Raw | ConvertFrom-Json }
     catch { Stop-Bootstrap "VALIDATION" "The synchronized folder definition is invalid JSON." }
-    if ([string]$folderDefinition.schemaVersion -cne "1.0.0" -or [string]$folderDefinition.definitionVersion -cne "0.7.0" -or [string]$folderDefinition.packageVersion -cne "0.7.0" -or [string]$folderDefinition.canonicalPath -cne "GeurtsTechniques/GeurtsFolderStructureDefinition.json" -or [string]$folderDefinition.pathBase -cne "<ProjectRoot>" -or [string]$folderDefinition.pathSeparator -cne "/" -or [string]$folderDefinition.explanatoryAuthority -cne "GeurtsTechniques/GeurtsFolderStructureTechnique.md" -or [string]$folderDefinition.automationAuthority -cne "GeurtsTechniques/GeurtsFolderStructureDefinition.json" -or @($folderDefinition.managedFolders).Count -ne 71 -or [int]$folderDefinition.managedFolderCount -ne 71 -or [int]$folderDefinition.projectStructureFolderCount -ne 67) {
-        Stop-Bootstrap "VALIDATION" "The synchronized folder definition does not match the v0.7.0 metadata, count, and authority contract."
+    if ([string]$folderDefinition.schemaVersion -cne "1.0.0" -or [string]$folderDefinition.definitionVersion -cne "0.7.0" -or [string]$folderDefinition.packageVersion -cne "0.8.0" -or [string]$folderDefinition.canonicalPath -cne "GeurtsTechniques/GeurtsFolderStructureDefinition.json" -or [string]$folderDefinition.pathBase -cne "<ProjectRoot>" -or [string]$folderDefinition.pathSeparator -cne "/" -or [string]$folderDefinition.explanatoryAuthority -cne "GeurtsTechniques/GeurtsFolderStructureTechnique.md" -or [string]$folderDefinition.automationAuthority -cne "GeurtsTechniques/GeurtsFolderStructureDefinition.json" -or @($folderDefinition.managedFolders).Count -ne 71 -or [int]$folderDefinition.managedFolderCount -ne 71 -or [int]$folderDefinition.projectStructureFolderCount -ne 67) {
+        Stop-Bootstrap "VALIDATION" "The synchronized folder definition does not match definition v0.7.0, package v0.8.0, and the required count and authority contract."
     }
     $allowedFolderCategories = @("documentation", "generated-content", "third-party-content", "tooling", "unity-project")
     $declaredFolderCategories = @($folderDefinition.contentCategories | Sort-Object)
@@ -536,8 +596,8 @@ try {
         Stop-Bootstrap "CONFIGURATION" "Unsupported repository configuration schema: $($config.schemaVersion)"
     }
     $exactConfigValues = @{
-        packageVersion = "0.7.0"
-        distributionStrategy = "authenticated-private-repository"
+        packageVersion = "0.8.0"
+        distributionStrategy = "public-repository"
         branch = "main"
         localSyncPath = "GeurtsGameForgeDocumentation"
         entryPointPath = "AI_READ_FIRST.md"
@@ -548,7 +608,7 @@ try {
     }
     foreach ($property in $exactConfigValues.Keys) {
         if ([string]$config.$property -cne [string]$exactConfigValues[$property]) {
-            Stop-Bootstrap "CONFIGURATION" "Repository configuration '$property' must be '$($exactConfigValues[$property])' for v0.7.0."
+            Stop-Bootstrap "CONFIGURATION" "Repository configuration '$property' must be '$($exactConfigValues[$property])' for package v0.8.0."
         }
     }
     if ([string]$config.branch -notmatch '^[A-Za-z0-9][A-Za-z0-9._/-]*$' -or [string]$config.branch -match '(?:^|/)\.\.(?:/|$)') {

@@ -1,5 +1,5 @@
 # RunAutomationTests.ps1
-# Version: 0.7.0
+# Version: 0.8.0
 
 [CmdletBinding()]
 param(
@@ -35,6 +35,25 @@ function Write-Utf8([string]$Path, [string]$Text) {
 function Get-FileSha([string]$Path) {
     if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) { return $null }
     return (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant()
+}
+
+function Get-GitIgnorePayloadInfo([string]$Path) {
+    if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) { return [pscustomobject]@{ Valid = $false } }
+    $text = [System.IO.File]::ReadAllText($Path)
+    $pattern = '(?ms)^<!-- GEURTS-GITIGNORE-BEGIN version="(?<Version>[0-9]+\.[0-9]+\.[0-9]+)" target="(?<Target>[^"]+)" sha256="(?<Hash>[0-9a-f]{64})" -->\r?\n```gitignore\r?\n(?<Payload>.*?)^```\r?\n<!-- GEURTS-GITIGNORE-END -->(?:\r?\n)?\z'
+    $matches = @([regex]::Matches($text, $pattern))
+    if ($matches.Count -ne 1 -or [regex]::Matches($text, 'GEURTS-GITIGNORE-BEGIN').Count -ne 1 -or [regex]::Matches($text, 'GEURTS-GITIGNORE-END').Count -ne 1) { return [pscustomobject]@{ Valid = $false } }
+    $match = $matches[0]
+    $payload = $match.Groups["Payload"].Value -replace "`r`n", "`n" -replace "`r", "`n"
+    $sha = [System.Security.Cryptography.SHA256]::Create()
+    try { $actualHash = ([System.BitConverter]::ToString($sha.ComputeHash($utf8NoBom.GetBytes($payload)))).Replace("-", "").ToLowerInvariant() }
+    finally { $sha.Dispose() }
+    return [pscustomobject]@{
+        Valid = ($match.Groups["Version"].Value -ceq "1.0.0" -and $match.Groups["Target"].Value -ceq ".gitignore" -and $match.Groups["Hash"].Value -ceq $actualHash -and $actualHash -ceq "7223a9449718942d3a5cad00cf4d4e0dee9c89eb64951541fa4ebfb803acb45b" -and [regex]::Matches($payload, "`n").Count -eq 376 -and $payload.EndsWith("`n") -and -not $payload.EndsWith("`n`n"))
+        Hash = $actualHash
+        LineCount = [regex]::Matches($payload, "`n").Count
+        EndsWithOneLf = ($payload.EndsWith("`n") -and -not $payload.EndsWith("`n`n"))
+    }
 }
 
 function Invoke-TestScript([string]$Path, [string[]]$Arguments) {
@@ -98,6 +117,13 @@ $testRoot = Join-Path $temporaryBase ("ggf-automation-tests-" + [Guid]::NewGuid(
 
 try {
     New-Item -ItemType Directory -Path $testRoot | Out-Null
+
+    $repositoryGitIgnorePath = Join-Path $RepositoryRoot "GeurtsTechniques/GeurtsGitIgnoreTechnique.md"
+    $repositoryGitIgnore = Get-GitIgnorePayloadInfo -Path $repositoryGitIgnorePath
+    Assert-True ($repositoryGitIgnore.Valid -and $repositoryGitIgnore.LineCount -eq 376 -and $repositoryGitIgnore.EndsWithOneLf) "Canonical custom .gitignore payload matches the approved normalized source"
+    $repositoryGitIgnoreText = [System.IO.File]::ReadAllText($repositoryGitIgnorePath)
+    $removedLegacyRoute = ([char]46) + "ge" + "urts/up" + "stream"
+    Assert-True ($repositoryGitIgnoreText -match '(?m)^\.geurts/\r?$' -and $repositoryGitIgnoreText.IndexOf($removedLegacyRoute, [System.StringComparison]::OrdinalIgnoreCase) -lt 0) "Project cache ignore rule is allowed without restoring the removed legacy synchronization route"
 
     # Native creation, GDD scaffolding, outside-marker preservation, and idempotence.
     $fresh = New-TestProject -Parent $testRoot -Name "fresh"
@@ -357,7 +383,7 @@ try {
     $bootstrapProject = New-TestProject -Parent $gitArea -Name "project"
     New-Item -ItemType Directory -Path (Join-Path $bootstrapProject "Tools") | Out-Null
     $bootstrapConfig = [ordered]@{
-        schemaVersion = "0.7.0"; packageVersion = "0.7.0"; distributionStrategy = "authenticated-private-repository"; repositoryUrl = $remote; branch = "main"; localSyncPath = "GeurtsGameForgeDocumentation"; entryPointPath = "AI_READ_FIRST.md"; manifestPath = "GeurtsTechniqueManifest.md"; techniquesPath = "GeurtsTechniques"; folderDefinitionPath = "GeurtsTechniques/GeurtsFolderStructureDefinition.json"; fallbackPolicy = "none";
+        schemaVersion = "0.7.0"; packageVersion = "0.8.0"; distributionStrategy = "public-repository"; repositoryUrl = $remote; branch = "main"; localSyncPath = "GeurtsGameForgeDocumentation"; entryPointPath = "AI_READ_FIRST.md"; manifestPath = "GeurtsTechniqueManifest.md"; techniquesPath = "GeurtsTechniques"; folderDefinitionPath = "GeurtsTechniques/GeurtsFolderStructureDefinition.json"; fallbackPolicy = "none";
         requiredEntries = @([ordered]@{path="AI_READ_FIRST.md";type="file"},[ordered]@{path="GeurtsTechniqueManifest.md";type="file"},[ordered]@{path="GeurtsTechniques";type="directory"});
         sparsePaths = @("/AI_READ_FIRST.md", "/GeurtsTechniqueManifest.md", "/GeurtsTechniques/")
     }
@@ -378,6 +404,9 @@ try {
     }
     $visible = @(Get-ChildItem -LiteralPath $syncPath -Force | Where-Object { $_.Name -ne ".git" } | Select-Object -ExpandProperty Name)
     Assert-True ($bootstrapUpdate.Code -eq 0 -and $bootstrapUpdate.Output.Contains("SYNC OK") -and $visible.Count -eq 3 -and -not ($visible -contains "Unrelated.md")) "Bootstrap Update produces exactly three visible entries after post-promotion validation"
+    $synchronizedGitIgnorePath = Join-Path $syncPath "GeurtsTechniques/GeurtsGitIgnoreTechnique.md"
+    $synchronizedGitIgnore = Get-GitIgnorePayloadInfo -Path $synchronizedGitIgnorePath
+    Assert-True ($synchronizedGitIgnore.Valid -and $synchronizedGitIgnore.Hash -eq $repositoryGitIgnore.Hash) "Bootstrap synchronizes the nested custom .gitignore payload without adding a top-level entry"
     $validCommit = Invoke-TestGit -Arguments @("rev-parse", "HEAD") -WorkingDirectory $syncPath
     $sourceEntryPath = Join-Path $source "AI_READ_FIRST.md"
     Write-Utf8 -Path $sourceEntryPath -Text ([System.IO.File]::ReadAllText($sourceEntryPath) + "`n<!-- valid automation update fixture -->`n")
@@ -408,12 +437,32 @@ try {
     $bootstrapCheck = Invoke-TestScript -Path $bootstrapScript -Arguments @("-Mode", "Check", "-ProjectRoot", $bootstrapProject, "-ConfigPath", $configPath)
     Assert-True ($bootstrapCheck.Code -eq 0 -and $bootstrapCheck.Output.Contains("CHECK OK") -and -not $bootstrapCheck.Output.Contains("SYNC OK") -and $bootstrapCheck.Output.Contains("CURRENT") -and (Get-FileSha -Path (Join-Path $syncPath "AI_READ_FIRST.md")) -eq $checkHash) "Bootstrap Check is non-mutating and does not claim synchronization"
     $bootstrapValidate = Invoke-TestScript -Path $bootstrapScript -Arguments @("-Mode", "Validate", "-ProjectRoot", $bootstrapProject, "-ConfigPath", $configPath)
-    Assert-True ($bootstrapValidate.Code -eq 0 -and $bootstrapValidate.Output.Contains("VALIDATION OK") -and -not $bootstrapValidate.Output.Contains("SYNC OK") -and $bootstrapValidate.Output.Contains("VALID") -and $bootstrapValidate.Output.Contains("Package:     0.7.0")) "Bootstrap Validate checks manifest-listed content without claiming synchronization"
+    Assert-True ($bootstrapValidate.Code -eq 0 -and $bootstrapValidate.Output.Contains("VALIDATION OK") -and -not $bootstrapValidate.Output.Contains("SYNC OK") -and $bootstrapValidate.Output.Contains("VALID") -and $bootstrapValidate.Output.Contains("Package:     0.8.0")) "Bootstrap Validate checks manifest-listed content without claiming synchronization"
     $managedBootstrapJson = Invoke-TestScript -Path $manageScript -Arguments @("-ProjectRoot", $bootstrapProject, "-DocumentationMode", "Validate", "-OutputFormat", "Json", "-SkipGameDesignManifestUpdate")
     $managedBootstrapObject = $null
     try { $managedBootstrapObject = $managedBootstrapJson.Output | ConvertFrom-Json }
     catch { }
     Assert-True ($managedBootstrapJson.Code -eq 0 -and $managedBootstrapObject -and $managedBootstrapObject.status -eq "OK" -and $managedBootstrapObject.documentation.status -eq "VALID" -and $managedBootstrapObject.documentation.validationOutcome -eq "PASSED") "Managed setup JSON embeds parseable bootstrap validation output"
+
+    $sourceGitIgnorePath = Join-Path $source "GeurtsTechniques/GeurtsGitIgnoreTechnique.md"
+    $sourceGitIgnoreOriginal = [System.IO.File]::ReadAllText($sourceGitIgnorePath)
+    Write-Utf8 -Path $sourceGitIgnorePath -Text ($sourceGitIgnoreOriginal.Replace(".geurts/", ".geurts-cache/"))
+    Invoke-TestGit -Arguments @("add", "GeurtsTechniques/GeurtsGitIgnoreTechnique.md") -WorkingDirectory $source | Out-Null
+    Invoke-TestGit -Arguments @("commit", "-m", "tampered gitignore payload") -WorkingDirectory $source | Out-Null
+    Invoke-TestGit -Arguments @("push", $remote, "main") -WorkingDirectory $source | Out-Null
+    $activeGitIgnoreHash = Get-FileSha -Path $synchronizedGitIgnorePath
+    $tamperedGitIgnoreUpdate = Invoke-TestScript -Path $bootstrapScript -Arguments @("-Mode", "Update", "-ProjectRoot", $bootstrapProject, "-ConfigPath", $configPath, "-OutputFormat", "Json")
+    $afterTamperedCommit = Invoke-TestGit -Arguments @("rev-parse", "HEAD") -WorkingDirectory $syncPath
+    Assert-True ($tamperedGitIgnoreUpdate.Code -eq 31 -and $afterTamperedCommit -eq $validCommit -and (Get-FileSha -Path $synchronizedGitIgnorePath) -eq $activeGitIgnoreHash) "Bootstrap rejects a hash-mismatched custom .gitignore payload and preserves the last valid copy"
+
+    Write-Utf8 -Path $sourceGitIgnorePath -Text $sourceGitIgnoreOriginal
+    Invoke-TestGit -Arguments @("add", "GeurtsTechniques/GeurtsGitIgnoreTechnique.md") -WorkingDirectory $source | Out-Null
+    Invoke-TestGit -Arguments @("commit", "-m", "restore gitignore payload") -WorkingDirectory $source | Out-Null
+    Invoke-TestGit -Arguments @("push", $remote, "main") -WorkingDirectory $source | Out-Null
+    $restoredGitIgnoreUpdate = Invoke-TestScript -Path $bootstrapScript -Arguments @("-Mode", "Update", "-ProjectRoot", $bootstrapProject, "-ConfigPath", $configPath)
+    Assert-True ($restoredGitIgnoreUpdate.Code -eq 0 -and (Get-GitIgnorePayloadInfo -Path $synchronizedGitIgnorePath).Valid) "Bootstrap accepts the restored custom .gitignore payload"
+    $validCommit = Invoke-TestGit -Arguments @("rev-parse", "HEAD") -WorkingDirectory $syncPath
+
     Remove-Item -LiteralPath (Join-Path $source "GeurtsTechniques/GeurtsGameForgeIntelligenceIntegrationContract.md") -Force
     Invoke-TestGit -Arguments @("add", "-A") -WorkingDirectory $source | Out-Null
     Invoke-TestGit -Arguments @("commit", "-m", "invalid candidate") -WorkingDirectory $source | Out-Null
@@ -445,7 +494,7 @@ try {
     $staticJsonObject = $null
     try { $staticJsonObject = $staticJsonValidation.Output | ConvertFrom-Json }
     catch { }
-    Assert-True ($staticJsonValidation.Code -eq 0 -and $staticJsonObject -and $staticJsonObject.status -eq "VALID" -and @($staticJsonObject.checks).Count -eq 18) "Repository validation JSON output is one parseable document"
+    Assert-True ($staticJsonValidation.Code -eq 0 -and $staticJsonObject -and $staticJsonObject.status -eq "VALID" -and @($staticJsonObject.checks).Count -eq 19) "Repository validation JSON output is one parseable document"
 }
 catch {
     $script:Failed++

@@ -1,6 +1,6 @@
 # Geurts Game Forge AI Entry Point
 
-**Version:** 0.7.0
+**Version:** 0.8.0
 **Purpose:** Single authoritative starting point for AI coding agents, automated development systems, and human developers using Geurts Game Forge documentation.
 **Canonical path:** `AI_READ_FIRST.md`
 
@@ -49,10 +49,11 @@ Before creating, modifying, moving, renaming, or deleting implementation files:
 6. If the task changes player-facing behaviour, read `GeurtsTechniques/GeurtsGameDesignDocumentationTechnique.md`.
 7. When design context is required, use the initialized `<ProjectRoot>/Docs/GameDesign/GameDesignManifest.md` and load every relevant project-specific design document.
 8. If the task changes Game Forge Intelligence, documentation synchronization, managed AI entries, folder generation, or GDD manifest automation, read `GeurtsTechniques/GeurtsGameForgeIntelligenceIntegrationContract.md`.
-9. Inspect the target project's existing implementation before creating a replacement system.
-10. Plan the smallest maintainable change.
-11. Implement.
-12. Validate against the applicable Geurts Definition of Done and report what changed.
+9. If the task sets up, repairs, or validates a project-root `.gitignore`, also read `GeurtsTechniques/GeurtsGitIgnoreTechnique.md` for the exact custom payload.
+10. Inspect the target project's existing implementation before creating a replacement system.
+11. Plan the smallest maintainable change.
+12. Implement.
+13. Validate against the applicable Geurts Definition of Done and report what changed.
 
 Use the highest semantic version when multiple versions of the same technique exist, unless the manifest explicitly declares another authority rule.
 
@@ -104,6 +105,7 @@ If a relevant listed document is missing or does not provide the required decisi
 Read the applicable technical set plus:
 
 - `GeurtsTechniques/GeurtsGameForgeIntelligenceIntegrationContract.md`
+- `GeurtsTechniques/GeurtsGitIgnoreTechnique.md` when project-root `.gitignore` setup, repair, or validation is involved
 - `GeurtsTechniques/GeurtsFolderStructureDefinition.json` when folder automation is involved
 - `GeurtsTechniques/GeurtsGameDesignDocumentationTechnique.md` when GDD discovery, scaffolding, importing, or manifest maintenance is involved
 
@@ -135,6 +137,8 @@ Repository: `Geurtsy/GeurtsGameForge_Documentation`
 
 Branch: `main`
 
+The canonical repository is public. Normal read-only checks and synchronization use anonymous access by default.
+
 **Game Forge Intelligence** is the current concrete Unity plugin. A **Geurts-compatible Unity AI integration package** is the generic category for other implementations of the same published contract.
 
 The integration stores a validated local copy at `GeurtsGameForgeDocumentation/` and directs every native AI entry to `GeurtsGameForgeDocumentation/AI_READ_FIRST.md`. The required visible synchronized layout is exactly:
@@ -150,7 +154,7 @@ At initialization, perform a lightweight comparison of the local commit/version 
 
 The script modes are `-Mode Check` for the lightweight comparison, `-Mode Update` for safe synchronization, and `-Mode Validate` for local validation.
 
-An update must be staged and validated before replacing the last valid local copy. Report authentication, network, checkout, validation, and file-lock failures distinctly. Never claim a stale copy is current. v0.7.0 has no approved bundled fallback. Package policy or the user may explicitly permit the last validated local copy as a potentially stale fallback; report its version and commit, and never let it outrank a newer successfully synchronized canonical copy.
+An update must be staged and validated before replacing the last valid local copy. Report optional-authentication, network, checkout, validation, and file-lock failures distinctly. Never claim a stale copy is current. v0.8.0 has no approved bundled fallback. Package policy or the user may explicitly permit the last validated local copy as a potentially stale fallback; report its version and commit, and never let it outrank a newer successfully synchronized canonical copy.
 
 The detailed reusable contract is `GeurtsTechniques/GeurtsGameForgeIntelligenceIntegrationContract.md`.
 

@@ -1,7 +1,7 @@
 # Geurts AI Agent Setup Technique
 
 **Native AI Instruction Setup - Copilot, Codex, and Future Agents**  
-**Version:** 0.7.0
+**Version:** 0.8.0
 **Status:** Draft supporting technique  
 **Primary audience:** AI coding agents and automated development systems
 **Secondary audience:** Human developers
@@ -34,7 +34,7 @@ Canonical branch:
 
 `main`
 
-The current distribution strategy is an authenticated private canonical repository. Do not assume anonymous clone access. Authentication failures must be reported with actionable guidance.
+The current distribution strategy is a public canonical repository plus a validated local synchronized copy. Use anonymous read-only access by default. Optional authentication failures must not block a safe anonymous read-only attempt.
 
 Game Forge Intelligence and compatible packages store the last validated copy at:
 
@@ -129,9 +129,9 @@ Tools/BootstrapGeurtsInstructions.ps1 -Mode Validate
 
 Use `-Mode Check` for the lightweight comparison, `-Mode Update` for safe synchronization, and `-Mode Validate` for local validation. When no update exists, report the validated local commit and continue. When an update exists, report current and available versions/commits and follow package policy to update automatically or request approval. After success, report the exact synchronized commit. The manual action is named **Update Geurts Game Forge Documentation**.
 
-The update must acquire a target-scoped single-writer lock, then stage and validate before replacing the live copy. Validation requires `AI_READ_FIRST.md`, `GeurtsTechniqueManifest.md`, every manifest-listed synchronized file with matching version and canonical path, deep folder-definition safety and Markdown parity, and chat-only classification. Failed authentication, network, checkout, validation, or file locking must preserve the previous valid copy and be reported distinctly. An invalid first installation must be removed rather than reported as a valid local copy.
+The update must acquire a target-scoped single-writer lock, then stage and validate before replacing the live copy. Validation requires `AI_READ_FIRST.md`, `GeurtsTechniqueManifest.md`, every manifest-listed synchronized file with matching version and canonical path, the custom `.gitignore` payload grammar and hash, deep folder-definition safety and Markdown parity, and chat-only classification. Failed optional authentication, network, checkout, validation, or file locking must preserve the previous valid copy and be reported distinctly. An invalid first installation must be removed rather than reported as a valid local copy.
 
-v0.7.0 has no approved bundled fallback. Package policy or the user may explicitly permit the last validated local copy as a potentially stale fallback. Report its version and commit, and never let it outrank a newer successfully synchronized canonical copy. Without an allowed fallback, required synchronization failure blocks project modification.
+v0.8.0 has no approved bundled documentation fallback. Package policy or the user may explicitly permit the last validated local copy as a potentially stale fallback. Report its version and commit, and never let it outrank a newer successfully synchronized canonical copy. Without an allowed fallback, required synchronization failure blocks project modification.
 
 ### READ
 
@@ -143,7 +143,8 @@ Read:
 4. `GeurtsGameForgeDocumentation/GeurtsTechniques/GeurtsTechnicalTechnique.md`.
 5. `GeurtsGameForgeDocumentation/GeurtsTechniques/GeurtsFolderStructureTechnique.md`.
 6. `GeurtsGameForgeDocumentation/GeurtsTechniques/GeurtsGameForgeIntelligenceIntegrationContract.md` for integration or automation changes.
-7. Project-specific design documentation when `AI_READ_FIRST.md` classifies the task as player-facing.
+7. `GeurtsGameForgeDocumentation/GeurtsTechniques/GeurtsGitIgnoreTechnique.md` for project-root `.gitignore` setup, repair, or validation.
+8. Project-specific design documentation when `AI_READ_FIRST.md` classifies the task as player-facing.
 
 At initialization, read `<ProjectRoot>/Docs/GameDesign/GameDesignManifest.md` once when it exists and retain its version/hash/timestamp fingerprint. Re-read it when the fingerprint changes. This lightweight discovery does not require loading every full GDD.
 
@@ -198,6 +199,24 @@ It may refresh Geurts-owned content when the template version changes. It must p
 Markdown regions use strict HTML `GEURTS-MANAGED-BEGIN` and `GEURTS-MANAGED-END` comments with matching IDs, template version, managed-payload hash, and required `-->` closers. YAML frontmatter uses strict `#` comment markers inside the opening and closing frontmatter delimiters. A valid managed region with a newer unsupported version is a visible conflict and must never be downgraded. The exact file opt-out signal is `GEURTS-MANAGED-OPT-OUT`.
 
 Each run must be idempotent and report `created`, `updated`, `preserved`, `skipped`, and `conflicted` files. Known v0.4, mixed v0.5, and v0.6 entry styles require migration validation coverage.
+
+---
+
+## Safe Project Git Ignore Setup
+
+During explicit plugin setup, Game Forge Intelligence reads the canonical custom payload from:
+
+```text
+GeurtsGameForgeDocumentation/GeurtsTechniques/GeurtsGitIgnoreTechnique.md
+```
+
+and may create only a missing:
+
+```text
+<ProjectRoot>/.gitignore
+```
+
+This setup must remain separately rerunnable. It validates the marked payload and uses a visibly reported, versioned plugin default when the custom source cannot be used. It never overwrites, appends to, merges, or reformats a differing existing file, and it never changes Git tracking state. The exact parsing, fallback, target-safety, idempotence, and audit rules are owned by `GeurtsTechniques/GeurtsGameForgeIntelligenceIntegrationContract.md` and `GeurtsTechniques/GeurtsGitIgnoreTechnique.md`.
 
 ---
 

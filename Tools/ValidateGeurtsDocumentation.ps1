@@ -1,5 +1,5 @@
 # ValidateGeurtsDocumentation.ps1
-# Version: 0.7.0
+# Version: 0.8.0
 
 [CmdletBinding()]
 param(
@@ -80,14 +80,16 @@ try {
     $manifestText = if (Test-Path -LiteralPath $manifestPath -PathType Leaf) { [System.IO.File]::ReadAllText($manifestPath) } else { "" }
     $packageMatch = [regex]::Match($manifestText, '(?im)^\*\*Version:\*\*\s*(?<Version>\d+\.\d+\.\d+)')
     $packageVersion = if ($packageMatch.Success) { $packageMatch.Groups["Version"].Value } else { $null }
-    Add-Check "Package version" ($packageVersion -eq "0.7.0") "Manifest package version is $packageVersion."
+    Add-Check "Package version" ($packageVersion -eq "0.8.0") "Manifest package version is $packageVersion."
 
     $migrationRelative = "Migrations/v0.7.0.md"
     $legacyHidden = ([char]46) + "ge" + "urts"
     $legacySegment = "up" + "stream"
+    $legacyRouteForward = $legacyHidden + "/" + $legacySegment
+    $legacyRouteBackward = $legacyHidden + "\" + $legacySegment
     $legacyDocs = "Docs/" + "Geurts"
     $legacyProduct = "Tripo" + "CodexUnityPackage"
-    $forbiddenPatterns = @($legacyHidden, $legacySegment, $legacyDocs, $legacyProduct)
+    $forbiddenPatterns = @($legacyRouteForward, $legacyRouteBackward, $legacyDocs, $legacyProduct)
     $forbiddenHits = New-Object System.Collections.Generic.List[string]
     foreach ($file in @(Get-ChildItem -LiteralPath $RepositoryRoot -File -Recurse -Force | Where-Object { $_.FullName -notmatch '[\\/]\.git[\\/]' })) {
         $relative = $file.FullName.Substring($RepositoryRoot.Length).TrimStart('\', '/').Replace('\', '/')
@@ -128,6 +130,61 @@ try {
     }
     Add-Check "Manifest-listed files" ($listedRecords.Count -gt 0 -and $missingListed.Count -eq 0) $(if ($missingListed.Count) { "Missing: " + ($missingListed -join ", ") } else { "$($listedRecords.Count) listed files exist." })
     Add-Check "Listed file versions" ($versionMismatches.Count -eq 0) $(if ($versionMismatches.Count) { $versionMismatches -join "; " } else { "Manifest-listed versions agree with declared file versions." })
+
+    $gitIgnoreFailures = New-Object System.Collections.Generic.List[string]
+    $gitIgnoreRelative = "GeurtsTechniques/GeurtsGitIgnoreTechnique.md"
+    $gitIgnorePath = Join-Path $RepositoryRoot $gitIgnoreRelative
+    $gitIgnoreText = $null
+    if (-not (Test-Path -LiteralPath $gitIgnorePath -PathType Leaf)) {
+        $gitIgnoreFailures.Add("technique is missing") | Out-Null
+    }
+    else {
+        try {
+            $gitIgnoreBytes = [System.IO.File]::ReadAllBytes($gitIgnorePath)
+            $gitIgnoreOffset = 0
+            if ($gitIgnoreBytes.Length -ge 3 -and $gitIgnoreBytes[0] -eq 0xEF -and $gitIgnoreBytes[1] -eq 0xBB -and $gitIgnoreBytes[2] -eq 0xBF) { $gitIgnoreOffset = 3 }
+            $strictUtf8 = New-Object System.Text.UTF8Encoding($false, $true)
+            $gitIgnoreText = $strictUtf8.GetString($gitIgnoreBytes, $gitIgnoreOffset, $gitIgnoreBytes.Length - $gitIgnoreOffset)
+        }
+        catch { $gitIgnoreFailures.Add("technique is not valid UTF-8") | Out-Null }
+    }
+
+    if ($null -ne $gitIgnoreText) {
+        if ([regex]::Matches($gitIgnoreText, 'GEURTS-GITIGNORE-BEGIN').Count -ne 1 -or [regex]::Matches($gitIgnoreText, 'GEURTS-GITIGNORE-END').Count -ne 1) {
+            $gitIgnoreFailures.Add("marker count is invalid") | Out-Null
+        }
+        $gitIgnorePattern = '(?ms)^<!-- GEURTS-GITIGNORE-BEGIN version="(?<Version>[0-9]+\.[0-9]+\.[0-9]+)" target="(?<Target>[^"]+)" sha256="(?<Hash>[0-9a-f]{64})" -->\r?\n```gitignore\r?\n(?<Payload>.*?)^```\r?\n<!-- GEURTS-GITIGNORE-END -->(?:\r?\n)?\z'
+        $gitIgnoreMatches = @([regex]::Matches($gitIgnoreText, $gitIgnorePattern))
+        if ($gitIgnoreMatches.Count -ne 1) {
+            $gitIgnoreFailures.Add("marker or fence grammar is invalid") | Out-Null
+        }
+        else {
+            $gitIgnoreMatch = $gitIgnoreMatches[0]
+            $techniqueVersion = Get-DeclaredVersion -Path $gitIgnorePath
+            if ($techniqueVersion -cne "1.0.0" -or $gitIgnoreMatch.Groups["Version"].Value -cne $techniqueVersion) { $gitIgnoreFailures.Add("template version is invalid") | Out-Null }
+            if ($gitIgnoreMatch.Groups["Target"].Value -cne ".gitignore") { $gitIgnoreFailures.Add("target is not ordinal-exact .gitignore") | Out-Null }
+            $payload = $gitIgnoreMatch.Groups["Payload"].Value
+            if ($payload.Length -gt 0 -and $payload[0] -eq [char]0xFEFF) { $gitIgnoreFailures.Add("payload contains a byte-order mark") | Out-Null }
+            $normalizedPayload = $payload -replace "`r`n", "`n" -replace "`r", "`n"
+            if (-not $normalizedPayload.EndsWith("`n") -or $normalizedPayload.EndsWith("`n`n")) { $gitIgnoreFailures.Add("payload terminal newline is invalid") | Out-Null }
+            if ([regex]::Matches($normalizedPayload, "`n").Count -ne 376) { $gitIgnoreFailures.Add("payload logical line count is not 376") | Out-Null }
+            $expectedNormalizedHash = "7223a9449718942d3a5cad00cf4d4e0dee9c89eb64951541fa4ebfb803acb45b"
+            if ($gitIgnoreMatch.Groups["Hash"].Value -cne $expectedNormalizedHash -or (Get-TextHash -Text $normalizedPayload) -cne $expectedNormalizedHash) { $gitIgnoreFailures.Add("normalized payload hash is invalid") | Out-Null }
+
+            $sourceSha = [System.Security.Cryptography.SHA256]::Create()
+            try { $approvedSourceHash = ([System.BitConverter]::ToString($sourceSha.ComputeHash($strictUtf8.GetBytes($normalizedPayload.Replace("`n", "`r`n"))))).Replace("-", "").ToLowerInvariant() }
+            finally { $sourceSha.Dispose() }
+            if ($approvedSourceHash -cne "c8412a38435bccd89f1fefb855da3c24680612c27609341e64dcbaf99c0f88ab") { $gitIgnoreFailures.Add("approved CRLF source hash is invalid") | Out-Null }
+        }
+    }
+
+    $integrationContractPath = Join-Path $RepositoryRoot "GeurtsTechniques/GeurtsGameForgeIntelligenceIntegrationContract.md"
+    $integrationContractText = if (Test-Path -LiteralPath $integrationContractPath -PathType Leaf) { [System.IO.File]::ReadAllText($integrationContractPath) } else { "" }
+    foreach ($requiredText in @("**Version:** 0.9.0", "GeurtsGameForgeDocumentation/GeurtsTechniques/GeurtsGitIgnoreTechnique.md", "<ProjectRoot>/.gitignore", "CUSTOM_DOCUMENTATION", "DEFAULT_FALLBACK", "SOURCE_FAILED", "PRESERVED")) {
+        if ($integrationContractText.IndexOf($requiredText, [System.StringComparison]::Ordinal) -lt 0) { $gitIgnoreFailures.Add("integration contract is missing '$requiredText'") | Out-Null }
+    }
+    if ($manifestText.IndexOf($gitIgnoreRelative, [System.StringComparison]::Ordinal) -lt 0) { $gitIgnoreFailures.Add("manifest does not classify the technique") | Out-Null }
+    Add-Check "Custom .gitignore payload" ($gitIgnoreFailures.Count -eq 0) $(if ($gitIgnoreFailures.Count) { $gitIgnoreFailures -join "; " } else { "The v1.0.0 payload exactly matches the approved 376-line source after normalization and is routed by contract v0.9.0." })
 
     $canonicalFailures = New-Object System.Collections.Generic.List[string]
     foreach ($technique in @(Get-ChildItem -LiteralPath (Join-Path $RepositoryRoot "GeurtsTechniques") -Filter "*.md" -File)) {
@@ -229,8 +286,8 @@ try {
             if (-not $requiredExpected.ContainsKey([string]$entry.path) -or [string]$requiredExpected[[string]$entry.path] -cne [string]$entry.type) { $requiredValid = $false }
         }
     }
-    $configFieldsValid = $config -and [string]$config.schemaVersion -ceq "0.7.0" -and [string]$config.packageVersion -ceq "0.7.0" -and [string]$config.distributionStrategy -ceq "authenticated-private-repository" -and [string]$config.repositoryUrl -ceq "https://github.com/Geurtsy/GeurtsGameForge_Documentation.git" -and [string]$config.branch -ceq "main" -and [string]$config.localSyncPath -ceq "GeurtsGameForgeDocumentation" -and [string]$config.entryPointPath -ceq "AI_READ_FIRST.md" -and [string]$config.manifestPath -ceq "GeurtsTechniqueManifest.md" -and [string]$config.techniquesPath -ceq "GeurtsTechniques" -and [string]$config.folderDefinitionPath -ceq "GeurtsTechniques/GeurtsFolderStructureDefinition.json" -and [string]$config.fallbackPolicy -ceq "none"
-    Add-Check "Exact sparse layout configuration" ($sparseValid -and $requiredValid -and $configFieldsValid) "Private-repository configuration selects exactly the entry point, manifest, and techniques directory with no fallback."
+    $configFieldsValid = $config -and [string]$config.schemaVersion -ceq "0.7.0" -and [string]$config.packageVersion -ceq "0.8.0" -and [string]$config.distributionStrategy -ceq "public-repository" -and [string]$config.repositoryUrl -ceq "https://github.com/Geurtsy/GeurtsGameForge_Documentation.git" -and [string]$config.branch -ceq "main" -and [string]$config.localSyncPath -ceq "GeurtsGameForgeDocumentation" -and [string]$config.entryPointPath -ceq "AI_READ_FIRST.md" -and [string]$config.manifestPath -ceq "GeurtsTechniqueManifest.md" -and [string]$config.techniquesPath -ceq "GeurtsTechniques" -and [string]$config.folderDefinitionPath -ceq "GeurtsTechniques/GeurtsFolderStructureDefinition.json" -and [string]$config.fallbackPolicy -ceq "none"
+    Add-Check "Exact sparse layout configuration" ($sparseValid -and $requiredValid -and $configFieldsValid) "Public-repository configuration selects exactly the entry point, manifest, and techniques directory with no bundled documentation fallback."
 
     $definitionPath = Join-Path $RepositoryRoot "GeurtsTechniques/GeurtsFolderStructureDefinition.json"
     $folderFailures = New-Object System.Collections.Generic.List[string]
@@ -245,7 +302,7 @@ try {
             $topLevelExpected = @{
                 schemaVersion = "1.0.0"
                 definitionVersion = "0.7.0"
-                packageVersion = "0.7.0"
+                packageVersion = "0.8.0"
                 canonicalPath = "GeurtsTechniques/GeurtsFolderStructureDefinition.json"
                 pathBase = "<ProjectRoot>"
                 pathSeparator = "/"
@@ -391,7 +448,7 @@ try {
         [System.IO.File]::ReadAllText((Join-Path $RepositoryRoot "GeurtsTechniques/GeurtsTechnicalTechnique.md"))
     ) -join "`n"
     $chatSection = [regex]::Match($manifestText, '(?ms)^### Chat-only\s*(?<Body>.*?)(?=^### |\z)')
-    $chatOnlyValid = $chatSection.Success -and $chatSection.Groups["Body"].Value.Contains("GeurtsTechniques/GeurtsAIResponseControlTechnique_V1.1.md") -and $chatSection.Groups["Body"].Value -match '(?i)not an? .*implementation standard' -and $manifestText -match '(?m)^\| `GeurtsTechniques/GeurtsAIResponseControlTechnique_V1\.1\.md` \| 1\.1 \| Chat-only response technique; synchronized but not an implementation standard\. \|$'
+    $chatOnlyValid = $chatSection.Success -and $chatSection.Groups["Body"].Value.Contains("GeurtsTechniques/GeurtsAIResponseControlTechnique_V1.1.md") -and $chatSection.Groups["Body"].Value -match '(?i)not an? .*implementation standard' -and $manifestText -match '(?m)^\| `GeurtsTechniques/GeurtsAIResponseControlTechnique_V1\.1\.md` \| 1\.1 \| Chat-only response technique; synchronized but not an implementation standard\. \|\r?$'
     Add-Check "Chat-only classification" $chatOnlyValid "Response control remains independently versioned, synchronized, and explicitly excluded from implementation standards."
     $priorityFailures = New-Object System.Collections.Generic.List[string]
     foreach ($priorityRelative in @("README.md", "GeurtsTechniqueManifest.md", "GeurtsTechniques/GeurtsTechnicalTechnique.md", "GeurtsTechniques/GeurtsAIAgentSetupTechnique.md")) {
@@ -406,8 +463,8 @@ try {
     Add-Check "GDD path boundary" $gddBoundaryValid "Project GDD and synchronized technique paths remain separate and project-root-relative."
 
     $bootstrapText = [System.IO.File]::ReadAllText((Join-Path $RepositoryRoot "Tools/BootstrapGeurtsInstructions.ps1"))
-    $bootstrapContractValid = @("Check", "Update", "Validate", "AUTHENTICATION", "NETWORK", "CHECKOUT", "VALIDATION", "FILE_LOCK", "FILESYSTEM", "Test-SynchronizedPackageContent", "Test-SynchronizedFolderPath", "delegatedOwners", "parent-closed", "RequireCurrentPackage", "GEURTS-PACKAGE-FILES:BEGIN", "GeurtsFolderStructureDefinition.json", "GeurtsAIResponseControlTechnique_V1.1.md", "GeurtsGameForgeDocumentation", "authenticated-private-repository", "fallbackPolicy", "System.Threading.Mutex", "Enter-SyncLock", "Exit-SyncLock", "Get-FilesystemFailureCategory", "tls", "Move-Item", "previousCommit", "synchronizedCommit", "validationOutcome", "preservedLocalCopy", "lastValidCopy", "credential manager or credential provider") | Where-Object { $bootstrapText.IndexOf($_, [System.StringComparison]::OrdinalIgnoreCase) -lt 0 } | Measure-Object | Select-Object -ExpandProperty Count
-    Add-Check "Bootstrap safety contract" ($bootstrapContractValid -eq 0) "Check, Update, Validate, exact visible-path configuration, target-scoped locking, profile closure, deep staged content validation, atomic promotion, explicit commit and validation reporting, confirmed-copy rollback reporting, actionable authentication, and distinct failure categories are implemented."
+    $bootstrapContractValid = @("Check", "Update", "Validate", "AUTHENTICATION", "NETWORK", "CHECKOUT", "VALIDATION", "FILE_LOCK", "FILESYSTEM", "Test-SynchronizedPackageContent", "Test-SynchronizedGitIgnoreTechnique", "Test-SynchronizedFolderPath", "delegatedOwners", "parent-closed", "RequireCurrentPackage", "GEURTS-PACKAGE-FILES:BEGIN", "GeurtsFolderStructureDefinition.json", "GeurtsAIResponseControlTechnique_V1.1.md", "GeurtsGitIgnoreTechnique.md", "GeurtsGameForgeDocumentation", "public-repository", "fallbackPolicy", "System.Threading.Mutex", "Enter-SyncLock", "Exit-SyncLock", "Get-FilesystemFailureCategory", "tls", "Move-Item", "previousCommit", "synchronizedCommit", "validationOutcome", "preservedLocalCopy", "lastValidCopy", "anonymous read-only access") | Where-Object { $bootstrapText.IndexOf($_, [System.StringComparison]::OrdinalIgnoreCase) -lt 0 } | Measure-Object | Select-Object -ExpandProperty Count
+    Add-Check "Bootstrap safety contract" ($bootstrapContractValid -eq 0) "Check, Update, Validate, exact visible-path configuration, target-scoped locking, custom .gitignore payload validation, profile closure, deep staged content validation, atomic promotion, explicit commit and validation reporting, confirmed-copy rollback reporting, public access guidance, and distinct failure categories are implemented."
 
     $managerText = [System.IO.File]::ReadAllText((Join-Path $RepositoryRoot "Tools/ManageGeurtsAgentInstructions.ps1"))
     $managerSafetyMissing = @("Test-HasReparsePoint", "Test-NativeMigrationCatalog", "native-entry", "gdd-scaffolding", "frontmatter delimiters", "unsupported version", "no downgrade") | Where-Object { $managerText.IndexOf($_, [System.StringComparison]::OrdinalIgnoreCase) -lt 0 } | Measure-Object | Select-Object -ExpandProperty Count

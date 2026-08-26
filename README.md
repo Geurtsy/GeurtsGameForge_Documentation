@@ -1,6 +1,6 @@
 # Geurts Game Forge Documentation
 
-**Version:** 0.7.0
+**Version:** 0.8.0
 **Status:** Draft technique package  
 **Primary audience:** AI coding agents and automated development systems
 **Secondary audience:** Human developers
@@ -53,6 +53,7 @@ ProjectRoot/Docs/GameDesign/
 - `GeurtsTechniques/GeurtsFolderStructureDefinition.json` - machine-readable folder-creation authority.
 - `GeurtsTechniques/GeurtsGameDesignDocumentationTechnique.md` - rules for discovering player-facing design context.
 - `GeurtsTechniques/GeurtsGameForgeIntelligenceIntegrationContract.md` - reusable synchronization, managed-entry, folder-generation, and GDD automation contract.
+- `GeurtsTechniques/GeurtsGitIgnoreTechnique.md` - canonical, hash-validated custom project-root `.gitignore` payload.
 - `<ProjectRoot>/Docs/GameDesign/GameDesignManifest.md` - target game's design-document index when present.
 
 ## Game Forge Intelligence Integration
@@ -69,15 +70,17 @@ Canonical branch:
 
 `main`
 
-The repository currently uses an authenticated private distribution strategy. Integrations must provide actionable authentication guidance and must not assume anonymous cloning works.
+The repository is public. Integrations use anonymous read-only access for normal checks and synchronization by default; optional authentication must not be required for that path.
 
 Normal prompts use the last validated local copy at `GeurtsGameForgeDocumentation/`. They do not contact GitHub on every prompt.
 
 At Unity launch or AI-session initialization, the integration performs one lightweight commit/version check. When an update exists, it reports the current and available identifiers and follows package policy to request approval or update automatically. The manual action is named **Update Geurts Game Forge Documentation**.
 
-Updates must be staged, validated, and swapped safely. A successful update reports the exact synchronized commit. A failed update preserves the last valid copy and reports authentication, network, checkout, validation, or file-lock failure accurately. v0.7.0 has no approved bundled fallback. Explicit policy may permit the last validated local copy as potentially stale; its version and commit must be visible, and it never outranks a newer successfully synchronized canonical copy.
+Updates must be staged, validated, and swapped safely. A successful update reports the exact synchronized commit. A failed update preserves the last valid copy and reports optional-authentication, network, checkout, validation, or file-lock failure accurately. v0.8.0 has no approved bundled documentation fallback. Explicit policy may permit the last validated local copy as potentially stale; its version and commit must be visible, and it never outranks a newer successfully synchronized canonical copy.
 
 Every generated native AI entry routes through `GeurtsGameForgeDocumentation/AI_READ_FIRST.md`. The full reusable contract is `GeurtsTechniques/GeurtsGameForgeIntelligenceIntegrationContract.md`.
+
+During plugin setup, Game Forge Intelligence uses the marked payload in `GeurtsGameForgeDocumentation/GeurtsTechniques/GeurtsGitIgnoreTechnique.md` to create a missing project-root `.gitignore`. If that custom source cannot be used, the plugin reports and uses its versioned default. A differing existing `.gitignore` remains project-owned and unchanged.
 
 ## Game Design Discovery
 
@@ -117,6 +120,7 @@ For multiplayer systems, **network efficiency overrides all other priorities**.
 ## Supporting Documents
 
 - `Ideas/GameForgeIntelligenceIdeas.md` - non-normative proposals, open decisions, and deferred plugin work.
+- `Migrations/v0.8.0.md` - migration notes for public access, contract reconciliation, and custom `.gitignore` provisioning.
 - `Migrations/v0.7.0.md` - migration from legacy synchronized layouts and native instruction files.
 
 ## Important Classification
@@ -128,6 +132,13 @@ For multiplayer systems, **network efficiency overrides all other priorities**.
 When multiple versions of the same technique exist, use the highest semantic version. When versions tie, prefer the canonical repository/path declared by the technique or manifest.
 
 ## Changelog
+
+### v0.8.0
+
+- Aligned canonical synchronization with public anonymous read-only repository access.
+- Added contract reconciliation and explicit compatibility reporting through integration contract v0.9.0.
+- Added a hash-validated custom Unity project `.gitignore` payload and safe create-if-missing plugin setup with a visible default fallback.
+- Preserved the three-entry synchronized top-level layout by storing the payload inside `GeurtsTechniques/`.
 
 ### v0.7.0
 
