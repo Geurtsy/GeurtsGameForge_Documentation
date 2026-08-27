@@ -1,5 +1,5 @@
 # CreateGeurtsFolderStructure.ps1
-# Version: 0.8.0
+# Version: 0.9.0
 
 [CmdletBinding()]
 param(
@@ -26,6 +26,22 @@ function Test-IsContainedPath([string]$Candidate, [string]$Root) {
     return $Candidate.StartsWith($rootWithSeparator, [System.StringComparison]::OrdinalIgnoreCase)
 }
 
+function Assert-UnityProjectRoot([string]$Root) {
+    $toolContainer = [System.IO.Path]::GetFullPath((Split-Path -Parent $PSScriptRoot)).TrimEnd([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar)
+    if ($Root.TrimEnd([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar).Equals($toolContainer, [System.StringComparison]::OrdinalIgnoreCase)) {
+        throw "Project root must not be the documentation source or synchronized documentation container: $Root"
+    }
+    $rootItem = Get-Item -LiteralPath $Root -Force
+    if (($rootItem.Attributes -band [System.IO.FileAttributes]::ReparsePoint) -ne 0) {
+        throw "Project root must not be a junction, symbolic link, or other reparse point: $Root"
+    }
+    foreach ($marker in @("Assets", "Packages", "ProjectSettings")) {
+        if (-not (Test-Path -LiteralPath (Join-Path $Root $marker) -PathType Container)) {
+            throw "Project root must be explicit and identify a Unity project containing Assets, Packages, and ProjectSettings: $Root"
+        }
+    }
+}
+
 function Test-DefinitionPath([string]$Path) {
     if ([string]::IsNullOrWhiteSpace($Path)) { return $false }
     if ([System.IO.Path]::IsPathRooted($Path)) { return $false }
@@ -43,6 +59,8 @@ function Test-DefinitionPath([string]$Path) {
 }
 
 function Test-HasReparsePoint([string]$Candidate, [string]$Root) {
+    $rootItem = Get-Item -LiteralPath $Root -Force
+    if (($rootItem.Attributes -band [System.IO.FileAttributes]::ReparsePoint) -ne 0) { return $true }
     $current = $Candidate
     while (Test-IsContainedPath -Candidate $current -Root $Root) {
         if (Test-Path -LiteralPath $current) {
@@ -60,9 +78,29 @@ function Test-HasReparsePoint([string]$Candidate, [string]$Root) {
     return $false
 }
 
+function Invoke-TestDirectoryBarrier([string]$TargetPath) {
+    $barrierPath = [Environment]::GetEnvironmentVariable("GEURTS_TEST_WRITE_BARRIER_PATH")
+    $barrierTarget = [Environment]::GetEnvironmentVariable("GEURTS_TEST_WRITE_BARRIER_TARGET")
+    if ([string]::IsNullOrWhiteSpace($barrierPath) -or [string]::IsNullOrWhiteSpace($barrierTarget)) { return }
+    $fullTarget = [System.IO.Path]::GetFullPath($TargetPath)
+    if (-not $fullTarget.Equals([System.IO.Path]::GetFullPath($barrierTarget), [System.StringComparison]::OrdinalIgnoreCase)) { return }
+    $fullBarrier = [System.IO.Path]::GetFullPath($barrierPath)
+    $temporaryRoot = [System.IO.Path]::GetFullPath([System.IO.Path]::GetTempPath()).TrimEnd([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar) + [System.IO.Path]::DirectorySeparatorChar
+    if (-not $fullBarrier.StartsWith($temporaryRoot, [System.StringComparison]::OrdinalIgnoreCase)) { throw "Automation test directory barrier must remain below the system temporary directory." }
+    $readyPath = $fullBarrier + ".ready"
+    $continuePath = $fullBarrier + ".continue"
+    [System.IO.File]::WriteAllText($readyPath, "ready", (New-Object System.Text.UTF8Encoding($false)))
+    $deadline = [DateTime]::UtcNow.AddSeconds(15)
+    while (-not (Test-Path -LiteralPath $continuePath -PathType Leaf)) {
+        if ([DateTime]::UtcNow -ge $deadline) { throw "Automation test directory barrier timed out." }
+        Start-Sleep -Milliseconds 20
+    }
+    Remove-Item -LiteralPath $continuePath -Force -ErrorAction SilentlyContinue
+    Remove-Item -LiteralPath $readyPath -Force -ErrorAction SilentlyContinue
+}
+
 function Get-ExpectedProfilesForPath([string]$Path) {
     if ($Path -in @(".github", ".github/instructions")) { return @("native-entry") }
-    if ($Path -in @("GeurtsGameForgeDocumentation", "GeurtsGameForgeDocumentation/GeurtsTechniques")) { return @("documentation-sync") }
     if ($Path -in @("Docs", "Docs/GameDesign")) { return @("full-project-structure", "gdd-scaffolding") }
     return @("full-project-structure")
 }
@@ -81,17 +119,17 @@ function Add-Result([string]$Status, [string]$Path, [string]$Message) {
 
 try {
     if ([string]::IsNullOrWhiteSpace($ProjectRoot)) {
-        $ProjectRoot = Split-Path -Parent $PSScriptRoot
+        throw "-ProjectRoot is required for folder creation; the tool will not infer a Unity project from its own Tools location."
     }
     $ProjectRoot = [System.IO.Path]::GetFullPath($ProjectRoot)
     if (-not (Test-Path -LiteralPath $ProjectRoot -PathType Container)) {
         throw "Project root does not exist: $ProjectRoot"
     }
+    Assert-UnityProjectRoot -Root $ProjectRoot
 
     if ([string]::IsNullOrWhiteSpace($DefinitionPath)) {
         $candidates = @(
             (Join-Path $ProjectRoot "GeurtsGameForgeDocumentation/GeurtsTechniques/GeurtsFolderStructureDefinition.json"),
-            (Join-Path $ProjectRoot "GeurtsTechniques/GeurtsFolderStructureDefinition.json"),
             (Join-Path (Split-Path -Parent $PSScriptRoot) "GeurtsTechniques/GeurtsFolderStructureDefinition.json")
         )
         $DefinitionPath = $candidates | Where-Object { Test-Path -LiteralPath $_ -PathType Leaf } | Select-Object -First 1
@@ -101,7 +139,7 @@ try {
     }
 
     if ([string]::IsNullOrWhiteSpace($DefinitionPath) -or -not (Test-Path -LiteralPath $DefinitionPath -PathType Leaf)) {
-        throw "Folder definition not found. Synchronize the documentation or provide -DefinitionPath."
+        throw "Folder definition not found. Provide the package definition through -DefinitionPath."
     }
 
     try {
@@ -112,14 +150,14 @@ try {
     }
 
     if ([string]$definition.schemaVersion -ne "1.0.0") { throw "Unsupported folder-definition schemaVersion '$($definition.schemaVersion)'." }
-    if ([string]$definition.definitionVersion -ne "0.7.0" -or [string]$definition.packageVersion -ne "0.8.0") {
-        throw "Folder definition version must be 0.7.0 and package version must be 0.8.0."
+    if ([string]$definition.definitionVersion -ne "0.8.0" -or [string]$definition.packageVersion -ne "0.9.0") {
+        throw "Folder definition version must be 0.8.0 and package version must be 0.9.0."
     }
     if ([string]$definition.canonicalPath -ne "GeurtsTechniques/GeurtsFolderStructureDefinition.json" -or [string]$definition.pathBase -ne "<ProjectRoot>" -or [string]$definition.pathSeparator -ne "/" -or [string]$definition.explanatoryAuthority -ne "GeurtsTechniques/GeurtsFolderStructureTechnique.md" -or [string]$definition.automationAuthority -ne "GeurtsTechniques/GeurtsFolderStructureDefinition.json") {
-        throw "Folder definition declares an unsupported canonical path or path-base contract."
+        throw "Folder definition declares an unsupported required path or path-base contract."
     }
-    if (-not $definition.managedFolders -or @($definition.managedFolders).Count -ne 71 -or [int]$definition.managedFolderCount -ne 71 -or [int]$definition.projectStructureFolderCount -ne 67) {
-        throw "The v0.7.0 folder definition must declare exactly 71 managed folders and 67 project-structure folders."
+    if (-not $definition.managedFolders -or @($definition.managedFolders).Count -ne 69 -or [int]$definition.managedFolderCount -ne 69 -or [int]$definition.projectStructureFolderCount -ne 67) {
+        throw "The v0.8.0 folder definition must declare exactly 69 managed folders and 67 project-structure folders."
     }
 
     $allowedCategories = @("unity-project", "generated-content", "tooling", "documentation", "third-party-content")
@@ -134,9 +172,8 @@ try {
         "full-project-structure" = "folder-structure-tool"
         "native-entry" = "native-entry-manager"
         "gdd-scaffolding" = "native-entry-manager"
-        "documentation-sync" = "documentation-synchronizer"
     }
-    if (@($definition.creationProfiles).Count -ne $expectedProfileOwners.Count) { throw "The v0.7.0 definition must declare exactly four creation profiles." }
+    if (@($definition.creationProfiles).Count -ne $expectedProfileOwners.Count) { throw "The v0.8.0 definition must declare exactly three creation profiles." }
     $profileOwners = @{}
     foreach ($declaredProfile in @($definition.creationProfiles)) {
         $profileId = [string]$declaredProfile.id
@@ -160,7 +197,7 @@ try {
     }
 
     $knownPaths = New-Object 'System.Collections.Generic.HashSet[string]' ([System.StringComparer]::OrdinalIgnoreCase)
-    $knownCanonicalPaths = New-Object 'System.Collections.Generic.HashSet[string]' ([System.StringComparer]::Ordinal)
+    $knownRequiredPaths = New-Object 'System.Collections.Generic.HashSet[string]' ([System.StringComparer]::Ordinal)
     $validated = New-Object System.Collections.Generic.List[object]
 
     foreach ($folder in @($definition.managedFolders)) {
@@ -168,9 +205,12 @@ try {
         if (-not (Test-DefinitionPath -Path $relativePath)) {
             throw "Unsafe or invalid folder path in definition: '$relativePath'."
         }
-        $addedCanonicalPath = $knownCanonicalPaths.Add($relativePath)
+        if ($relativePath -ceq "GeurtsGameForgeDocumentation") {
+            throw "The documentation container is a reserved read-only placement and is not a managed folder."
+        }
+        $addedRequiredPath = $knownRequiredPaths.Add($relativePath)
         $addedInsensitivePath = $knownPaths.Add($relativePath)
-        if (-not $addedCanonicalPath -or -not $addedInsensitivePath) {
+        if (-not $addedRequiredPath -or -not $addedInsensitivePath) {
             throw "Duplicate folder path in definition: '$relativePath'."
         }
         if ($folder.requirement -notin @("required", "optional")) {
@@ -199,11 +239,11 @@ try {
         $expectedFolderProfiles = @(Get-ExpectedProfilesForPath -Path $relativePath | Sort-Object)
         $actualFolderProfiles = @($profiles | ForEach-Object { [string]$_ } | Sort-Object)
         if ($actualFolderProfiles.Count -ne $expectedFolderProfiles.Count) {
-            throw "Folder '$relativePath' does not declare its exact v0.7.0 creation-profile scope."
+            throw "Folder '$relativePath' does not declare its exact v0.8.0 creation-profile scope."
         }
         for ($profileIndex = 0; $profileIndex -lt $expectedFolderProfiles.Count; $profileIndex++) {
             if ($actualFolderProfiles[$profileIndex] -cne $expectedFolderProfiles[$profileIndex]) {
-                throw "Folder '$relativePath' does not declare its exact v0.7.0 creation-profile scope."
+                throw "Folder '$relativePath' does not declare its exact v0.8.0 creation-profile scope."
             }
         }
         if ([string]::IsNullOrWhiteSpace([string]$folder.automation.owner)) {
@@ -279,8 +319,8 @@ try {
         throw "The explanatory folder authority is missing beside the definition: '$techniquePath'."
     }
     $techniqueText = [System.IO.File]::ReadAllText($techniquePath)
-    if ($techniqueText -notmatch '(?im)^\*\*Version:\*\*\s*0\.7\.0\s*$' -or $techniqueText -notmatch '(?m)^\*\*Canonical path:\*\* `GeurtsTechniques/GeurtsFolderStructureTechnique\.md`\s*$') {
-        throw "The explanatory folder authority does not declare the v0.7.0 canonical metadata."
+    if ($techniqueText -notmatch '(?im)^\*\*Version:\*\*\s*0\.8\.0\s*$' -or $techniqueText -notmatch '(?m)^\*\*Required package path:\*\* `GeurtsTechniques/GeurtsFolderStructureTechnique\.md`\s*$') {
+        throw "The explanatory folder authority does not declare the v0.8.0 stable path metadata."
     }
     $registryMatch = [regex]::Match($techniqueText, '(?ms)<!-- GEURTS-FOLDER-PATHS:BEGIN -->\s*```text\s*(?<Paths>.*?)\s*```\s*<!-- GEURTS-FOLDER-PATHS:END -->')
     if (-not $registryMatch.Success -or [regex]::Matches($techniqueText, 'GEURTS-FOLDER-PATHS:BEGIN').Count -ne 1 -or [regex]::Matches($techniqueText, 'GEURTS-FOLDER-PATHS:END').Count -ne 1) {
@@ -294,12 +334,12 @@ try {
             throw "The explanatory folder authority contains an invalid or duplicate path: '$documentedPath'."
         }
     }
-    if ($documentedPaths.Count -ne $knownCanonicalPaths.Count) { throw "The JSON and Markdown folder path counts differ." }
-    foreach ($canonicalPath in $knownCanonicalPaths) {
-        if (-not $documentedPaths.Contains($canonicalPath)) { throw "The JSON path '$canonicalPath' is absent from the Markdown literal registry." }
+    if ($documentedPaths.Count -ne $knownRequiredPaths.Count) { throw "The JSON and Markdown folder path counts differ." }
+    foreach ($requiredPath in $knownRequiredPaths) {
+        if (-not $documentedPaths.Contains($requiredPath)) { throw "The JSON path '$requiredPath' is absent from the Markdown literal registry." }
     }
     foreach ($documentedPath in $documentedPaths) {
-        if (-not $knownCanonicalPaths.Contains($documentedPath)) { throw "The Markdown path '$documentedPath' is absent from the JSON definition." }
+        if (-not $knownRequiredPaths.Contains($documentedPath)) { throw "The Markdown path '$documentedPath' is absent from the JSON definition." }
     }
 
     if ([int]$definition.managedFolderCount -ne $validated.Count) {
@@ -340,13 +380,19 @@ try {
     }
 
     foreach ($folder in $selectedFolders) {
-        if (Test-Path -LiteralPath $folder.TargetPath -PathType Container) {
+        Invoke-TestDirectoryBarrier -TargetPath $folder.TargetPath
+        $finalTargetPath = [System.IO.Path]::GetFullPath([string]$folder.TargetPath)
+        $finalProjectRoot = [System.IO.Path]::GetFullPath($ProjectRoot)
+        if (-not (Test-IsContainedPath -Candidate $finalTargetPath -Root $finalProjectRoot) -or (Test-HasReparsePoint -Candidate $finalTargetPath -Root $finalProjectRoot)) {
+            throw "A reparse point or changed path makes final folder creation unsafe at '$($folder.RelativePath)'."
+        }
+        if (Test-Path -LiteralPath $finalTargetPath -PathType Container) {
             Add-Result -Status "Exists" -Path $folder.RelativePath -Message ""
             continue
         }
-
-        New-Item -ItemType Directory -Path $folder.TargetPath -ErrorAction Stop | Out-Null
-        if (-not (Test-Path -LiteralPath $folder.TargetPath -PathType Container)) {
+        if (Test-Path -LiteralPath $finalTargetPath) { throw "A file blocks required directory '$($folder.RelativePath)'." }
+        New-Item -ItemType Directory -Path $finalTargetPath -ErrorAction Stop | Out-Null
+        if (-not (Test-Path -LiteralPath $finalTargetPath -PathType Container)) {
             throw "Directory creation did not produce '$($folder.RelativePath)'."
         }
         Add-Result -Status "Created" -Path $folder.RelativePath -Message ""

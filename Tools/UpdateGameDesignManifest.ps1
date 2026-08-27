@@ -1,5 +1,5 @@
 # UpdateGameDesignManifest.ps1
-# Version: 0.7.0
+# Version: 0.9.0
 
 [CmdletBinding()]
 param(
@@ -27,6 +27,18 @@ function Get-FullPath([string]$Path, [string]$BasePath) {
 function Test-IsContainedPath([string]$Candidate, [string]$Root) {
     $rootWithSeparator = $Root.TrimEnd([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar) + [System.IO.Path]::DirectorySeparatorChar
     return $Candidate.StartsWith($rootWithSeparator, [System.StringComparison]::OrdinalIgnoreCase)
+}
+
+function Assert-UnityProjectRoot([string]$Root) {
+    $toolContainer = [System.IO.Path]::GetFullPath((Split-Path -Parent $PSScriptRoot)).TrimEnd([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar)
+    if ($Root.TrimEnd([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar).Equals($toolContainer, [System.StringComparison]::OrdinalIgnoreCase)) {
+        throw "Project root must not be the documentation source or synchronized documentation container: $Root"
+    }
+    foreach ($marker in @("Assets", "Packages", "ProjectSettings")) {
+        if (-not (Test-Path -LiteralPath (Join-Path $Root $marker) -PathType Container)) {
+            throw "Project root must be explicit and identify a Unity project containing Assets, Packages, and ProjectSettings: $Root"
+        }
+    }
 }
 
 function Test-HasReparsePoint([string]$Candidate, [string]$Root) {
@@ -71,6 +83,39 @@ function Get-StringHash([string]$Text) {
         return ([System.BitConverter]::ToString($sha.ComputeHash($bytes))).Replace("-", "").ToLowerInvariant()
     }
     finally { $sha.Dispose() }
+}
+
+function Get-ByteHash([byte[]]$Bytes) {
+    $sha = [System.Security.Cryptography.SHA256]::Create()
+    try { return ([System.BitConverter]::ToString($sha.ComputeHash($Bytes))).Replace("-", "").ToLowerInvariant() }
+    finally { $sha.Dispose() }
+}
+
+function Read-ManagedTextFile([string]$Path) {
+    $bytes = [System.IO.File]::ReadAllBytes($Path)
+    $offset = 0
+    $encoding = $null
+    if ($bytes.Length -ge 4 -and (($bytes[0] -eq 0xFF -and $bytes[1] -eq 0xFE -and $bytes[2] -eq 0x00 -and $bytes[3] -eq 0x00) -or ($bytes[0] -eq 0x00 -and $bytes[1] -eq 0x00 -and $bytes[2] -eq 0xFE -and $bytes[3] -eq 0xFF))) {
+        throw "Unsupported UTF-32 encoding; the manifest was preserved."
+    }
+    elseif ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF) {
+        $offset = 3
+        $encoding = New-Object System.Text.UTF8Encoding($true, $true)
+    }
+    elseif ($bytes.Length -ge 2 -and $bytes[0] -eq 0xFF -and $bytes[1] -eq 0xFE) {
+        $offset = 2
+        $encoding = New-Object System.Text.UnicodeEncoding($false, $true, $true)
+    }
+    elseif ($bytes.Length -ge 2 -and $bytes[0] -eq 0xFE -and $bytes[1] -eq 0xFF) {
+        $offset = 2
+        $encoding = New-Object System.Text.UnicodeEncoding($true, $true, $true)
+    }
+    else {
+        $encoding = New-Object System.Text.UTF8Encoding($false, $true)
+    }
+    try { $text = $encoding.GetString($bytes, $offset, $bytes.Length - $offset) }
+    catch { throw "Unsupported or invalid text encoding; the manifest was preserved." }
+    return [pscustomobject]@{ Text = $text; Encoding = $encoding; ByteHash = (Get-ByteHash -Bytes $bytes) }
 }
 
 function Get-FileSha256([string]$Path) {
@@ -223,17 +268,46 @@ function Add-Event([string]$Status, [string]$Path, [string]$Message) {
 
 function Exit-ManifestLock {
     if ($lockStream) { $lockStream.Dispose(); $script:lockStream = $null }
-    if ($lockOwned -and $lockPath -and (Test-Path -LiteralPath $lockPath)) { Remove-Item -LiteralPath $lockPath -Force -ErrorAction SilentlyContinue }
     $script:lockOwned = $false
 }
 
-function Write-AtomicText([string]$Path, [string]$Text, [string]$ExpectedSourceHash) {
-    $directory = Split-Path -Parent $Path
-    $temporary = Join-Path $directory (".ggf-manifest-" + [Guid]::NewGuid().ToString("N") + ".tmp")
-    $replacementBackup = Join-Path $directory (".ggf-replace-" + [Guid]::NewGuid().ToString("N") + ".bak")
+function Invoke-TestWriteBarrier([string]$TargetPath) {
+    $barrierPath = [Environment]::GetEnvironmentVariable("GEURTS_TEST_WRITE_BARRIER_PATH")
+    $barrierTarget = [Environment]::GetEnvironmentVariable("GEURTS_TEST_WRITE_BARRIER_TARGET")
+    if ([string]::IsNullOrWhiteSpace($barrierPath) -or [string]::IsNullOrWhiteSpace($barrierTarget)) { return }
+    $fullTarget = [System.IO.Path]::GetFullPath($TargetPath)
+    if (-not $fullTarget.Equals([System.IO.Path]::GetFullPath($barrierTarget), [System.StringComparison]::OrdinalIgnoreCase)) { return }
+    $fullBarrier = [System.IO.Path]::GetFullPath($barrierPath)
+    $temporaryRoot = [System.IO.Path]::GetFullPath([System.IO.Path]::GetTempPath()).TrimEnd([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar) + [System.IO.Path]::DirectorySeparatorChar
+    if (-not $fullBarrier.StartsWith($temporaryRoot, [System.StringComparison]::OrdinalIgnoreCase)) { throw "Automation test write barrier must remain below the system temporary directory." }
+    $readyPath = $fullBarrier + ".ready"
+    $continuePath = $fullBarrier + ".continue"
+    [System.IO.File]::WriteAllText($readyPath, "ready", $utf8NoBom)
+    $deadline = [DateTime]::UtcNow.AddSeconds(15)
+    while (-not (Test-Path -LiteralPath $continuePath -PathType Leaf)) {
+        if ([DateTime]::UtcNow -ge $deadline) { throw "Automation test write barrier timed out." }
+        Start-Sleep -Milliseconds 20
+    }
+    Remove-Item -LiteralPath $continuePath -Force -ErrorAction SilentlyContinue
+    Remove-Item -LiteralPath $readyPath -Force -ErrorAction SilentlyContinue
+}
+
+function Write-AtomicText(
+    [string]$Path,
+    [string]$Text,
+    [string]$AllowedRoot,
+    [ValidateSet("Absent", "Existing")][string]$ExpectedState,
+    [string]$ExpectedByteHash,
+    [System.Text.Encoding]$Encoding
+) {
+    # Keep transaction artifacts at the validated root so a late swap of the
+    # manifest's parent cannot redirect or strand them through a reparse point.
+    $temporary = Join-Path $AllowedRoot (".ggf-manifest-" + [Guid]::NewGuid().ToString("N") + ".tmp")
+    $replacementBackup = Join-Path $AllowedRoot (".ggf-replace-" + [Guid]::NewGuid().ToString("N") + ".bak")
     try {
-        [System.IO.File]::WriteAllText($temporary, $Text, $utf8NoBom)
-        $roundTrip = [System.IO.File]::ReadAllText($temporary)
+        [System.IO.File]::WriteAllText($temporary, $Text, $Encoding)
+        $temporaryFile = Read-ManagedTextFile -Path $temporary
+        $roundTrip = [string]$temporaryFile.Text
         if ($roundTrip -cne $Text) { throw "Temporary manifest verification failed." }
         if ([regex]::Matches($roundTrip, 'GEURTS-GDD-MANIFEST-BEGIN').Count -ne 1 -or [regex]::Matches($roundTrip, 'GEURTS-GDD-MANIFEST-END').Count -ne 1) {
             throw "Temporary manifest does not contain one valid managed region."
@@ -241,9 +315,19 @@ function Write-AtomicText([string]$Path, [string]$Text, [string]$ExpectedSourceH
         $roundTripMatch = [regex]::Match($roundTrip, $manifestPattern)
         if (-not $roundTripMatch.Success -or $roundTripMatch.Groups["Version"].Value -cne "0.7.0") { throw "Temporary manifest managed-region version is invalid." }
         Get-ExistingEntries -Body $roundTripMatch.Groups["Body"].Value | Out-Null
-        $currentSourceHash = Get-StringHash -Text ([System.IO.File]::ReadAllText($Path))
-        if ($currentSourceHash -cne $ExpectedSourceHash) { throw "Manifest changed after it was read; the concurrent edit was preserved." }
-        [System.IO.File]::Replace($temporary, $Path, $replacementBackup)
+        Invoke-TestWriteBarrier -TargetPath $Path
+        $resolvedTarget = [System.IO.Path]::GetFullPath($Path)
+        $resolvedRoot = [System.IO.Path]::GetFullPath($AllowedRoot)
+        if (-not (Test-IsContainedPath -Candidate $resolvedTarget -Root $resolvedRoot) -or (Test-HasReparsePoint -Candidate $resolvedTarget -Root $resolvedRoot)) { throw "Manifest path changed or uses an unsafe reparse point immediately before promotion." }
+        if ($ExpectedState -ceq "Absent") {
+            if (Test-Path -LiteralPath $resolvedTarget) { throw "Manifest target appeared after preflight; concurrent content was preserved." }
+            [System.IO.File]::Move($temporary, $resolvedTarget)
+        }
+        else {
+            if (-not (Test-Path -LiteralPath $resolvedTarget -PathType Leaf)) { throw "Manifest disappeared or changed type after it was read." }
+            if ([string]::IsNullOrWhiteSpace($ExpectedByteHash) -or (Get-FileSha256 -Path $resolvedTarget) -cne $ExpectedByteHash) { throw "Manifest bytes changed after they were read; the concurrent edit was preserved." }
+            [System.IO.File]::Replace($temporary, $resolvedTarget, $replacementBackup)
+        }
     }
     finally {
         if (Test-Path -LiteralPath $temporary) { Remove-Item -LiteralPath $temporary -Force -ErrorAction SilentlyContinue }
@@ -252,24 +336,27 @@ function Write-AtomicText([string]$Path, [string]$Text, [string]$ExpectedSourceH
 }
 
 try {
-    if ([string]::IsNullOrWhiteSpace($ProjectRoot)) { $ProjectRoot = Split-Path -Parent $PSScriptRoot }
+    if ([string]::IsNullOrWhiteSpace($ProjectRoot)) { throw "-ProjectRoot is required for game-design manifest maintenance; the tool will not infer a Unity project from its own Tools location." }
     $ProjectRoot = [System.IO.Path]::GetFullPath($ProjectRoot)
     if (-not (Test-Path -LiteralPath $ProjectRoot -PathType Container)) { throw "Project root does not exist: $ProjectRoot" }
+    Assert-UnityProjectRoot -Root $ProjectRoot
 
-    $canonicalManifestPath = Join-Path $ProjectRoot "Docs/GameDesign/GameDesignManifest.md"
-    if ([string]::IsNullOrWhiteSpace($ManifestPath)) { $ManifestPath = $canonicalManifestPath }
+    $requiredManifestPath = Join-Path $ProjectRoot "Docs/GameDesign/GameDesignManifest.md"
+    if ([string]::IsNullOrWhiteSpace($ManifestPath)) { $ManifestPath = $requiredManifestPath }
     else { $ManifestPath = Get-FullPath -Path $ManifestPath -BasePath $ProjectRoot }
-    if ($ManifestPath -cne $canonicalManifestPath) { throw "ManifestPath must resolve to the canonical project path Docs/GameDesign/GameDesignManifest.md." }
+    if ($ManifestPath -cne $requiredManifestPath) { throw "ManifestPath must resolve to the required project path Docs/GameDesign/GameDesignManifest.md." }
     if (-not (Test-Path -LiteralPath $ManifestPath -PathType Leaf)) { throw "Game Design Manifest does not exist: $ManifestPath" }
 
     $designRoot = Split-Path -Parent $ManifestPath
-    if (Test-HasReparsePoint -Candidate $ManifestPath -Root $ProjectRoot) { throw "The canonical game-design path contains a reparse point and is unsafe." }
-    $lockPath = Join-Path $designRoot ".ggf-manifest.lock"
+    if (Test-HasReparsePoint -Candidate $ManifestPath -Root $ProjectRoot) { throw "The required game-design path contains a reparse point and is unsafe." }
+    # Keep the single-writer artifact at the validated Unity root. A late swap
+    # of Docs/GameDesign must not redirect either the lock or write artifacts.
+    $lockPath = Join-Path $ProjectRoot ".ggf-manifest.lock"
     try {
-        $lockStream = New-Object System.IO.FileStream($lockPath, [System.IO.FileMode]::OpenOrCreate, [System.IO.FileAccess]::ReadWrite, [System.IO.FileShare]::None)
+        $lockStream = New-Object System.IO.FileStream($lockPath, [System.IO.FileMode]::CreateNew, [System.IO.FileAccess]::ReadWrite, [System.IO.FileShare]::None, 4096, [System.IO.FileOptions]::DeleteOnClose)
         $lockOwned = $true
     }
-    catch { throw "Another manifest maintenance operation is already running." }
+    catch { throw "Manifest maintenance lock path already exists or could not be acquired; it was preserved." }
 
     $importedPaths = New-Object 'System.Collections.Generic.HashSet[string]' ([System.StringComparer]::OrdinalIgnoreCase)
     foreach ($rawImportedPath in @($ImportedPath)) {
@@ -284,8 +371,10 @@ try {
         }
         if (-not $importedPaths.Add($projectRelativeImport)) { throw "ImportedPath contains a duplicate path: $projectRelativeImport" }
     }
-    $manifestText = [System.IO.File]::ReadAllText($ManifestPath)
-    $sourceManifestHash = Get-StringHash -Text $manifestText
+    $manifestFile = Read-ManagedTextFile -Path $ManifestPath
+    $manifestText = [string]$manifestFile.Text
+    $sourceManifestHash = [string]$manifestFile.ByteHash
+    $manifestEncoding = $manifestFile.Encoding
     $manifestMatch = [regex]::Match($manifestText, $manifestPattern)
     if (-not $manifestMatch.Success -or [regex]::Matches($manifestText, 'GEURTS-GDD-MANIFEST-BEGIN').Count -ne 1 -or [regex]::Matches($manifestText, 'GEURTS-GDD-MANIFEST-END').Count -ne 1) {
         Add-Event "Skipped" "Docs/GameDesign/GameDesignManifest.md" "User-owned manifest has no single valid managed index; it was preserved."
@@ -439,7 +528,7 @@ try {
         if (-not $pathSet.Add([string]$entry.Path)) { throw "Duplicate path detected after reconciliation: $($entry.Path)" }
     }
 
-    $newline = if ($manifestText.Contains("`r`n")) { "`r`n" } else { "`n" }
+    $newline = if ($manifestMatch.Value.Contains("`r`n")) { "`r`n" } else { "`n" }
     $tableLines = New-Object System.Collections.Generic.List[string]
     $tableLines.Add('| ID | Path | Purpose | Status | Version | Authority | Tags | SHA256 |') | Out-Null
     $tableLines.Add('|---|---|---|---|---|---|---|---|') | Out-Null
@@ -455,7 +544,7 @@ try {
         $status = "UNCHANGED"
     }
     else {
-        Write-AtomicText -Path $ManifestPath -Text $updatedManifest -ExpectedSourceHash $sourceManifestHash
+        Write-AtomicText -Path $ManifestPath -Text $updatedManifest -AllowedRoot $ProjectRoot -ExpectedState "Existing" -ExpectedByteHash $sourceManifestHash -Encoding $manifestEncoding
         Add-Event "Updated" "Docs/GameDesign/GameDesignManifest.md" "Reconciled the managed index atomically."
         $status = "UPDATED"
     }

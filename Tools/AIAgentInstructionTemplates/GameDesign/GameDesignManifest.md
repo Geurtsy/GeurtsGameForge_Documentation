@@ -3,7 +3,7 @@
 
 **Template Version:** 0.7.0
 **Manifest Format Version:** 0.7.0
-**Canonical path:** `Docs/GameDesign/GameDesignManifest.md`
+**Required project path:** `Docs/GameDesign/GameDesignManifest.md`
 
 This manifest is the lightweight session-start index for project-specific design documents. Unknown design facts remain explicitly unprovided.
 <!-- GEURTS-SCAFFOLD-END -->

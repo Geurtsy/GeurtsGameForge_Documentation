@@ -1,22 +1,22 @@
-<!-- GEURTS-SCAFFOLD-BEGIN version="0.7.0" -->
+<!-- GEURTS-SCAFFOLD-BEGIN version="0.9.0" -->
 ---
 geurtsId: gdd-readme
 purpose: Routes AI agents through the project game-design manifest without asserting game facts.
 status: Active
-version: 0.7.0
+version: 0.9.0
 authority: Informational
 tags: documentation, routing
 ---
 
 # Project Game Design Documentation
 
-**Template Version:** 0.7.0
+**Template Version:** 0.9.0
 **Status:** Active
-**Canonical path:** `Docs/GameDesign/README.md`
+**Required project path:** `Docs/GameDesign/README.md`
 
 This directory contains project-specific game design documentation. It is separate from the synchronized Geurts techniques in `GeurtsGameForgeDocumentation/`.
 
 Start with `Docs/GameDesign/GameDesignManifest.md`. The setup utility creates this scaffold only when missing and never invents mechanics, narrative, balance, progression, characters, or other design facts.
 
-When relevant design information is unprovided, an AI agent must state its assumption before changing player-facing behaviour.
+When missing information would establish or change player-facing design intent, stop and ask. Assumptions are permitted only for reversible technical details that do not create or overwrite design facts.
 <!-- GEURTS-SCAFFOLD-END -->

@@ -2,12 +2,21 @@
 setlocal
 
 rem CreateGeurtsFolderStructure.bat
-rem Version: 0.7.0
+rem Version: 0.9.0
 rem Compatibility launcher for the definition-driven PowerShell utility.
 
 set "SCRIPT_DIR=%~dp0"
 if not exist "%SCRIPT_DIR%CreateGeurtsFolderStructure.ps1" (
     echo ERROR: Missing Tools\CreateGeurtsFolderStructure.ps1
+    exit /b 1
+)
+
+if /I not "%~1"=="-ProjectRoot" (
+    echo ERROR: Usage: CreateGeurtsFolderStructure.bat -ProjectRoot ^<UnityProjectRoot^> [options]
+    exit /b 1
+)
+if "%~2"=="" (
+    echo ERROR: -ProjectRoot requires a Unity project path.
     exit /b 1
 )
 

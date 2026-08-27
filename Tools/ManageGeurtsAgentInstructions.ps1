@@ -1,25 +1,23 @@
 # ManageGeurtsAgentInstructions.ps1
-# Version: 0.8.0
+# Version: 0.9.0
 
 [CmdletBinding()]
 param(
     [string]$ProjectRoot,
     [string]$TemplateRoot,
     [string]$MigrationCatalogPath,
-    [ValidateSet("Update", "Check", "Validate", "Skip")]
-    [string]$DocumentationMode = "Update",
-    [switch]$SkipGameDesignManifestUpdate,
+    [switch]$IncludeGameDesignScaffolding,
+    [switch]$UpdateGameDesignManifest,
     [ValidateSet("Text", "Json")]
     [string]$OutputFormat = "Text"
 )
 
 $ErrorActionPreference = "Stop"
 $results = New-Object System.Collections.Generic.List[object]
-$documentationResult = $null
 $manifestResult = $null
 $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
-$htmlMarkerPattern = '(?ms)^<!--\s*GEURTS-MANAGED-BEGIN\s+id="(?<Id>[^"]+)"\s+version="(?<Version>[^"]+)"\s+sha256="(?<Hash>[0-9a-fA-F]{64})"\s*-->\r?\n(?<Body>.*?)^<!--\s*GEURTS-MANAGED-END\s+id="\k<Id>"\s*-->\s*$'
-$yamlMarkerPattern = '(?ms)^#\s*GEURTS-MANAGED-BEGIN\s+id="(?<Id>[^"]+)"\s+version="(?<Version>[^"]+)"\s+sha256="(?<Hash>[0-9a-fA-F]{64})"\s*\r?\n(?<Body>.*?)^#\s*GEURTS-MANAGED-END\s+id="\k<Id>"\s*$'
+$htmlMarkerPattern = '(?ms)^<!--\s*GEURTS-MANAGED-BEGIN\s+id="(?<Id>[^"]+)"\s+version="(?<Version>[^"]+)"\s+sha256="(?<Hash>[0-9a-fA-F]{64})"\s*-->\r?\n(?<Body>.*?)^<!--\s*GEURTS-MANAGED-END\s+id="\k<Id>"\s*-->[^\S\r\n]*(?=\r?\n|\z)'
+$yamlMarkerPattern = '(?ms)^#\s*GEURTS-MANAGED-BEGIN\s+id="(?<Id>[^"]+)"\s+version="(?<Version>[^"]+)"\s+sha256="(?<Hash>[0-9a-fA-F]{64})"\s*\r?\n(?<Body>.*?)^#\s*GEURTS-MANAGED-END\s+id="\k<Id>"[^\S\r\n]*(?=\r?\n|\z)'
 
 function Get-FullPath([string]$Path, [string]$BasePath) {
     if ([System.IO.Path]::IsPathRooted($Path)) { return [System.IO.Path]::GetFullPath($Path) }
@@ -50,8 +48,7 @@ function Test-HasReparsePoint([string]$Candidate, [string]$Root) {
 function Get-NormalizedText([string]$Text) {
     if ($Text.Length -gt 0 -and $Text[0] -eq [char]0xFEFF) { $Text = $Text.Substring(1) }
     $normalized = $Text -replace "`r`n", "`n" -replace "`r", "`n"
-    if ($normalized.Length -gt 0 -and -not $normalized.EndsWith("`n")) { $normalized += "`n" }
-    return $normalized
+    return $normalized.TrimEnd("`n") + "`n"
 }
 
 function Get-TextHash([string]$Text) {
@@ -63,6 +60,25 @@ function Get-TextHash([string]$Text) {
     finally {
         $sha.Dispose()
     }
+}
+
+function Get-ByteHash([byte[]]$Bytes) {
+    $sha = [System.Security.Cryptography.SHA256]::Create()
+    try { return ([System.BitConverter]::ToString($sha.ComputeHash($Bytes))).Replace("-", "").ToLowerInvariant() }
+    finally { $sha.Dispose() }
+}
+
+function Get-FileByteHash([string]$Path) {
+    return Get-ByteHash -Bytes ([System.IO.File]::ReadAllBytes($Path))
+}
+
+function Convert-Newlines([string]$Text, [string]$Newline) {
+    return (($Text -replace "`r`n", "`n") -replace "`r", "`n").Replace("`n", $Newline)
+}
+
+function Get-NewlineConvention([string]$Text) {
+    if ($Text.Contains("`r`n")) { return "`r`n" }
+    return "`n"
 }
 
 function Get-ManagedRegions([string]$Text) {
@@ -106,20 +122,87 @@ function Get-ManagedRegions([string]$Text) {
     return $regions.ToArray()
 }
 
-function Write-AtomicText([string]$Path, [string]$Text) {
-    $directory = Split-Path -Parent $Path
-    if (-not (Test-Path -LiteralPath $directory -PathType Container)) {
-        New-Item -ItemType Directory -Path $directory -ErrorAction Stop | Out-Null
+function Read-ManagedTextFile([string]$Path) {
+    $bytes = [System.IO.File]::ReadAllBytes($Path)
+    $offset = 0
+    $encoding = $null
+    if ($bytes.Length -ge 4 -and (($bytes[0] -eq 0xFF -and $bytes[1] -eq 0xFE -and $bytes[2] -eq 0x00 -and $bytes[3] -eq 0x00) -or ($bytes[0] -eq 0x00 -and $bytes[1] -eq 0x00 -and $bytes[2] -eq 0xFE -and $bytes[3] -eq 0xFF))) {
+        throw "Unsupported UTF-32 encoding; no content was overwritten."
     }
-    $temporary = Join-Path $directory (".ggf-write-" + [Guid]::NewGuid().ToString("N") + ".tmp")
-    $replacementBackup = Join-Path $directory (".ggf-replace-" + [Guid]::NewGuid().ToString("N") + ".bak")
+    elseif ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF) {
+        $offset = 3
+        $encoding = New-Object System.Text.UTF8Encoding($true, $true)
+    }
+    elseif ($bytes.Length -ge 2 -and $bytes[0] -eq 0xFF -and $bytes[1] -eq 0xFE) {
+        $offset = 2
+        $encoding = New-Object System.Text.UnicodeEncoding($false, $true, $true)
+    }
+    elseif ($bytes.Length -ge 2 -and $bytes[0] -eq 0xFE -and $bytes[1] -eq 0xFF) {
+        $offset = 2
+        $encoding = New-Object System.Text.UnicodeEncoding($true, $true, $true)
+    }
+    else {
+        $encoding = New-Object System.Text.UTF8Encoding($false, $true)
+    }
+    try { $text = $encoding.GetString($bytes, $offset, $bytes.Length - $offset) }
+    catch { throw "Unsupported or invalid text encoding; no content was overwritten." }
+    return [pscustomobject]@{ Text = $text; Encoding = $encoding; ByteHash = (Get-ByteHash -Bytes $bytes) }
+}
+
+function Invoke-TestWriteBarrier([string]$TargetPath) {
+    $barrierPath = [Environment]::GetEnvironmentVariable("GEURTS_TEST_WRITE_BARRIER_PATH")
+    $barrierTarget = [Environment]::GetEnvironmentVariable("GEURTS_TEST_WRITE_BARRIER_TARGET")
+    if ([string]::IsNullOrWhiteSpace($barrierPath) -or [string]::IsNullOrWhiteSpace($barrierTarget)) { return }
+    $fullTarget = [System.IO.Path]::GetFullPath($TargetPath)
+    if (-not $fullTarget.Equals([System.IO.Path]::GetFullPath($barrierTarget), [System.StringComparison]::OrdinalIgnoreCase)) { return }
+    $fullBarrier = [System.IO.Path]::GetFullPath($barrierPath)
+    $temporaryRoot = [System.IO.Path]::GetFullPath([System.IO.Path]::GetTempPath()).TrimEnd([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar) + [System.IO.Path]::DirectorySeparatorChar
+    if (-not $fullBarrier.StartsWith($temporaryRoot, [System.StringComparison]::OrdinalIgnoreCase)) { throw "Automation test write barrier must remain below the system temporary directory." }
+    $readyPath = $fullBarrier + ".ready"
+    $continuePath = $fullBarrier + ".continue"
+    [System.IO.File]::WriteAllText($readyPath, "ready", $utf8NoBom)
+    $deadline = [DateTime]::UtcNow.AddSeconds(15)
+    while (-not (Test-Path -LiteralPath $continuePath -PathType Leaf)) {
+        if ([DateTime]::UtcNow -ge $deadline) { throw "Automation test write barrier timed out." }
+        Start-Sleep -Milliseconds 20
+    }
+    Remove-Item -LiteralPath $continuePath -Force -ErrorAction SilentlyContinue
+    Remove-Item -LiteralPath $readyPath -Force -ErrorAction SilentlyContinue
+}
+
+function Write-AtomicText(
+    [string]$Path,
+    [string]$Text,
+    [string]$AllowedRoot,
+    [ValidateSet("Absent", "Existing")][string]$ExpectedState,
+    [string]$ExpectedByteHash,
+    [System.Text.Encoding]$Encoding = $null
+) {
+    if ($null -eq $Encoding) { $Encoding = $utf8NoBom }
+    $directory = [System.IO.Path]::GetFullPath((Split-Path -Parent $Path))
+    $initialRoot = [System.IO.Path]::GetFullPath($AllowedRoot)
+    $parentIsRootOrContained = $directory.Equals($initialRoot, [System.StringComparison]::OrdinalIgnoreCase) -or (Test-IsContainedPath -Candidate $directory -Root $initialRoot)
+    if (-not $parentIsRootOrContained -or (Test-HasReparsePoint -Candidate $directory -Root $initialRoot) -or -not (Test-Path -LiteralPath $directory -PathType Container)) {
+        throw "Atomic target parent must already exist safely below the validated project root."
+    }
+    # Keep transaction artifacts at the validated root so a late swap of the
+    # target's parent cannot redirect or strand them through a reparse point.
+    $temporary = Join-Path $AllowedRoot (".ggf-write-" + [Guid]::NewGuid().ToString("N") + ".tmp")
+    $replacementBackup = Join-Path $AllowedRoot (".ggf-replace-" + [Guid]::NewGuid().ToString("N") + ".bak")
     try {
-        [System.IO.File]::WriteAllText($temporary, $Text, $utf8NoBom)
-        if (Test-Path -LiteralPath $Path -PathType Leaf) {
-            [System.IO.File]::Replace($temporary, $Path, $replacementBackup)
+        [System.IO.File]::WriteAllText($temporary, $Text, $Encoding)
+        Invoke-TestWriteBarrier -TargetPath $Path
+        $resolvedTarget = [System.IO.Path]::GetFullPath($Path)
+        $resolvedRoot = [System.IO.Path]::GetFullPath($AllowedRoot)
+        if (-not (Test-IsContainedPath -Candidate $resolvedTarget -Root $resolvedRoot) -or (Test-HasReparsePoint -Candidate $resolvedTarget -Root $resolvedRoot)) { throw "Target path changed or uses an unsafe reparse point immediately before promotion." }
+        if ($ExpectedState -ceq "Absent") {
+            if (Test-Path -LiteralPath $resolvedTarget) { throw "Target appeared after preflight; concurrent content was preserved." }
+            [System.IO.File]::Move($temporary, $resolvedTarget)
         }
         else {
-            Move-Item -LiteralPath $temporary -Destination $Path -ErrorAction Stop
+            if (-not (Test-Path -LiteralPath $resolvedTarget -PathType Leaf)) { throw "Target disappeared or changed type after it was read." }
+            if ([string]::IsNullOrWhiteSpace($ExpectedByteHash) -or (Get-FileByteHash -Path $resolvedTarget) -cne $ExpectedByteHash) { throw "Target bytes changed after they were read; concurrent content was preserved." }
+            [System.IO.File]::Replace($temporary, $resolvedTarget, $replacementBackup)
         }
     }
     finally {
@@ -128,19 +211,44 @@ function Write-AtomicText([string]$Path, [string]$Text) {
     }
 }
 
-function New-Backup([string]$TargetPath) {
-    $base = "$TargetPath.pre-v0.7.0.bak"
+function New-Backup([string]$TargetPath, [string]$AllowedRoot, [string]$ExpectedByteHash) {
+    $base = "$TargetPath.pre-v0.9.0.bak"
     $backup = $base
     $index = 1
     while (Test-Path -LiteralPath $backup) {
         $backup = "$base.$index"
         $index++
     }
-    Copy-Item -LiteralPath $TargetPath -Destination $backup -ErrorAction Stop
-    if (-not (Test-Path -LiteralPath $backup -PathType Leaf)) {
-        throw "Backup creation failed for '$TargetPath'."
+    $root = [System.IO.Path]::GetFullPath($AllowedRoot)
+    $source = [System.IO.Path]::GetFullPath($TargetPath)
+    $temporary = Join-Path $root (".ggf-backup-" + [Guid]::NewGuid().ToString("N") + ".tmp")
+    try {
+        if (-not (Test-IsContainedPath -Candidate $source -Root $root) -or (Test-HasReparsePoint -Candidate $source -Root $root) -or -not (Test-Path -LiteralPath $source -PathType Leaf)) {
+            throw "Backup source is missing or unsafe."
+        }
+        if ([string]::IsNullOrWhiteSpace($ExpectedByteHash) -or (Get-FileByteHash -Path $source) -cne $ExpectedByteHash) {
+            throw "Target bytes changed before backup capture; concurrent content was preserved."
+        }
+        [System.IO.File]::Copy($source, $temporary, $false)
+        if ((Get-FileByteHash -Path $temporary) -cne $ExpectedByteHash) { throw "Backup capture did not match the validated target bytes." }
+
+        Invoke-TestWriteBarrier -TargetPath $backup
+        $finalSource = [System.IO.Path]::GetFullPath($TargetPath)
+        $finalBackup = [System.IO.Path]::GetFullPath($backup)
+        $finalRoot = [System.IO.Path]::GetFullPath($AllowedRoot)
+        if (-not (Test-IsContainedPath -Candidate $finalSource -Root $finalRoot) -or -not (Test-IsContainedPath -Candidate $finalBackup -Root $finalRoot) -or (Test-HasReparsePoint -Candidate $finalSource -Root $finalRoot) -or (Test-HasReparsePoint -Candidate $finalBackup -Root $finalRoot)) {
+            throw "Backup path changed or uses an unsafe reparse point immediately before promotion."
+        }
+        if (-not (Test-Path -LiteralPath $finalSource -PathType Leaf) -or (Get-FileByteHash -Path $finalSource) -cne $ExpectedByteHash) {
+            throw "Target bytes changed before backup promotion; concurrent content was preserved."
+        }
+        if (Test-Path -LiteralPath $finalBackup) { throw "Backup target appeared after preflight; it was preserved." }
+        [System.IO.File]::Move($temporary, $finalBackup)
+        return $finalBackup
     }
-    return $backup
+    finally {
+        if (Test-Path -LiteralPath $temporary) { Remove-Item -LiteralPath $temporary -Force -ErrorAction SilentlyContinue }
+    }
 }
 
 function Add-Result([string]$Status, [string]$Path, [string]$Message, [string]$Backup) {
@@ -155,6 +263,30 @@ function Add-Result([string]$Status, [string]$Path, [string]$Message, [string]$B
         Write-Host ("{0}: {1}{2}" -f $Status, $Path, $suffix)
         if ($Backup) { Write-Host "  Backup: $Backup" }
     }
+}
+
+function Assert-UnityProjectRoot([string]$Root) {
+    $toolContainer = [System.IO.Path]::GetFullPath((Split-Path -Parent $PSScriptRoot)).TrimEnd([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar)
+    if ($Root.TrimEnd([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar).Equals($toolContainer, [System.StringComparison]::OrdinalIgnoreCase)) {
+        throw "Project root must not be the documentation source or synchronized documentation container: $Root"
+    }
+    foreach ($marker in @("Assets", "Packages", "ProjectSettings")) {
+        if (-not (Test-Path -LiteralPath (Join-Path $Root $marker) -PathType Container)) {
+            throw "Project root must be explicit and identify a Unity project containing Assets, Packages, and ProjectSettings: $Root"
+        }
+    }
+}
+
+function Get-CurrentNativeTemplateVersion($Entry) {
+    return "0.9.0"
+}
+
+function Test-NativeTemplateRoute($Entry, [string]$Text) {
+    if (-not $Text.Contains("GeurtsGameForgeDocumentation/AGENTS.md") -or $Text.Contains("GeurtsGameForgeDocumentation/AI_READ_FIRST.md")) { return $false }
+    if ([string]$Entry.targetPath -ceq "AGENTS.md") {
+        return -not $Text.Contains("Docs/GameDesign/")
+    }
+    return $Text.Contains("manifest-controlled package chain") -and -not $Text.Contains("owns the complete documentation chain")
 }
 
 function Invoke-ChildPowerShell([string]$ScriptPath, [string[]]$Arguments, [bool]$EmitOutput) {
@@ -176,16 +308,29 @@ function Invoke-ChildPowerShell([string]$ScriptPath, [string[]]$Arguments, [bool
 
 function Test-NativeMigrationCatalog($Catalog, [string]$Templates, [string]$Root) {
     $expected = @{
-        "AGENTS.md" = @{ Template = "AGENTS.md"; Hashes = @{ "0.4.0" = "24232b85e9c5f18e1c055e0c1d59ba9d4b9f294472b25dbb966ae682e4d1d9d7"; "0.5.0" = "3bec9754a17f3387f27e0678feb69e541c921d81d55f6093a87c27c1fca98534"; "0.6.0" = "a44874e2feedfe903caf805c0dd91fb71cb5ce2db5696330d1a37c399501118e" } }
+        "AGENTS.md" = @{
+            Template = "AGENTS.md"
+            Hashes = @{
+                "0.4.0" = "24232b85e9c5f18e1c055e0c1d59ba9d4b9f294472b25dbb966ae682e4d1d9d7"
+                "0.5.0" = "3bec9754a17f3387f27e0678feb69e541c921d81d55f6093a87c27c1fca98534"
+                "0.6.0" = "a44874e2feedfe903caf805c0dd91fb71cb5ce2db5696330d1a37c399501118e"
+            }
+        }
         ".github/copilot-instructions.md" = @{ Template = "copilot-instructions.md"; Hashes = @{ "0.4.0" = "d72006b497ed12ae97ef3d4ef9248f634af7159b7011434987ea3bd60cbd8da7"; "0.5.0" = "d72006b497ed12ae97ef3d4ef9248f634af7159b7011434987ea3bd60cbd8da7"; "0.6.0" = "cfeb6826447b74d391c7afa40f07e19171086ee0f6e8a107887360fa4e6fd7e3" } }
         ".github/instructions/geurts-unity.instructions.md" = @{ Template = "instructions/geurts-unity.instructions.md"; Hashes = @{ "0.4.0" = "27bff44e8cd8a26962b2b2890b3ca6c02a5a1ee6c0531c195514d70b9ffde92f"; "0.5.0" = "27bff44e8cd8a26962b2b2890b3ca6c02a5a1ee6c0531c195514d70b9ffde92f"; "0.6.0" = "799fe2cc0a720cd5e9f7f350b7480d219c0f92309a4a6201953e3a452faa0fa3" } }
         ".github/instructions/geurts-game-design.instructions.md" = @{ Template = "instructions/geurts-game-design.instructions.md"; Hashes = @{ "0.4.0" = "724549bbd75e2ed1f83167992747f5b56adac9d0b4e40886085b65d497cddbd9"; "0.5.0" = "724549bbd75e2ed1f83167992747f5b56adac9d0b4e40886085b65d497cddbd9"; "0.6.0" = "2805d6be2804eff71668625a83725d02338070a9b6988bde20bc521d455d17c0" } }
     }
-    if ([string]$Catalog.schemaVersion -cne "0.7.0" -or [string]$Catalog.normalization -cne "utf8-text-with-lf-newlines-and-terminal-lf" -or @($Catalog.entries).Count -ne 4) {
-        throw "Migration catalog metadata does not match the exact v0.7.0 contract."
+    if ([string]$Catalog.schemaVersion -cne "0.9.0" -or [string]$Catalog.normalization -cne "utf8-text-with-lf-newlines-and-terminal-lf" -or @($Catalog.entries).Count -ne 4) {
+        throw "Migration catalog metadata does not match the exact v0.9.0 contract."
     }
     $seenTargets = New-Object 'System.Collections.Generic.HashSet[string]' ([System.StringComparer]::Ordinal)
     foreach ($entry in @($Catalog.entries)) {
+        $expectedEntryFields = @("legacyFingerprints", "targetPath", "templatePath")
+        $actualEntryFields = @($entry.PSObject.Properties | Select-Object -ExpandProperty Name | Sort-Object)
+        if ($actualEntryFields.Count -ne $expectedEntryFields.Count) { throw "Migration catalog entry shape is invalid." }
+        for ($fieldIndex = 0; $fieldIndex -lt $expectedEntryFields.Count; $fieldIndex++) {
+            if ([string]$actualEntryFields[$fieldIndex] -cne [string]$expectedEntryFields[$fieldIndex]) { throw "Migration catalog entry shape is invalid." }
+        }
         $target = [string]$entry.targetPath
         $template = [string]$entry.templatePath
         if (-not $seenTargets.Add($target) -or -not $expected.ContainsKey($target) -or $template -cne [string]$expected[$target].Template) { throw "Migration catalog contains an unexpected or duplicate native target '$target'." }
@@ -202,41 +347,49 @@ function Test-NativeMigrationCatalog($Catalog, [string]$Templates, [string]$Root
                 if (-not $seenVersions.Add($version) -or -not $expected[$target].Hashes.ContainsKey($version) -or [string]$expected[$target].Hashes[$version] -cne $hash) { throw "Migration catalog fingerprint mismatch for '$target' version '$version'." }
             }
         }
-        foreach ($version in @("0.4.0", "0.5.0", "0.6.0")) { if (-not $seenVersions.Contains($version)) { throw "Migration catalog is missing '$target' version '$version'." } }
+        foreach ($version in @($expected[$target].Hashes.Keys)) { if (-not $seenVersions.Contains([string]$version)) { throw "Migration catalog is missing '$target' version '$version'." } }
+
     }
     foreach ($target in $expected.Keys) { if (-not $seenTargets.Contains($target)) { throw "Migration catalog is missing native target '$target'." } }
 }
 
-function Get-GddScaffoldingDefinition([string]$Root) {
+function Get-ManagedFolderDefinition([string]$Root, [bool]$IncludeGameDesign) {
     $definitionCandidates = @(
         (Join-Path $Root "GeurtsGameForgeDocumentation/GeurtsTechniques/GeurtsFolderStructureDefinition.json"),
         (Join-Path (Split-Path -Parent $PSScriptRoot) "GeurtsTechniques/GeurtsFolderStructureDefinition.json")
     )
     $definitionPath = $definitionCandidates | Where-Object { Test-Path -LiteralPath $_ -PathType Leaf } | Select-Object -First 1
     if ([string]::IsNullOrWhiteSpace([string]$definitionPath)) {
-        throw "The authoritative folder definition is required before creating GDD scaffolding."
+        throw "The authoritative folder definition is required before creating managed setup folders."
     }
     $definitionTrustRoot = if (Test-IsContainedPath -Candidate ([System.IO.Path]::GetFullPath($definitionPath)) -Root $Root) { $Root } else { Split-Path -Parent $PSScriptRoot }
     if (Test-HasReparsePoint -Candidate ([System.IO.Path]::GetFullPath($definitionPath)) -Root $definitionTrustRoot) { throw "The authoritative folder definition uses an unsafe reparse point." }
 
     try { $definition = Get-Content -LiteralPath $definitionPath -Raw | ConvertFrom-Json }
     catch { throw "The authoritative folder definition is invalid JSON: $($_.Exception.Message)" }
-    if ([string]$definition.definitionVersion -ne "0.7.0" -or [string]$definition.packageVersion -ne "0.8.0") {
-        throw "The GDD scaffolding delegation requires folder definition v0.7.0 from package v0.8.0."
+    if ([string]$definition.definitionVersion -ne "0.8.0" -or [string]$definition.packageVersion -ne "0.9.0") {
+        throw "Managed setup requires folder definition v0.8.0 from package v0.9.0."
     }
 
-    foreach ($profileId in @("native-entry", "gdd-scaffolding")) {
+    $requiredProfiles = @("native-entry")
+    if ($IncludeGameDesign) { $requiredProfiles += "gdd-scaffolding" }
+    foreach ($profileId in $requiredProfiles) {
         $profiles = @($definition.creationProfiles | Where-Object { [string]$_.id -ceq $profileId })
         if ($profiles.Count -ne 1 -or [string]$profiles[0].owner -cne "native-entry-manager") {
             throw "The folder definition does not assign '$profileId' to native-entry-manager."
         }
     }
-    foreach ($expected in @(
+    $expectedFolders = @(
         @{ Path = ".github"; Parent = ""; Profile = "native-entry"; Delegated = $false },
-        @{ Path = ".github/instructions"; Parent = ".github"; Profile = "native-entry"; Delegated = $false },
-        @{ Path = "Docs"; Parent = ""; Profile = "gdd-scaffolding"; Delegated = $true },
-        @{ Path = "Docs/GameDesign"; Parent = "Docs"; Profile = "gdd-scaffolding"; Delegated = $true }
-    )) {
+        @{ Path = ".github/instructions"; Parent = ".github"; Profile = "native-entry"; Delegated = $false }
+    )
+    if ($IncludeGameDesign) {
+        $expectedFolders += @(
+            @{ Path = "Docs"; Parent = ""; Profile = "gdd-scaffolding"; Delegated = $true },
+            @{ Path = "Docs/GameDesign"; Parent = "Docs"; Profile = "gdd-scaffolding"; Delegated = $true }
+        )
+    }
+    foreach ($expected in $expectedFolders) {
         $matches = @($definition.managedFolders | Where-Object { [string]$_.path -ceq $expected.Path })
         if ($matches.Count -ne 1) { throw "The folder definition must contain exactly one '$($expected.Path)' entry." }
         $folder = $matches[0]
@@ -278,20 +431,28 @@ function Update-NativeEntry($Entry, [string]$Templates, [string]$Root) {
     }
 
     $templateText = [System.IO.File]::ReadAllText($templatePath)
-    if (-not $templateText.Contains("GeurtsGameForgeDocumentation/AI_READ_FIRST.md")) {
-        throw "Template does not route through the canonical AI entry point: $templatePath"
+    $currentTemplateVersion = Get-CurrentNativeTemplateVersion -Entry $Entry
+    if (-not (Test-NativeTemplateRoute -Entry $Entry -Text $templateText)) {
+        throw "Template does not use its required concise documentation route: $templatePath"
     }
     $templateRegions = Get-ManagedRegions -Text $templateText
     if ($templateRegions.Count -eq 0) { throw "Template has no managed regions: $templatePath" }
     foreach ($region in $templateRegions) {
+        if ($region.Version -cne $currentTemplateVersion) {
+            throw "Template managed region '$($region.Id)' must use current version '$currentTemplateVersion'."
+        }
         if ($region.ActualHash -ne $region.DeclaredHash) {
             throw "Template managed-region hash is invalid for '$($region.Id)'."
         }
     }
 
     if (-not (Test-Path -LiteralPath $targetPath)) {
-        Write-AtomicText -Path $targetPath -Text $templateText
-        Add-Result "Created" ([string]$Entry.targetPath) "Installed managed v0.7.0 entry." $null
+        try { Write-AtomicText -Path $targetPath -Text $templateText -AllowedRoot $Root -ExpectedState "Absent" }
+        catch {
+            Add-Result "Conflicted" ([string]$Entry.targetPath) ("Managed entry creation lost its expected-absent state: " + $_.Exception.Message) $null
+            return
+        }
+        Add-Result "Created" ([string]$Entry.targetPath) "Installed managed v$currentTemplateVersion entry." $null
         return
     }
     if (-not (Test-Path -LiteralPath $targetPath -PathType Leaf)) {
@@ -299,7 +460,14 @@ function Update-NativeEntry($Entry, [string]$Templates, [string]$Root) {
         return
     }
 
-    $targetText = [System.IO.File]::ReadAllText($targetPath)
+    try { $targetFile = Read-ManagedTextFile -Path $targetPath }
+    catch {
+        Add-Result "Conflicted" ([string]$Entry.targetPath) $_.Exception.Message $null
+        return
+    }
+    $targetText = [string]$targetFile.Text
+    $targetEncoding = $targetFile.Encoding
+    $targetByteHash = [string]$targetFile.ByteHash
     if ($targetText -match 'GEURTS-MANAGED-OPT-OUT') {
         Add-Result "Skipped" ([string]$Entry.targetPath) "Managed updates are explicitly disabled in this file." $null
         return
@@ -331,7 +499,8 @@ function Update-NativeEntry($Entry, [string]$Templates, [string]$Root) {
                 Add-Result "Conflicted" ([string]$Entry.targetPath) "Managed region '$($region.Id)' was edited; no content was overwritten." $null
                 return
             }
-            if ($region.Version -cne "0.7.0") {
+            $supportedTargetVersions = if ([string]$Entry.targetPath -ceq "AGENTS.md") { @("0.7.0", "0.8.0", "0.9.0") } else { @("0.7.0", "0.9.0") }
+            if ($supportedTargetVersions -notcontains $region.Version) {
                 Add-Result "Conflicted" ([string]$Entry.targetPath) "Managed region '$($region.Id)' uses unsupported version '$($region.Version)'; no downgrade or overwrite occurred." $null
                 return
             }
@@ -339,7 +508,7 @@ function Update-NativeEntry($Entry, [string]$Templates, [string]$Root) {
 
         $updatedText = $targetText
         foreach ($region in @($targetRegions | Sort-Object Index -Descending)) {
-            $replacement = $templateById[$region.Id].FullText
+            $replacement = Convert-Newlines -Text $templateById[$region.Id].FullText -Newline (Get-NewlineConvention -Text $region.FullText)
             $updatedText = $updatedText.Substring(0, $region.Index) + $replacement + $updatedText.Substring($region.Index + $region.Length)
         }
         if ($updatedText -ceq $targetText) {
@@ -347,12 +516,14 @@ function Update-NativeEntry($Entry, [string]$Templates, [string]$Root) {
             return
         }
 
-        $backup = New-Backup -TargetPath $targetPath
+        $backup = $null
         try {
-            Write-AtomicText -Path $targetPath -Text $updatedText
+            $backup = New-Backup -TargetPath $targetPath -AllowedRoot $Root -ExpectedByteHash $targetByteHash
+            Write-AtomicText -Path $targetPath -Text $updatedText -AllowedRoot $Root -ExpectedState "Existing" -ExpectedByteHash $targetByteHash -Encoding $targetEncoding
         }
         catch {
-            Add-Result "Conflicted" ([string]$Entry.targetPath) "Atomic managed update failed; the original and backup were preserved." $backup
+            $backupDetail = if ([string]::IsNullOrWhiteSpace([string]$backup)) { " No safety backup was promoted." } else { " The safety backup was preserved." }
+            Add-Result "Conflicted" ([string]$Entry.targetPath) ("Atomic managed update failed: " + $_.Exception.Message + " The target was preserved." + $backupDetail) $backup
             return
         }
         Add-Result "Updated" ([string]$Entry.targetPath) "Refreshed managed regions and preserved content outside markers." $backup
@@ -362,15 +533,18 @@ function Update-NativeEntry($Entry, [string]$Templates, [string]$Root) {
     $targetHash = Get-TextHash -Text $targetText
     $knownLegacy = @($Entry.legacyFingerprints | Where-Object { ([string]$_.sha256).ToLowerInvariant() -eq $targetHash }).Count -gt 0
     if ($knownLegacy) {
-        $backup = New-Backup -TargetPath $targetPath
+        $legacyReplacement = Convert-Newlines -Text $templateText -Newline (Get-NewlineConvention -Text $targetText)
+        $backup = $null
         try {
-            Write-AtomicText -Path $targetPath -Text $templateText
+            $backup = New-Backup -TargetPath $targetPath -AllowedRoot $Root -ExpectedByteHash $targetByteHash
+            Write-AtomicText -Path $targetPath -Text $legacyReplacement -AllowedRoot $Root -ExpectedState "Existing" -ExpectedByteHash $targetByteHash -Encoding $targetEncoding
         }
         catch {
-            Add-Result "Conflicted" ([string]$Entry.targetPath) "Legacy migration failed; the original and backup were preserved." $backup
+            $backupDetail = if ([string]::IsNullOrWhiteSpace([string]$backup)) { " No safety backup was promoted." } else { " The safety backup was preserved." }
+            Add-Result "Conflicted" ([string]$Entry.targetPath) ("Legacy migration failed: " + $_.Exception.Message + " The target was preserved." + $backupDetail) $backup
             return
         }
-        Add-Result "Updated" ([string]$Entry.targetPath) "Migrated an exact known legacy template to managed v0.7.0 content." $backup
+        Add-Result "Updated" ([string]$Entry.targetPath) "Migrated an exact known legacy template to managed v$currentTemplateVersion content." $backup
         return
     }
 
@@ -379,13 +553,18 @@ function Update-NativeEntry($Entry, [string]$Templates, [string]$Root) {
         return
     }
 
+    if ($targetText -match '(?m)^<!--\s*[A-Z0-9_-]+_(?:START|END)\s*-->\s*$') {
+        Add-Result "Conflicted" ([string]$Entry.targetPath) "An unknown product- or user-owned managed block was preserved without changes." $null
+        return
+    }
     Add-Result "Skipped" ([string]$Entry.targetPath) "User-owned unmarked file was preserved without changes." $null
 }
 
 try {
-    if ([string]::IsNullOrWhiteSpace($ProjectRoot)) { $ProjectRoot = Split-Path -Parent $PSScriptRoot }
+    if ([string]::IsNullOrWhiteSpace($ProjectRoot)) { throw "-ProjectRoot is required for managed entry setup; the tool will not infer a Unity project from its own Tools location." }
     $ProjectRoot = [System.IO.Path]::GetFullPath($ProjectRoot)
     if (-not (Test-Path -LiteralPath $ProjectRoot -PathType Container)) { throw "Project root does not exist: $ProjectRoot" }
+    Assert-UnityProjectRoot -Root $ProjectRoot
 
     if ([string]::IsNullOrWhiteSpace($TemplateRoot)) { $TemplateRoot = Join-Path $PSScriptRoot "AIAgentInstructionTemplates" }
     else { $TemplateRoot = Get-FullPath -Path $TemplateRoot -BasePath $ProjectRoot }
@@ -394,25 +573,10 @@ try {
     if (-not (Test-Path -LiteralPath $TemplateRoot -PathType Container)) { throw "Template directory is missing: $TemplateRoot" }
     if (-not (Test-Path -LiteralPath $MigrationCatalogPath -PathType Leaf)) { throw "Migration catalog is missing: $MigrationCatalogPath" }
 
-    if ($DocumentationMode -ne "Skip") {
-        $bootstrapPath = Join-Path $PSScriptRoot "BootstrapGeurtsInstructions.ps1"
-        $bootstrapArguments = @("-Mode", $DocumentationMode, "-ProjectRoot", $ProjectRoot)
-        if ($OutputFormat -eq "Json") { $bootstrapArguments += @("-OutputFormat", "Json") }
-        $bootstrapRun = Invoke-ChildPowerShell -ScriptPath $bootstrapPath -Arguments $bootstrapArguments -EmitOutput ($OutputFormat -eq "Text")
-        if ($OutputFormat -eq "Json") {
-            try { $documentationResult = $bootstrapRun.Output | ConvertFrom-Json }
-            catch { throw "Documentation $DocumentationMode returned invalid JSON. No project instruction files were changed." }
-        }
-        if ($bootstrapRun.Code -ne 0) {
-            $childMessage = if ($documentationResult -and $documentationResult.message) { " $($documentationResult.message)" } else { "" }
-            throw "Documentation $DocumentationMode failed with exit code $($bootstrapRun.Code).$childMessage No project instruction files were changed."
-        }
-    }
-
     try { $catalog = Get-Content -LiteralPath $MigrationCatalogPath -Raw | ConvertFrom-Json }
     catch { throw "Migration catalog is invalid JSON: $($_.Exception.Message)" }
     Test-NativeMigrationCatalog -Catalog $catalog -Templates $TemplateRoot -Root $ProjectRoot
-    $folderDefinition = Get-GddScaffoldingDefinition -Root $ProjectRoot
+    $folderDefinition = Get-ManagedFolderDefinition -Root $ProjectRoot -IncludeGameDesign ([bool]$IncludeGameDesignScaffolding)
 
     $githubDirectory = Join-Path $ProjectRoot ".github"
     $githubInstructionsDirectory = Join-Path $ProjectRoot ".github/instructions"
@@ -420,20 +584,27 @@ try {
     $gameDesignDirectory = Join-Path $ProjectRoot "Docs/GameDesign"
     $managedDirectories = @(
         @{ Path = $githubDirectory; Relative = ".github"; Profile = "native-entry" },
-        @{ Path = $githubInstructionsDirectory; Relative = ".github/instructions"; Profile = "native-entry" },
-        @{ Path = $docsDirectory; Relative = "Docs"; Profile = "gdd-scaffolding" },
-        @{ Path = $gameDesignDirectory; Relative = "Docs/GameDesign"; Profile = "gdd-scaffolding" }
+        @{ Path = $githubInstructionsDirectory; Relative = ".github/instructions"; Profile = "native-entry" }
     )
+    if ($IncludeGameDesignScaffolding) {
+        $managedDirectories += @(
+            @{ Path = $docsDirectory; Relative = "Docs"; Profile = "gdd-scaffolding" },
+            @{ Path = $gameDesignDirectory; Relative = "Docs/GameDesign"; Profile = "gdd-scaffolding" }
+        )
+    }
     foreach ($directory in $managedDirectories) {
         if (Test-HasReparsePoint -Candidate $directory.Path -Root $ProjectRoot) { throw "Managed setup directory uses a reparse point and is unsafe: $($directory.Path)" }
         if ((Test-Path -LiteralPath $directory.Path) -and -not (Test-Path -LiteralPath $directory.Path -PathType Container)) {
             throw "A file blocks required managed directory '$($directory.Relative)'. No setup files were changed."
         }
     }
-    $scaffolds = @(
-        @{ Source = "GameDesign/README.md"; Target = "Docs/GameDesign/README.md" },
-        @{ Source = "GameDesign/GameDesignManifest.md"; Target = "Docs/GameDesign/GameDesignManifest.md" }
-    )
+    $scaffolds = @()
+    if ($IncludeGameDesignScaffolding) {
+        $scaffolds = @(
+            @{ Source = "GameDesign/README.md"; Target = "Docs/GameDesign/README.md" },
+            @{ Source = "GameDesign/GameDesignManifest.md"; Target = "Docs/GameDesign/GameDesignManifest.md" }
+        )
+    }
     foreach ($scaffold in $scaffolds) {
         $sourcePath = Get-FullPath -Path $scaffold.Source -BasePath $TemplateRoot
         $targetPath = Get-FullPath -Path $scaffold.Target -BasePath $ProjectRoot
@@ -446,17 +617,27 @@ try {
         $targetPath = Get-FullPath -Path ([string]$entry.targetPath).Replace('/', [System.IO.Path]::DirectorySeparatorChar) -BasePath $ProjectRoot
         if ((Test-Path -LiteralPath $targetPath) -and -not (Test-Path -LiteralPath $targetPath -PathType Leaf)) { throw "A directory blocks native instruction target '$($entry.targetPath)'. No setup files were changed." }
         $templateText = [System.IO.File]::ReadAllText($sourcePath)
-        if (-not $templateText.Contains("GeurtsGameForgeDocumentation/AI_READ_FIRST.md")) { throw "Template does not route through the canonical AI entry point: $sourcePath" }
+        $currentTemplateVersion = Get-CurrentNativeTemplateVersion -Entry $entry
+        if (-not (Test-NativeTemplateRoute -Entry $entry -Text $templateText)) { throw "Template does not use its required concise documentation route: $sourcePath" }
         $templateRegions = Get-ManagedRegions -Text $templateText
-        if ($templateRegions.Count -eq 0 -or @($templateRegions | Where-Object { $_.ActualHash -ne $_.DeclaredHash }).Count -gt 0) { throw "Native instruction template managed regions are missing or invalid: $sourcePath" }
+        if ($templateRegions.Count -eq 0 -or @($templateRegions | Where-Object { $_.ActualHash -ne $_.DeclaredHash -or $_.Version -cne $currentTemplateVersion }).Count -gt 0) { throw "Native instruction template managed regions are missing, invalid, or use the wrong current version: $sourcePath" }
     }
 
     foreach ($directory in $managedDirectories) {
-        if (Test-Path -LiteralPath $directory.Path -PathType Container) {
+        Invoke-TestWriteBarrier -TargetPath $directory.Path
+        $finalDirectoryPath = [System.IO.Path]::GetFullPath([string]$directory.Path)
+        $finalProjectRoot = [System.IO.Path]::GetFullPath($ProjectRoot)
+        if (-not (Test-IsContainedPath -Candidate $finalDirectoryPath -Root $finalProjectRoot) -or (Test-HasReparsePoint -Candidate $finalDirectoryPath -Root $finalProjectRoot)) {
+            throw "Managed setup directory changed or uses a reparse point immediately before acceptance or creation: $($directory.Relative)"
+        }
+        if (Test-Path -LiteralPath $finalDirectoryPath -PathType Container) {
             Add-Result "Preserved" $directory.Relative "Authorized $($directory.Profile) directory already exists." $null
         }
+        elseif (Test-Path -LiteralPath $finalDirectoryPath) {
+            throw "A file blocks required managed directory '$($directory.Relative)'. No setup files were changed."
+        }
         else {
-            New-Item -ItemType Directory -Path $directory.Path -ErrorAction Stop | Out-Null
+            New-Item -ItemType Directory -Path $finalDirectoryPath -ErrorAction Stop | Out-Null
             Add-Result "Created" $directory.Relative "Created under $($directory.Profile) delegation from folder definition $($folderDefinition.definitionVersion)." $null
         }
     }
@@ -465,7 +646,7 @@ try {
         Update-NativeEntry -Entry $entry -Templates $TemplateRoot -Root $ProjectRoot
     }
 
-    if (Test-Path -LiteralPath $gameDesignDirectory -PathType Container) {
+    if ($IncludeGameDesignScaffolding -and (Test-Path -LiteralPath $gameDesignDirectory -PathType Container)) {
         foreach ($scaffold in $scaffolds) {
             $sourcePath = Get-FullPath -Path $scaffold.Source -BasePath $TemplateRoot
             $targetPath = Get-FullPath -Path $scaffold.Target -BasePath $ProjectRoot
@@ -477,23 +658,27 @@ try {
                 Add-Result "Conflicted" $scaffold.Target "A directory exists where the scaffold file is required." $null
             }
             else {
-                Write-AtomicText -Path $targetPath -Text ([System.IO.File]::ReadAllText($sourcePath))
-                Add-Result "Created" $scaffold.Target "Created missing scaffold from the controlled template." $null
+                try {
+                    Write-AtomicText -Path $targetPath -Text ([System.IO.File]::ReadAllText($sourcePath)) -AllowedRoot $ProjectRoot -ExpectedState "Absent"
+                    Add-Result "Created" $scaffold.Target "Created missing scaffold from the controlled template." $null
+                }
+                catch { Add-Result "Conflicted" $scaffold.Target ("Scaffold creation lost its expected-absent state: " + $_.Exception.Message) $null }
             }
         }
 
-        if (-not $SkipGameDesignManifestUpdate) {
-            $manifestUpdater = Join-Path $PSScriptRoot "UpdateGameDesignManifest.ps1"
-            $manifestArguments = @("-ProjectRoot", $ProjectRoot)
-            if ($OutputFormat -eq "Json") { $manifestArguments += @("-OutputFormat", "Json") }
-            $manifestRun = Invoke-ChildPowerShell -ScriptPath $manifestUpdater -Arguments $manifestArguments -EmitOutput ($OutputFormat -eq "Text")
-            if ($OutputFormat -eq "Json") {
-                try { $manifestResult = $manifestRun.Output | ConvertFrom-Json }
-                catch { throw "Game Design Manifest maintenance returned invalid JSON." }
-            }
-            if ($manifestRun.Code -ne 0) {
-                Add-Result "Conflicted" "Docs/GameDesign/GameDesignManifest.md" "Deterministic manifest maintenance reported a conflict." $null
-            }
+    }
+
+    if ($UpdateGameDesignManifest) {
+        $manifestUpdater = Join-Path $PSScriptRoot "UpdateGameDesignManifest.ps1"
+        $manifestArguments = @("-ProjectRoot", $ProjectRoot)
+        if ($OutputFormat -eq "Json") { $manifestArguments += @("-OutputFormat", "Json") }
+        $manifestRun = Invoke-ChildPowerShell -ScriptPath $manifestUpdater -Arguments $manifestArguments -EmitOutput ($OutputFormat -eq "Text")
+        if ($OutputFormat -eq "Json") {
+            try { $manifestResult = $manifestRun.Output | ConvertFrom-Json }
+            catch { throw "Game Design Manifest maintenance returned invalid JSON." }
+        }
+        if ($manifestRun.Code -ne 0) {
+            Add-Result "Conflicted" "Docs/GameDesign/GameDesignManifest.md" "Deterministic manifest maintenance reported a conflict." $null
         }
     }
 
@@ -507,7 +692,6 @@ try {
             projectRoot = $ProjectRoot
             counts = $counts
             results = $results.ToArray()
-            documentation = $documentationResult
             gameDesignManifest = $manifestResult
         } | ConvertTo-Json -Depth 7
     }
@@ -520,7 +704,7 @@ try {
 catch {
     $failureLocation = if ($_.InvocationInfo.ScriptLineNumber) { " (line $($_.InvocationInfo.ScriptLineNumber))" } else { "" }
     if ($OutputFormat -eq "Json") {
-        [pscustomobject]@{ status = "FAILED"; message = ($_.Exception.Message + $failureLocation); results = $results.ToArray(); documentation = $documentationResult; gameDesignManifest = $manifestResult } | ConvertTo-Json -Depth 7
+        [pscustomobject]@{ status = "FAILED"; message = ($_.Exception.Message + $failureLocation); results = $results.ToArray(); gameDesignManifest = $manifestResult } | ConvertTo-Json -Depth 7
     }
     else {
         Write-Host "AI ENTRY SETUP FAILED: $($_.Exception.Message)$failureLocation" -ForegroundColor Red

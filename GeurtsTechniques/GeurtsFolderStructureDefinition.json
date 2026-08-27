@@ -1,11 +1,11 @@
 {
   "schemaVersion": "1.0.0",
-  "definitionVersion": "0.7.0",
-  "packageVersion": "0.8.0",
+  "definitionVersion": "0.8.0",
+  "packageVersion": "0.9.0",
   "canonicalPath": "GeurtsTechniques/GeurtsFolderStructureDefinition.json",
   "pathBase": "<ProjectRoot>",
   "pathSeparator": "/",
-  "managedFolderCount": 71,
+  "managedFolderCount": 69,
   "projectStructureFolderCount": 67,
   "explanatoryAuthority": "GeurtsTechniques/GeurtsFolderStructureTechnique.md",
   "automationAuthority": "GeurtsTechniques/GeurtsFolderStructureDefinition.json",
@@ -31,11 +31,6 @@
       "id": "gdd-scaffolding",
       "owner": "native-entry-manager",
       "purpose": "Creates Docs and Docs/GameDesign only when required for missing project GDD scaffolding."
-    },
-    {
-      "id": "documentation-sync",
-      "owner": "documentation-synchronizer",
-      "purpose": "Creates only the synchronized Geurts documentation root and technique directory."
     }
   ],
   "managedFolders": [
@@ -590,22 +585,6 @@
       "contentCategory": "tooling",
       "parent": ".github",
       "automation": { "mayCreate": true, "mayRemove": false, "owner": "native-entry-manager", "creationProfiles": ["native-entry"] }
-    },
-    {
-      "path": "GeurtsGameForgeDocumentation",
-      "requirement": "required",
-      "purpose": "Read-only synchronized local cache of canonical Geurts Game Forge documentation.",
-      "contentCategory": "documentation",
-      "parent": null,
-      "automation": { "mayCreate": true, "mayRemove": false, "owner": "documentation-synchronizer", "creationProfiles": ["documentation-sync"] }
-    },
-    {
-      "path": "GeurtsGameForgeDocumentation/GeurtsTechniques",
-      "requirement": "required",
-      "purpose": "Synchronized canonical techniques, definitions, and integration contracts.",
-      "contentCategory": "documentation",
-      "parent": "GeurtsGameForgeDocumentation",
-      "automation": { "mayCreate": true, "mayRemove": false, "owner": "documentation-synchronizer", "creationProfiles": ["documentation-sync"] }
     }
   ]
 }
