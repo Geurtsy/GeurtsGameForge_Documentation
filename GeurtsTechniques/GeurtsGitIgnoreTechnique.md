@@ -1,19 +1,19 @@
 # Geurts Git Ignore Technique
 
 **Version:** 1.0.0
-**Status:** Approved integration technique
-**Primary audience:** Game Forge Intelligence, AI coding agents, and automated development systems
+**Status:** Approved normative technique
+**Primary audience:** AI coding agents, automated development systems, and compatible setup integrations
 **Secondary audience:** Human developers and package maintainers
-**Canonical path:** `GeurtsTechniques/GeurtsGitIgnoreTechnique.md`
+**Required package path:** `GeurtsTechniques/GeurtsGitIgnoreTechnique.md`
 **Target path:** `<ProjectRoot>/.gitignore`
 
 ---
 
 ## Purpose and Authority
 
-This document owns the canonical custom Unity project `.gitignore` payload consumed by Game Forge Intelligence. The payload preserves the exact logical contents of the approved source template after newline normalization. The approved source was UTF-8 without a byte-order mark, used CRLF newlines, ended with a newline, and had raw SHA-256 `c8412a38435bccd89f1fefb855da3c24680612c27609341e64dcbaf99c0f88ab` before normalization.
+This document owns the approved custom Unity project `.gitignore` payload consumed by compatible setup tools. The payload preserves the exact logical contents of the approved source template after newline normalization. The approved source was UTF-8 without a byte-order mark, used CRLF newlines, ended with a newline, and had raw SHA-256 `c8412a38435bccd89f1fefb855da3c24680612c27609341e64dcbaf99c0f88ab` before normalization.
 
-`GeurtsTechniques/GeurtsGameForgeIntelligenceIntegrationContract.md` owns source selection, fallback, target preservation, write behaviour, audit requirements, and plugin conformance. Prose and Markdown outside the marked payload below are explanatory only and must never be copied into a project `.gitignore`.
+`GeurtsTechniqueManifest.md` selects this technique when the payload is needed. Prose and Markdown outside the marked payload below are explanatory only and must never be copied into a project `.gitignore`.
 
 ## Deterministic Payload Contract
 
@@ -29,9 +29,13 @@ Decode the document as valid UTF-8, permitting a byte-order mark only at the beg
 | Normalized SHA-256 | `7223a9449718942d3a5cad00cf4d4e0dee9c89eb64951541fa4ebfb803acb45b` |
 | Approved CRLF source SHA-256 | `c8412a38435bccd89f1fefb855da3c24680612c27609341e64dcbaf99c0f88ab` |
 
-If the marker metadata, fence structure, normalized line count, terminal newline, or hash does not match, the custom payload is invalid. Follow the fallback behaviour in the integration contract; do not copy a partial payload.
+If the marked documentation payload is missing or its metadata, fence structure, normalized line count, terminal newline, or hash does not match, fail safely and preserve the target exactly. Do not create a missing target from an invalid payload and do not copy a partial payload. Package v0.9.0 has `fallbackPolicy: none`; a plugin-owned default asset, if separately documented by that product, neither validates nor substitutes for this payload.
 
-## Canonical Payload
+A compatible setup operation may act only with explicit user authorization for this `.gitignore` subject. When authorized, it may create `<ProjectRoot>/.gitignore` only when the target is missing and this marked payload validates exactly. An identical existing target is reported unchanged and without rewriting. If the target already exists and differs, preserve its bytes and timestamp exactly and report `preserved` or `conflict`; never append, merge, replace, or reformat it. There is no Git index mutation: never stage, unstage, add, remove, or otherwise change Git tracking state through this operation.
+
+The fenced bytes below are a literal imported compatibility source. Names and comments inside the fenced payload are preserved source content, not generic Geurts assumptions, and must not be edited to modernize prose.
+
+## Approved Payload
 
 <!-- GEURTS-GITIGNORE-BEGIN version="1.0.0" target=".gitignore" sha256="7223a9449718942d3a5cad00cf4d4e0dee9c89eb64951541fa4ebfb803acb45b" -->
 ```gitignore

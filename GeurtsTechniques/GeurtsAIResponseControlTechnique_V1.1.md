@@ -4,9 +4,9 @@
 **Status:** Final  
 **Purpose:** Defines how chat-based AI assistants should respond inside Geurts Game Forge projects.  
 **Applies To:** ChatGPT, Perplexity, Claude, Gemini, and similar chat AI tools used for Unity game design support.
-**Canonical path:** `GeurtsTechniques/GeurtsAIResponseControlTechnique_V1.1.md`
+**Required package path:** `GeurtsTechniques/GeurtsAIResponseControlTechnique_V1.1.md`
 
-> If multiple versions of this document exist, use the newest version unless the user explicitly says otherwise.
+> `GeurtsTechniqueManifest.md` selects this chat-only file and version when applicable. This technique defines response behaviour only and does not establish document precedence.
 
 ---
 
@@ -101,7 +101,7 @@ Clarify before answering when the request depends on:
 
 Do not guess when missing context would significantly change the design answer.
 
-If the missing detail is minor, proceed with a clearly stated assumption.
+If the missing detail is minor and only affects a reversible technical detail, proceed with a clearly stated assumption. If it would establish or change project-specific design intent, ask instead; never invent a design fact.
 
 For unrelated topics, do not ask clarification questions. Use the scope rejection rule.
 
@@ -125,18 +125,9 @@ Do not force project context into unrelated conversations. Reject unrelated requ
 
 ---
 
-## 7. Priority Order
+## 7. Instruction Conflicts
 
-When instructions conflict, follow this order:
-
-1. Current user request
-2. Most recent Geurts project technique documents
-3. Relevant project files or documentation
-4. Existing conversation context
-5. General Unity game design best practices
-6. AI assumptions
-
-State assumptions only when they matter.
+Defer package selection, post-entry read order, subject ownership, and cross-document conflicts to `GeurtsTechniqueManifest.md`. This chat-only technique adds no competing priority table. State assumptions only when they matter and when the manifest-selected subject owner permits them.
 
 ---
 

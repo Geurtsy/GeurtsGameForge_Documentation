@@ -1,13 +1,13 @@
 # Geurts Technical Technique
 
 **Unity Game Development - AI Instruction Manual**  
-**Version:** 0.7.0
-**Status:** Draft master technique  
+**Version:** 0.8.0
+**Status:** Draft normative technique
 **Primary audience:** AI coding agents and automated development systems
 **Secondary audience:** Human developers
-**Canonical path:** `GeurtsTechniques/GeurtsTechnicalTechnique.md`
+**Required package path:** `GeurtsTechniques/GeurtsTechnicalTechnique.md`
 
-> **Version Selection Notice:** If multiple copies of this document are found during an AI agent build process, use the copy with the highest semantic version number. If two copies share the same version number, prefer the copy in the canonical path shown above.
+> `GeurtsTechniqueManifest.md` selects this file and version from one validated package commit. This technique defines technical implementation only and does not establish an alternate reading or conflict order.
 
 ---
 
@@ -23,35 +23,19 @@ It exists to ensure:
 - Predictable project structure and asset placement.
 - Maintainable systems that can scale from solo development to larger teams.
 
-This document is currently the temporary master technical technique. Later, it may be split into specialised documents.
+This document is the technical implementation authority. Reusable automation interaction is split into `GeurtsGameForgeAutomationTechnique.md`, but every technical trade-off remains governed by the strict priority order in this document.
 
 Interpret its requirements deterministically. Explicit rules, literal paths, stable terminology, and testable outcomes take precedence over stylistic elegance when the two conflict.
 
 ---
 
-## Related Technique Documents
+## Manifest Boundary
 
-The following documents are part of the Geurts Game Forge technique set:
-
-| Document | Purpose |
-|---|---|
-| `GeurtsTechniques/GeurtsTechnicalTechnique.md` | Main technical, coding, AI, debugging, performance, and priority standards. |
-| `GeurtsTechniques/GeurtsFolderStructureTechnique.md` | Folder layout, asset placement, project structure, and naming rules. |
-| `GeurtsTechniques/GeurtsFolderStructureDefinition.json` | Machine-readable authority for automated folder creation. |
-| `GeurtsTechniques/GeurtsAIAgentSetupTechnique.md` | Native AI agent instruction setup for GitHub Copilot, Codex, and future coding agents. |
-| `GeurtsTechniques/GeurtsGameDesignDocumentationTechnique.md` | How AI agents and developers should locate and use project game design documentation when a task depends on design intent. |
-| `GeurtsTechniques/GeurtsGameForgeIntelligenceIntegrationContract.md` | Reusable contract for documentation synchronization, folder generation, native entries, and GDD automation. |
-| `<ProjectRoot>/Docs/GameDesign/GameDesignManifest.md` | Project-specific index read at initialization when it exists. |
-
-AI systems and human developers must follow the latest valid versions of the relevant documents when generating, modifying, moving, or organising files.
-
-When creating new files, scripts, scenes, assets, tools, or documentation, placement must follow `GeurtsTechniques/GeurtsFolderStructureTechnique.md`. Automation that creates folders must also follow `GeurtsTechniques/GeurtsFolderStructureDefinition.json`.
-
-At session or project initialization, read `<ProjectRoot>/Docs/GameDesign/GameDesignManifest.md` once when it exists and retain a version/hash/timestamp fingerprint. Re-read it when the fingerprint changes. When a task affects gameplay design, player-facing behaviour, balance, progression, narrative, levels, UX, or content intent, load every relevant current design document listed by that manifest before implementation. Do not load unrelated full design documents for a purely technical task.
+`GeurtsTechniqueManifest.md` is the single resolver for applicable documents, subject ownership, versions, read order, and cross-document conflicts. This technique owns technical implementation and technical trade-offs. When a task also concerns folders, native AI entries, game-design documents, automation behaviour, an integration lifecycle, or the approved `.gitignore` payload, follow the additional subject owner selected by the manifest.
 
 ---
 
-## Authority and Conflict Resolution
+## Technical Priority Order
 
 The **Core Principles** are a strict priority order, not an unordered list of preferences.
 
@@ -63,154 +47,69 @@ When a decision requires a trade-off, apply this priority order:
 4. **Updated** - Follow current Unity and AI framework practices where practical.
 5. **Documented** - Major components, public APIs, and serialized fields must be clear and documented.
 
-These priorities are not equal. A higher priority wins over a lower priority unless a newer technique version explicitly says otherwise.
+These priorities are not equal. A higher priority wins over a lower priority within this technique's subject. A package change must be selected and versioned through the manifest rather than inferred from a stray copy.
 
 ### Multiplayer Exception
 
 For multiplayer systems, **network efficiency overrides all other priorities**.
 
-### Document Authority
-
-- Project-specific Geurts Game Forge rules override general Unity habits or AI defaults.
-- `GeurtsTechniques/GeurtsTechnicalTechnique.md` is the authority for technical implementation.
-- `GeurtsTechniques/GeurtsFolderStructureTechnique.md` is the authority for folder structure and asset placement.
-- `GeurtsTechniques/GeurtsFolderStructureDefinition.json` is the authority for automated folder creation.
-- `GeurtsTechniques/GeurtsAIAgentSetupTechnique.md` is the authority for AI agent instruction files.
-- `GeurtsTechniques/GeurtsGameDesignDocumentationTechnique.md` is the authority for locating and using design documentation.
-- `GeurtsTechniques/GeurtsGameForgeIntelligenceIntegrationContract.md` is the reusable authority for compatible integration behaviour.
-- Native AI instruction files such as `.github/copilot-instructions.md` and `AGENTS.md` are entry points that point agents back to the latest Geurts technique documents.
-- If ambiguity remains, AI systems must state their assumption before generating or modifying code.
+Cross-document applicability and conflicts defer to the manifest. This technique's priority order applies only to actual technical trade-offs within its assigned subject.
 
 ---
 
-## GitHub Copilot, Codex, and AI Compliance
+## Reusable Framework Compliance Header
 
-GitHub Copilot, Codex, ChatGPT, and any other AI coding assistant must follow the standards specified in the latest valid Geurts technique documents.
+GitHub Copilot, Codex, ChatGPT, and any other AI coding assistant must follow the manifest-selected Geurts techniques.
 
-The native AI instruction files for a target project are safely managed by:
-
-```text
-Tools/ManageGeurtsAgentInstructions.ps1
-```
-
-The managed updater creates missing entries, refreshes Geurts-owned sections when their template version changes, preserves user-owned content, backs up legacy files before replacement, and reports created, updated, preserved, skipped, and conflicted results:
-
-```text
-ProjectRoot/
-├── AGENTS.md
-└── .github/
-    ├── copilot-instructions.md
-    └── instructions/
-        ├── geurts-unity.instructions.md
-        └── geurts-game-design.instructions.md
-```
-
-These files must remain short and must point agents back to the Geurts technique documents instead of duplicating every rule.
-
-Every native entry must route through `GeurtsGameForgeDocumentation/AI_READ_FIRST.md`. A required documentation update or synchronization failure blocks project modification unless an explicit fallback policy permits use of the last valid copy.
-
-AI systems must insert the following comment at the beginning of every Unity C# script they generate or modify:
+Insert the following comment only when the AI creates or materially edits a reusable Geurts Game Forge framework, library, or tooling component intended to be shared across games:
 
 ```csharp
 // IMPORTANT: This script must comply with GeurtsGameForgeDocumentation/GeurtsTechniques/GeurtsTechnicalTechnique.md and folder placement rules in GeurtsGameForgeDocumentation/GeurtsTechniques/GeurtsFolderStructureTechnique.md.
 ```
 
+Geurts Game Forge Bricks is a positive example of shared framework code. An ordinary game-specific implementation is excluded even when AI-generated; for example, a project-specific 2D map generator does not receive this header merely because an AI created it. AI authorship alone is insufficient. If intended ownership or reuse is unclear, ask before adding the header.
+
+Never modify third-party packages, vendored code, generated code, read-only files, or a format/tooling surface that forbids the header merely to add compliance text.
+
 All code suggestions, refactoring, and automated completions must comply with the requirements for modularity, readability, efficiency, documentation, AI integration, runtime debugging, project structure, and game design awareness described in the Geurts technique documents.
 
-In case of ambiguity or conflict, the rules in `GeurtsTechniques/GeurtsTechnicalTechnique.md` take precedence unless the matter is specifically about folder structure, AI agent setup, or game design document discovery.
+---
 
-Copilot, Codex, and other AI instruction files should be reviewed regularly to ensure ongoing compliance with the latest technique documents.
+## Selectively Adapted Engineering Guidance
+
+### Provenance and authority
+
+Game Forge Intelligence `CODEX_ENGINEERING_RULES.md` v0.28.0 was reviewed as source material for this version. The reusable, non-conflicting guidance below is selectively adapted from that file and consolidated with existing Geurts rules. The source file is not a Geurts authority, and its broad catalogs or independent priority language do not override this technique.
+
+The strict priorities and multiplayer exception defined above remain controlling. The source material did not add or reorder priorities.
+
+### Understand, inspect, and reuse
+
+Treat the user's request as the desired outcome, subject to explicit instructions and the Geurts hierarchy. Before implementation, inspect the relevant project structure, code, dependencies, APIs, assets, conventions, and affected systems. Search for suitable existing functionality and extend it where that best satisfies the strict priorities. Preserve working behaviour unless the requested outcome requires changing it.
+
+When multiple methods are viable, choose a proportionate method by applying the five priorities in their declared order, the multiplayer exception when applicable, the project's actual constraints, and the more specific Geurts authorities. Do not create a separate competing list of engineering priorities or add architecture merely because it is available.
+
+### Implement, integrate, and handle failure
+
+Use clear responsibilities, focused code, minimal harmful duplication, predictable behaviour, useful diagnostics, correct cleanup, and explicit failure handling. Do not present placeholders as complete, invent APIs or package capabilities, expose secrets, silently swallow failures, or leave an avoidable partial state.
+
+Implement the complete requested change when authorized. Update required registration, initialization, configuration, references, assets, tests, and documentation rather than stopping after the primary class or file exists.
+
+### Verify, test, and preserve compatibility
+
+Review the result for compilation and type errors, incorrect references or paths, lifecycle defects, regressions, incomplete integration, unnecessary complexity, and relevant performance or security risks. Test the normal path, meaningful failure paths, edge cases, repeated operation, and surrounding functionality in proportion to the change.
+
+Refactor nearby code only when it prevents defects, removes harmful duplication, or materially improves the requested integration. Do not rewrite unrelated working systems for style. Before changing a public API, serialized field, file format, prefab, or scene contract, identify consumers and preserve compatibility when practical; when a break is necessary, version it and update affected references together.
+
+### Technical evidence for reporting
+
+Generic questioning and report behaviour is owned by the manifest-selected Game Forge Automation Technique. For this technique's subject, provide that owner with concrete technical evidence: changed implementation surfaces, validation performed, compatibility effects, technical assumptions, and unresolved technical limitations.
 
 ---
 
-## Core Principles
+## Boundaries with Other Subjects
 
-The following principles are listed in strict priority order:
-
-1. **Extendibility** - Code must be modular and easy to expand.
-2. **Efficiency** - Prioritise runtime performance and avoid unnecessary runtime cost.
-3. **Readability** - Use descriptive names, clear structure, and comments when they do not impose avoidable runtime cost.
-4. **Updated** - Follow current Unity and AI framework practices where practical.
-5. **Documented** - Every major component must include appropriate comments and tooltips.
-
-When these principles conflict, the lower-numbered principle wins.
-
-Exception: For multiplayer systems, network efficiency overrides all other priorities.
-
----
-
-## Folder Structure and Asset Placement
-
-Folder placement is explained by `GeurtsTechniques/GeurtsFolderStructureTechnique.md`. Automated folder creation is governed by `GeurtsTechniques/GeurtsFolderStructureDefinition.json`. A contradiction between them is a validation failure; automation must stop rather than guess.
-
-AI systems must check the folder structure technique before creating:
-
-- Scripts.
-- Scenes.
-- Prefabs.
-- ScriptableObjects.
-- Art assets.
-- Audio assets.
-- UI assets.
-- Tools.
-- Generated files.
-- Documentation.
-- External or third-party content.
-
-The project folder structure can be generated from the definition using:
-
-```text
-Tools/CreateGeurtsFolderStructure.ps1
-```
-
-The tool may create only definition entries that permit automation creation. It must not delete project content, including when a path disappears from a later definition.
-
----
-
-## Game Design Documentation Awareness
-
-Technical implementation must respect current game design intent when the task depends on player-facing behaviour.
-
-AI agents and human developers should consult game design documentation when working on:
-
-- Mechanics.
-- Player abilities.
-- Enemy behaviour.
-- AI behaviour that affects gameplay feel.
-- Balance and progression.
-- Quests, objectives, or narrative content.
-- Level design.
-- UI and UX flow.
-- Accessibility decisions.
-- Player-facing debug, cheat, or tuning tools.
-
-The target Unity project’s default design documentation location is:
-
-```text
-<ProjectRoot>/Docs/GameDesign/
-```
-
-The target Unity project’s design index, when present, is:
-
-```text
-<ProjectRoot>/Docs/GameDesign/GameDesignManifest.md
-```
-
-Use `Tools/UpdateGameDesignManifest.ps1` for deterministic manifest maintenance under `GeurtsTechniques/GeurtsGameDesignDocumentationTechnique.md`. If a task requires design intent and no relevant design document exists, the AI agent must state the assumption it is making before implementation. It must not invent mechanics, narrative, balance values, progression, characters, or other game-design facts.
-
-
-Do not create vague folders such as:
-
-- `Misc/`
-- `New Folder/`
-- `Temp/`
-- mixed folders containing unrelated scripts, prefabs, textures, and data.
-
-When unsure, place first-party Unity content under the closest matching domain inside:
-
-```text
-Assets/_Project/
-```
+Folder placement, automated folder creation, design-document discovery, and missing-design decisions are governed by their manifest-selected techniques. Technical implementation must consume those decisions but must not restate or replace them here.
 
 ---
 
@@ -218,7 +117,7 @@ Assets/_Project/
 
 - **Modular AI Components:** Implement behaviours as separate scripts.
 - **Data-Driven Design:** Use ScriptableObjects for AI configuration.
-- **Validation:** Apply validation attributes such as `[ValidateInput]` where safe parameter ranges are required.
+- **Validation:** Validate serialized inputs and safe parameter ranges through project-supported Unity or framework mechanisms. Odin-specific attributes apply only under the conditional Odin section below.
 - **Explainability:** Add tooltips and comments for all AI-related fields.
 - **Performance:** Optimise AI decision-making for FPS.
 
@@ -264,7 +163,7 @@ public enum AI_STATE
 
 ### UI
 
-Use Unity's new UI system unless a specific technical reason requires otherwise.
+Use UI Toolkit for new Geurts UI work. Inspect the existing UI before changing it, and never silently replace or overwrite working user content. When a project already uses another UI system, follow explicit user/project requirements for a scoped integration or migration; do not perform a destructive automatic conversion.
 
 ---
 
@@ -311,6 +210,8 @@ Comments must be updated when behaviour changes.
 
 ## Odin Inspector Usage
 
+Apply this section only when Odin Inspector is already installed in the project or the current user/project has explicitly selected it. This documentation does not require or authorize installing Odin. Otherwise use the project's selected inspector and serialization equivalents.
+
 - Group related variables with `[BoxGroup]`.
 - Organise major sections using `[TabGroup]` and subsections with `[FoldoutGroup]`.
 - Use `[Button]` for safe editor actions.
@@ -321,24 +222,24 @@ Editor buttons should be safe to run and should avoid destructive actions unless
 
 ---
 
-## Testing and Validation
+## Runtime Debugging and Logging
 
 ### Objective
 
-Runtime debugging and logging must be comprehensive, filterable, and accessible to both AI systems and players, with clear rules for sensitive commands.
+Runtime debugging and logging should be comprehensive, filterable, and accessible to developers. Player-facing console, log, command, or overlay access is disabled unless current project GDD or the current user explicitly selects it.
 
 ---
 
-## Quantum Console Integration
+## Runtime Console Integration
 
-### Mandatory Use
+### Conditional Quantum Console Use
 
-Quantum Console must be integrated for all runtime debugging and command execution.
+Apply the Quantum Console-specific rules below only when Quantum Console is already installed or explicitly selected by the current user/project. This documentation does not require or authorize installing it. Otherwise use the project's selected logging and command equivalents.
 
 ### Accessibility
 
-- The console must be available at runtime for developers and players.
-- Players can access all logs by default.
+- The selected console should be available to developers at runtime when appropriate.
+- Player access is off by default and requires explicit project GDD or current-user selection.
 
 ### Modes
 
@@ -353,7 +254,7 @@ Default filters show all categories:
 - Warnings
 - Info
 
-#### Player Mode
+#### Player Mode, When Explicitly Selected
 
 Default filters show essential categories:
 
@@ -361,7 +262,7 @@ Default filters show essential categories:
 - Errors
 - Bug Reports
 
-Players can toggle filters freely. The UI must indicate active filters.
+When a player-facing console is explicitly selected, its permitted filters and active-filter indicator must follow project GDD and privacy requirements.
 
 ---
 
@@ -433,7 +334,7 @@ AI.SetState
 
 Commands that expose private data must be flagged as `Sensitive`.
 
-Most commands are not sensitive. Commands that function as cheats should usually remain visible to players unless they expose private data.
+Do not expose any command to players by default. When player command access is explicitly selected, project policy decides which non-sensitive commands are visible; sensitive commands remain developer-only.
 
 Sensitive commands appear in help listings only in Developer Mode.
 
@@ -451,7 +352,7 @@ Commands that alter the game state must be flagged as `Cheat`.
 
 ## Logging Standards
 
-All logs must be routed through Quantum Console.
+Route runtime logs through the project-selected logging system. When Quantum Console is the selected system, use its categories and filters consistently.
 
 Severity colours:
 
@@ -476,11 +377,11 @@ Logs should use clear categories such as:
 
 ### Objective
 
-Provide players with real-time performance metrics in a small GUI overlay.
+Provide a runtime performance overlay only when current project GDD or the current user explicitly selects one. It is off by default for players.
 
 ### Requirements
 
-Always track:
+When monitoring is selected and supported, track the relevant available metrics:
 
 - FPS
 - RAM usage
@@ -491,7 +392,7 @@ Always track:
 
 Each setting should have a display toggle.
 
-The GUI overlay must be enabled by default and toggleable through Quantum Console.
+The overlay must be disabled for players by default. If explicitly selected, expose it through the project-selected runtime console or equivalent control.
 
 ### Overlay Design
 
@@ -503,7 +404,7 @@ The GUI overlay must be enabled by default and toggleable through Quantum Consol
   - BottomLeft
   - BottomRight
 
-### Quantum Console Commands
+### Example Commands When Quantum Console Is Selected
 
 ```text
 Performance.ToggleStats
@@ -512,36 +413,39 @@ Performance.SetPosition [TopLeft|TopRight|BottomLeft|BottomRight]
 
 ---
 
-## Performance Priorities
+## Performance Trade-Off Guidance Under Efficiency
 
-- FPS is more important than loading times.
-- Runtime performance is preferred over editor convenience when gameplay experience is affected.
-- For multiplayer, network efficiency is first priority.
+Apply this guidance only within the five-priority order defined above and the applicable project GDD. It is not a second priority list.
+
+- Prefer frame-rate stability over shorter loading times when the applicable design facts do not require a different player-facing trade-off.
+- Prefer runtime performance over editor convenience when gameplay experience is materially affected.
+- For multiplayer work, apply the network-efficiency override defined in **Multiplayer Exception** above.
 
 ---
 
 ## Multiplayer Efficiency Rule
 
-- Always use Unity Netcode for GameObjects unless the project explicitly changes networking framework.
+- Use Unity Netcode for GameObjects only when it is already installed or selected as the project's networking framework. Do not introduce or install it merely because this technique mentions it; inspect the project and use the selected networking equivalent.
 - Minimise RPC calls.
 - Batch updates where possible.
 - Sync only the data required for gameplay correctness.
 - Do not sacrifice network efficiency for local code convenience.
 
+The multiplayer network-efficiency override applies regardless of the selected networking framework.
+
 ---
 
-## Definition of Done for AI-Generated Scripts
+## Definition of Done for AI-Created or Modified Scripts
 
 A generated or modified Unity C# script is complete only when it:
 
-- Includes the required compliance comment at the top.
+- Includes the compliance header only when it is a reusable cross-game Geurts Game Forge framework, library, or tooling component under the scope above.
 - Uses the correct folder location according to `GeurtsTechniques/GeurtsFolderStructureTechnique.md`.
 - Follows naming conventions.
 - Includes tooltips for all `[SerializeField]` fields.
 - Includes XML summaries for public methods.
 - Avoids unnecessary per-frame allocations.
 - Avoids expensive logic inside `Update()` unless justified.
-- Routes runtime debug output through Quantum Console where relevant.
+- Routes runtime debug output through the project-selected logging or console system where relevant; applies Quantum Console-specific rules only when that package is installed or selected.
 - Preserves multiplayer network efficiency where relevant.
-- Loaded every relevant project-specific design document before changing player-facing behaviour, or explicitly stated the missing-design assumption.
-- Used a valid local documentation copy and recorded the synchronized commit/version when the host integration supplies it.
+- Satisfies every applicable GDD requirement selected by the manifest before changing player-facing behaviour.

@@ -1,13 +1,13 @@
 # Geurts Game Design Documentation Technique
 
 **Game Design Documentation Discovery - AI and Human Developer Reference**  
-**Version:** 0.7.0
-**Status:** Draft supporting technique  
+**Version:** 0.8.0
+**Status:** Draft normative technique
 **Primary audience:** AI coding agents and automated development systems
 **Secondary audience:** Human developers
-**Canonical path:** `GeurtsTechniques/GeurtsGameDesignDocumentationTechnique.md`
+**Required package path:** `GeurtsTechniques/GeurtsGameDesignDocumentationTechnique.md`
 
-> **Version Selection Notice:** If multiple copies of this document are found during an AI agent build process, use the copy with the highest semantic version number. If two copies share the same version number, prefer the canonical path shown above.
+> `GeurtsTechniqueManifest.md` selects this file and version from one validated package commit. This technique defines GDD discovery and maintenance boundaries only.
 
 ---
 
@@ -23,7 +23,7 @@ Interpret the rules deterministically. Literal paths, explicit metadata, stable 
 
 ## Documentation Boundary
 
-Synchronized Geurts Game Forge techniques belong at:
+The complete synchronized Geurts Game Forge documentation source belongs at:
 
 ```text
 <ProjectRoot>/GeurtsGameForgeDocumentation/
@@ -37,11 +37,11 @@ Project-specific game design documentation belongs at:
 
 Never use a template or example inside `GeurtsGameForgeDocumentation/` as the target game's design authority.
 
-Never put canonical Geurts techniques in `Docs/GameDesign/` or project-specific GDD files in `GeurtsGameForgeDocumentation/`.
+Never put Geurts source-package files in `Docs/GameDesign/` or project-specific GDD files in `GeurtsGameForgeDocumentation/`.
 
 ---
 
-## Canonical Game Design Directory
+## Project Game Design Directory
 
 Use this target-project directory for project-specific game design documentation:
 
@@ -69,7 +69,7 @@ At Unity-project opening or AI-session initialization:
 
 A missing manifest does not block a purely technical task. A technical task may proceed without unrelated full GDD files.
 
-Before changing player-facing behaviour, load every relevant document identified by the current manifest. If a relevant document is missing, unavailable, unclassified, or silent on the required decision, state the assumption before implementation. Do not invent mechanics, narrative, balance values, progression, characters, or other design facts.
+Before changing player-facing behaviour, load every relevant document identified by the project's current `GameDesignManifest.md`. If a relevant document is missing, unavailable, unclassified, or silent on a decision that would establish or change player-facing design intent, stop and ask for that decision before implementation. Do not invent or assume mechanics, narrative, balance values, progression, characters, or other design facts. A stated assumption is allowed only for a reversible technical detail that does not create, alter, or overwrite design intent.
 
 ---
 
@@ -93,7 +93,7 @@ AI agents must check the project-specific game design documentation when a task 
 
 ## Safe Scaffolding
 
-When these paths are missing, the setup workflow creates them from controlled templates:
+Only after separate explicit authorization, the setup workflow may create these missing paths from controlled templates:
 
 ```text
 <ProjectRoot>/Docs/GameDesign/
@@ -110,7 +110,17 @@ Rules:
 - Make every rerun idempotent.
 - Report which paths were created and which already existed.
 
-`Tools/ManageGeurtsAgentInstructions.ps1` installs both safe native entries and this missing-only GDD scaffolding, then invokes `Tools/UpdateGameDesignManifest.ps1`. The workflow is defined in `GeurtsTechniques/GeurtsAIAgentSetupTechnique.md`.
+Native-entry migration alone creates no GDD paths. The separately authorized operation uses the copied manager with explicit project root and opt-in:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "<ProjectRoot>/GeurtsGameForgeDocumentation/Tools/ManageGeurtsAgentInstructions.ps1" -ProjectRoot "<ProjectRoot>" -IncludeGameDesignScaffolding
+```
+
+The scaffolding opt-in does not update the manifest. Deterministic manifest maintenance requires a separate explicit operation, either the copied manager with `-UpdateGameDesignManifest` or the copied maintainer invocation below. The safe invocation contract is defined in `GeurtsTechniques/GeurtsAIAgentSetupTechnique.md`.
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "<ProjectRoot>/GeurtsGameForgeDocumentation/Tools/ManageGeurtsAgentInstructions.ps1" -ProjectRoot "<ProjectRoot>" -UpdateGameDesignManifest
+```
 
 ---
 
@@ -137,7 +147,7 @@ These files are optional starting points. Create only what the project actually 
 
 ## Manifest Rules
 
-`<ProjectRoot>/Docs/GameDesign/GameDesignManifest.md` is the project-specific routing index. It must not list synchronized Geurts techniques as project design authority.
+`<ProjectRoot>/Docs/GameDesign/GameDesignManifest.md` is the project-specific routing index. It must not list synchronized Geurts source-package files as project design authority.
 
 Each document record must support:
 
@@ -155,10 +165,10 @@ Do not infer purpose or authority from a filename when that inference is unrelia
 
 ### Deterministic Maintenance
 
-Use:
+After explicit authorization, use the copied tool with the Unity root supplied explicitly:
 
-```text
-Tools/UpdateGameDesignManifest.ps1
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "<ProjectRoot>/GeurtsGameForgeDocumentation/Tools/UpdateGameDesignManifest.ps1" -ProjectRoot "<ProjectRoot>"
 ```
 
 The maintainer must detect and report:
@@ -181,38 +191,26 @@ Maintenance must be:
 - deterministic and idempotent;
 - stably ordered by normalized project-relative path and then identifier;
 - free of timestamps or formatting changes that create unnecessary source-control churn;
-- limited to an explicit managed manifest section so manual notes remain intact;
+- limited to an explicit managed manifest section while preserving the exact bytes outside it;
+- able to preserve the manifest's original UTF-8, UTF-8-BOM, UTF-16LE-BOM, or UTF-16BE-BOM encoding and reject invalid text or UTF-32 without mutation;
 - able to preserve manually authored purpose, status, version, authority, and tags where practical;
 - protected from recursive self-triggering by excluding the manifest itself and ignoring its own unchanged output hash;
 - fail-safe when identifiers conflict or parsing is ambiguous.
 
-`-ManifestPath`, when supplied, must resolve exactly to `<ProjectRoot>/Docs/GameDesign/GameDesignManifest.md`. The maintainer must reject reparse points anywhere in the project, design, or discovered directory path; acquire its single-writer lock before reading the manifest; remove only a lock it acquired; parse every non-empty managed-region line strictly; validate explicit metadata before rendering; and treat unsupported future managed-region versions as conflicts without downgrade.
+`-ManifestPath`, when supplied, must resolve exactly to `<ProjectRoot>/Docs/GameDesign/GameDesignManifest.md`. The maintainer must reject reparse points anywhere in the project, design, or discovered directory path; keep its single-writer lock and temporary replacement artifacts at a validated project-root-owned location rather than beneath the swappable game-design parent; acquire the lock with create-new, handle-owned delete-on-close semantics before reading the manifest; treat any pre-existing lock path as a conflict and preserve its exact bytes; remove only the lock represented by its acquired handle; parse every non-empty managed-region line strictly; validate explicit metadata before rendering; and treat unsupported future managed-region versions as conflicts without downgrade. It must retain the raw-byte fingerprint captured at read time and, immediately before atomic promotion, revalidate containment and the full path chain, then reject any existence or byte drift instead of overwriting concurrent content.
 
 The managed table is bounded by matching `GEURTS-GDD-MANIFEST-BEGIN` and `GEURTS-GDD-MANIFEST-END` markers. Manually authored notes belong outside that region.
 
 New documents without reliable metadata receive `RequiresClassification`. Unsupported files are reported and must not be silently treated as design authority. Duplicate identifiers are conflicts: do not choose a winner or overwrite the manifest silently.
 
-Game Forge Intelligence may invoke the maintainer after imports or debounced file-watcher events. The exact plugin-facing event, conflict, and audit requirements are defined in `GeurtsTechniques/GeurtsGameForgeIntelligenceIntegrationContract.md`.
+A compatible host may detect imports or debounced file-watcher events, invalidate cached discovery data, report manifest drift, and offer a user-approved handoff to the external maintainer. It must not invoke the maintainer automatically or write project GDD content.
 
-### Design Document Conflict Order
+### Design Document Conflicts
 
-If multiple design documents conflict, AI agents should prefer:
-
-1. The explicit authority or precedence recorded in `GameDesignManifest.md`.
-2. The most specific relevant document.
-3. The highest semantic version for documents with the same scope and authority.
-4. The newest dated design decision note if versions are unavailable.
-
-If ambiguity remains, the AI agent must state the conflict and assumption before implementation.
+Cross-document conflict resolution is centralized in `GeurtsTechniqueManifest.md`. Record explicit design-source precedence in `GameDesignManifest.md`; otherwise surface a material conflict and ask when its resolution would establish design intent. Do not choose a stray document merely because it has a higher version or newer date.
 
 ---
 
-## Relationship to Other Techniques
+## Manifest Relationship
 
-- `GeurtsTechnicalTechnique.md` defines implementation standards.
-- Project-specific game design docs define player-facing intent.
-- `GeurtsFolderStructureTechnique.md` defines where files belong.
-- `GeurtsAIAgentSetupTechnique.md` defines how agents discover and synchronize the documentation.
-- `GeurtsGameForgeIntelligenceIntegrationContract.md` defines how Game Forge Intelligence and compatible packages implement discovery, watching, importing, maintenance, and audit behaviour.
-
-Game design documents should not silently override technical safety, performance, or multiplayer network-efficiency requirements. If design intent conflicts with technical standards, the AI agent must state the conflict.
+The manifest selects this technique alongside any other applicable subject owner. Project-specific game-design documents define player-facing facts within their recorded scope; if those facts materially conflict with a selected technical requirement, state the conflict rather than silently choosing one.
