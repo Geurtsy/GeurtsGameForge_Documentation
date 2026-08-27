@@ -1,13 +1,13 @@
 # Geurts Folder Structure Technique
 
 **Unity Project Structure - AI-First Automation and Human Developer Reference**
-**Version:** 0.7.0
-**Status:** Draft supporting technique  
+**Version:** 0.8.0
+**Status:** Draft normative technique
 **Primary audience:** AI coding agents and automated development systems
 **Secondary audience:** Human developers
-**Canonical path:** `GeurtsTechniques/GeurtsFolderStructureTechnique.md`
+**Required package path:** `GeurtsTechniques/GeurtsFolderStructureTechnique.md`
 
-> **Version Selection Notice:** If multiple copies of this document are found during an AI agent build process, use the copy with the highest semantic version number. If two copies share the same version number, prefer the copy in the canonical path shown above.
+> `GeurtsTechniqueManifest.md` selects this file and version from one validated package commit. This technique defines folder meaning and placement only.
 
 ---
 
@@ -26,7 +26,7 @@ The structure is optimised for:
 
 This Markdown document is the **explanatory authority** for folder meaning, placement, and constraints. `GeurtsTechniques/GeurtsFolderStructureDefinition.json` is the **automation authority** for the literal managed-folder registry and folder creation. Neither authority may contradict the other.
 
-The main technical rules remain in `GeurtsTechniques/GeurtsTechnicalTechnique.md`. AI agent setup files are governed by `GeurtsTechniques/GeurtsAIAgentSetupTechnique.md`. Game Forge Intelligence integration requirements are governed by `GeurtsTechniques/GeurtsGameForgeIntelligenceIntegrationContract.md`.
+The manifest resolves cross-document selection, applicability, and conflicts. This document and the JSON definition do not establish an alternate document order.
 
 If the Markdown and JSON disagree, validation must fail. An agent or tool must not guess which path to create.
 
@@ -58,14 +58,13 @@ Tools/CreateGeurtsFolderStructure.ps1
 
 `Tools/CreateGeurtsFolderStructure.bat` is a compatibility launcher. It must delegate folder selection to the PowerShell tool and must not contain an independent complete path list.
 
-The definition has four creation profiles:
+The definition has three creation profiles:
 
 | Profile | Owner | Exact scope |
 |---|---|---|
 | `full-project-structure` | `folder-structure-tool` | The 67 project-structure paths historically created by the folder script. |
 | `native-entry` | `native-entry-manager` | `.github` and `.github/instructions` only. |
 | `gdd-scaffolding` | `native-entry-manager` | `Docs` and `Docs/GameDesign` only, as an explicit delegation from their primary folder-structure owner. |
-| `documentation-sync` | `documentation-synchronizer` | `GeurtsGameForgeDocumentation` and `GeurtsGameForgeDocumentation/GeurtsTechniques` only. |
 
 An automation tool may create a registry entry only when all of these conditions are true:
 
@@ -74,21 +73,31 @@ An automation tool may create a registry entry only when all of these conditions
 3. The calling tool is the declared `automation.owner`, or the entry's `automation.delegatedOwners` object explicitly authorizes that profile's owner.
 4. Every declared parent is already present or is created first from the same authorized profile.
 
-Every v0.7.0 entry has `automation.mayRemove` set to `false`. No folder may be automatically deleted merely because it is absent from a later definition. Missing folders may be created; existing folders and their contents must be preserved.
+Every v0.8.0 entry has `automation.mayRemove` set to `false`. No folder may be automatically deleted merely because it is absent from a later definition. Missing folders may be created; existing folders and their contents must be preserved.
 
 `required` means the folder is part of the applicable Geurts project or integration baseline. `optional` means content may not need the folder, although the full creation profile may still create the empty organizational path. Requirement status never grants deletion authority.
 
-All definition paths are relative to `<ProjectRoot>`, use `/` as their canonical separator, preserve canonical letter case, contain no `.` or `..` segments, and have no leading or trailing slash.
+All definition paths are relative to `<ProjectRoot>`, use `/` as their required separator, preserve declared letter case, contain no `.` or `..` segments, and have no leading or trailing slash.
 
 The folder tool must report created, existing, skipped, invalid, and conflicted paths. Re-running it with the same definition and project state must be idempotent.
 
-AI agent instruction files and the canonical documentation can be initialized with:
+The Unity project root itself must not be a junction, symbolic link, or other reparse point. Immediately before accepting an existing managed directory or creating a missing one, the tool must re-resolve containment below the validated project root and recheck the complete path chain for newly introduced reparse points; a failed recheck is a conflict and must not create a descendant outside the project.
 
-```text
-Tools/CreateAIAgentInstructionFiles.bat
+In a Unity project with an installed documentation package, invoke the copied folder tool with the Unity root explicitly:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "<ProjectRoot>/GeurtsGameForgeDocumentation/Tools/CreateGeurtsFolderStructure.ps1" -ProjectRoot "<ProjectRoot>"
 ```
 
-Run project tools from the Unity project root. If a compatibility launcher is stored inside `Tools/`, it must resolve the parent directory as `<ProjectRoot>` without changing the canonical path base.
+From a documentation source checkout, the distinct maintainer invocation is:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File ".\Tools\CreateGeurtsFolderStructure.ps1" -ProjectRoot "<ProjectRoot>"
+```
+
+That source-checkout path uses the script-adjacent definition after checking for an installed package definition. It never discovers an unselected `<ProjectRoot>/GeurtsTechniques/` definition implicitly; a deliberate alternative requires an explicit `-DefinitionPath`.
+
+The compatibility launcher at `GeurtsGameForgeDocumentation/Tools/CreateGeurtsFolderStructure.bat` likewise requires `-ProjectRoot <UnityProjectRoot>` as its first argument. Documentation acquisition and replacement are outside the folder-definition contract, and native-entry setup is a separate explicitly invoked AI Agent Setup responsibility. No copied tool may infer the Unity root from its documentation-container parent.
 
 ---
 
@@ -109,21 +118,21 @@ ProjectRoot/
 
 ---
 
-## Automation-Owned Supporting Folders
+## Supporting and Placement-Only Folders
 
-These managed folders are documented here but are not members of the `full-project-structure` creation profile:
+These paths are documented here but are not members of the `full-project-structure` creation profile:
 
 ```text
 ProjectRoot/
 ├── .github/
 │   └── instructions/
 └── GeurtsGameForgeDocumentation/
-    └── GeurtsTechniques/
 ```
 
 - `.github/` and `.github/instructions/` are owned by the native-entry manager. They hold generated Copilot entry files and other GitHub-native repository configuration. The folder-structure tool must not create them as part of the 67-path project profile.
-- `GeurtsGameForgeDocumentation/` and `GeurtsGameForgeDocumentation/GeurtsTechniques/` are owned by the documentation synchronizer. The folder-structure tool must not create an empty substitute for synchronized documentation.
-- These owners may create their assigned folders but may never delete an existing directory or user content through the folder-definition contract.
+- `GeurtsGameForgeDocumentation/` is a placement and read-only content boundary, not a machine-readable managed folder. The folder-structure tool has no creation or lifecycle authority for it. Installation and content requirements belong to the applicable manifest-selected integration technique.
+- Directories below `GeurtsGameForgeDocumentation/` are deliberately absent from the folder definition, so a new tracked source directory does not require a folder-schema change.
+- The native-entry manager may create its assigned `.github` paths but may never delete existing directories or user content through the folder-definition contract.
 - `Docs/` and `Docs/GameDesign/` remain members of the full project profile and additionally delegate the closed `gdd-scaffolding` profile to the native-entry manager, so missing GDD scaffolding can be created without granting that manager access to unrelated folders.
 
 ---
@@ -141,27 +150,20 @@ Examples:
 - Onboarding notes.
 - Game design documentation under `Docs/GameDesign/`.
 
-Canonical Geurts implementation techniques do not belong here. They are synchronized into `GeurtsGameForgeDocumentation/`.
+Geurts source implementation techniques do not belong here. They are copied into `GeurtsGameForgeDocumentation/` as package content.
 
 ### GeurtsGameForgeDocumentation/
 
-Plugin-managed, synchronized Geurts Game Forge reference documentation.
-
-Required core layout:
-
-```text
-GeurtsGameForgeDocumentation/
-├── AI_READ_FIRST.md
-├── GeurtsTechniqueManifest.md
-└── GeurtsTechniques/
-```
+Top-level placement for read-only Geurts Game Forge reference documentation.
 
 Rules:
 
-- Treat this directory as read-only synchronized reference material.
+- Treat this directory as read-only reference material.
+- The folder-definition tool must not create, populate, update, or remove it.
+- The applicable manifest-selected integration technique owns installation, package-content, and integration-state requirements.
 - Do not store project-specific GDD files here.
 - Keep project-specific game design documentation under `Docs/GameDesign/`.
-- Do not replace this directory with a hidden or nested substitute path unless the user explicitly changes the contract.
+- Do not substitute a hidden, nested, or `Assets/` path for this required top-level placement.
 
 ### Builds/
 
@@ -463,11 +465,13 @@ Avoid:
 
 ## Machine-Readable Definition Contract
 
-Before creating folders, Game Forge Intelligence and platform-neutral tools must:
+The JSON `canonicalPath` property is a legacy serialized compatibility key. Preserve its exact key and required value for schema consumers, but use `Required package path` in human-facing metadata and prose.
 
-1. Load `GeurtsGameForgeDocumentation/GeurtsTechniques/GeurtsFolderStructureDefinition.json` from the last validated synchronized copy.
+Before creating folders, any compatible folder-creation consumer must:
+
+1. Load `GeurtsGameForgeDocumentation/GeurtsTechniques/GeurtsFolderStructureDefinition.json` from the active validated package.
 2. Confirm supported `schemaVersion`, `definitionVersion`, and `packageVersion` values.
-3. Confirm `managedFolderCount` is 71 and `projectStructureFolderCount` is 67 for definition v0.7.0.
+3. Confirm `managedFolderCount` is 69 and `projectStructureFolderCount` is 67 for definition v0.8.0.
 4. Reject duplicate paths, absolute paths, traversal segments, backslashes, unknown content categories, missing parents, unknown profiles, or malformed automation objects.
 5. Confirm every registry path appears in the literal Markdown registry below.
 6. Select only the creation profile owned by the calling operation.
@@ -553,8 +557,6 @@ Assets/_Project/VFX
 Assets/_Project/Testing
 .github
 .github/instructions
-GeurtsGameForgeDocumentation
-GeurtsGameForgeDocumentation/GeurtsTechniques
 ```
 
 <!-- GEURTS-FOLDER-PATHS:END -->
@@ -564,7 +566,7 @@ GeurtsGameForgeDocumentation/GeurtsTechniques
 ## Recommendations
 
 1. Keep `_Project` as the single source of truth for studio-owned assets.
-2. Run `Tools/ValidateGeurtsDocumentation.ps1` whenever the Markdown technique or JSON definition changes.
+2. When maintaining this source repository, run the read-only source validator at `Tools/ValidateGeurtsDocumentation.ps1` whenever the Markdown technique or JSON definition changes; this is distinct from copied project-mutating tools that require explicit `-ProjectRoot`.
 3. Create new folders only when a category has multiple assets or a stable workflow need.
 4. Use `Test` and `Sandbox` intentionally so experimental work does not pollute production content.
 5. Treat `External` and `_ThirdParty` as quarantine zones for anything not authored by the studio.
@@ -592,7 +594,7 @@ Assets/_Project/
 
 Only expand the structure when search time, onboarding friction, or asset collisions become noticeable.
 
-The `full-project-structure` automation profile creates the complete 67-path structure. Teams may choose the minimal subset manually at the beginning of a small project; v0.7.0 does not define an automated minimal profile. A future profile must be versioned in both authorities and must preserve the no-deletion rule.
+The `full-project-structure` automation profile creates the complete 67-path structure. Teams may choose the minimal subset manually at the beginning of a small project; v0.8.0 does not define an automated minimal profile. A future profile must be versioned in both authorities and must preserve the no-deletion rule.
 
 ---
 

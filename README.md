@@ -1,176 +1,125 @@
 # Geurts Game Forge Documentation
 
-**Version:** 0.8.0
-**Status:** Draft technique package  
+**Version:** 0.9.0
+**Status:** Draft technique package
 **Primary audience:** AI coding agents and automated development systems
 **Secondary audience:** Human developers
-**Canonical repository:** `Geurtsy/GeurtsGameForge_Documentation`
+**Documentation source repository:** `Geurtsy/GeurtsGameForge_Documentation`
 
-## AI: Start Here
+## Start Here
 
-If you are an AI agent, Codex session, or automated development tool, begin with:
+Begin with `AGENTS.md`, then its sibling `AI_READ_FIRST.md`, then `GeurtsTechniqueManifest.md`. Do not start implementation from this README.
 
-`AI_READ_FIRST.md`
-
-Do not start implementation from this README. `AI_READ_FIRST.md` defines the mandatory reading order, task routing, authority hierarchy, and pre-code lock.
+The manifest is the single resolver for package-file selection, versions, subject ownership, applicability, post-entry order, and cross-document conflicts. It selects every required package technique from one validated package commit. When it selects the GDD Technique, that technique uses the project-authored `Docs/GameDesign/GameDesignManifest.md` to identify relevant design facts.
 
 ## What This Repository Is
 
-This repository is the canonical source for Geurts Game Forge development techniques. Unity projects and compatible AI integration packages should synchronize this repository rather than maintaining independent copies of the technique set.
-
-The package is AI-first. Documentation favours deterministic interpretation, explicit requirements, literal paths, stable terminology, machine-readable data, and automated validation. Human readability remains important, but human elegance does not override reliable machine interpretation.
-
-The intended flow is:
-
-`GitHub canonical docs -> project synchronization -> GeurtsGameForgeDocumentation/ -> project AGENTS.md -> AI agent -> Unity implementation`
-
-## Project-Local Documentation Layout
-
-A synchronized Unity project should use:
+This repository is the documentation source for reusable Geurts Game Forge development techniques and package-local project automation. Game Forge Intelligence installs the complete Git-tracked source tree into a top-level Unity-project directory alongside `Assets/`, `Packages/`, and `ProjectSettings/`:
 
 ```text
-ProjectRoot/
-└── GeurtsGameForgeDocumentation/
-    ├── AI_READ_FIRST.md
-    ├── GeurtsTechniqueManifest.md
-    └── GeurtsTechniques/
+<ProjectRoot>/GeurtsGameForgeDocumentation/
+├── AGENTS.md
+├── AI_READ_FIRST.md
+├── GeurtsTechniqueManifest.md
+├── GeurtsTechniques/
+├── Ideas/
+├── Migrations/
+├── README.md
+└── Tools/
 ```
 
-Project-specific game design documentation remains separate at:
+Those are the current Git-tracked top-level entries. The current source has zero Git-tracked hidden paths and only regular tracked files. This is a description of the present repository, not an installation allowlist; the selected Game Forge Intelligence Technique owns complete-copy and fidelity requirements.
 
-```text
-ProjectRoot/Docs/GameDesign/
+Clone-internal metadata such as `.git/` and every non-content integration artifact is excluded. The manifest-selected Game Forge Intelligence Technique owns that integration boundary.
+
+Project-specific game-design documentation is a separate authority domain under `<ProjectRoot>/Docs/GameDesign/`. It is never synchronized source content.
+
+## Package Map
+
+- `AGENTS.md` - first repository entry; routes to the sibling AI router.
+- `AI_READ_FIRST.md` - second-stage local-package and session boundary; routes to the manifest.
+- `GeurtsTechniqueManifest.md` - package registry and sole resolver.
+- `GeurtsTechniques/GeurtsTechnicalTechnique.md` - technical implementation and the package's sole technical-priority owner.
+- `GeurtsTechniques/GeurtsGameForgeAutomationTechnique.md` - generic AI-assisted automation behaviour.
+- `GeurtsTechniques/GeurtsFolderStructureTechnique.md` and `GeurtsTechniques/GeurtsFolderStructureDefinition.json` - folder meaning and exact creation registry.
+- `GeurtsTechniques/GeurtsAIAgentSetupTechnique.md` - concise native-entry setup, safe migration, and create-if-missing scaffolding.
+- `GeurtsTechniques/GeurtsGameDesignDocumentationTechnique.md` - GDD discovery and maintenance boundary.
+- `GeurtsTechniques/GeurtsGameForgeIntelligenceTechnique.md` - Game Forge Intelligence documentation lifecycle and compatibility boundary.
+- `GeurtsTechniques/GeurtsGitIgnoreTechnique.md` - approved, hash-validated project-root `.gitignore` payload.
+- `GeurtsTechniques/GeurtsAIResponseControlTechnique_V1.1.md` - chat-only response behaviour, never a coding standard.
+
+The former `GeurtsGameForgeIntelligenceIntegrationContract.md` is only a non-normative compatibility redirect for a released consumer. The manifest selects the renamed technique only; do not load both as authorities.
+
+## Source and Integration Boundary
+
+Game Forge Intelligence integration requirements are defined only by the manifest-selected Game Forge Intelligence Technique. Direct users obtain one complete source commit through ordinary Git or repository download outside a package-tool contract, and must not mix files from different commits or place clone-internal `.git/` metadata inside the Unity-project documentation container.
+
+This repository contains documentation, schemas, templates, platform-neutral scripts, and tests. It does not contain the Game Forge Intelligence Unity plugin source, product UI, feature modes, runtime settings, or product-specific feature policy. The manifest selects the Game Forge Intelligence Technique only when that integration boundary is involved.
+
+Every Geurts-managed native AI entry routes first to `GeurtsGameForgeDocumentation/AGENTS.md`. The optional managed region in project-root `AGENTS.md` is only a concise external-tool shim. Safe preservation, exact-fingerprint migration, backups, conflicts, and opt-out are defined by the AI Agent Setup Technique.
+
+## Package Tools in an Installed Project
+
+Package scripts are present under `GeurtsGameForgeDocumentation/Tools/` and are not duplicated into project-root `Tools/`. The Folder Structure Technique still requires a separate project-owned `<ProjectRoot>/Tools/` directory for project automation and integration tooling. Always pass the Unity project root explicitly to copied project-mutating scripts.
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "<ProjectRoot>/GeurtsGameForgeDocumentation/Tools/ManageGeurtsAgentInstructions.ps1" -ProjectRoot "<ProjectRoot>"
+powershell -NoProfile -ExecutionPolicy Bypass -File "<ProjectRoot>/GeurtsGameForgeDocumentation/Tools/CreateGeurtsFolderStructure.ps1" -ProjectRoot "<ProjectRoot>"
+powershell -NoProfile -ExecutionPolicy Bypass -File "<ProjectRoot>/GeurtsGameForgeDocumentation/Tools/UpdateGameDesignManifest.ps1" -ProjectRoot "<ProjectRoot>"
 ```
 
-## Core Entry Points
+PowerShell 7 may use `pwsh` with the same paths and arguments. The two batch compatibility launchers also require `-ProjectRoot <UnityProjectRoot>` as their first argument.
 
-- `AI_READ_FIRST.md` - primary AI documentation entry point.
-- `AGENTS.md` - repository-level Codex instructions for this documentation repository.
-- `GeurtsTechniqueManifest.md` - current package/version index and instruction classifications.
-- `GeurtsTechniques/GeurtsAIAgentSetupTechnique.md` - AI integration and bootstrap rules.
-- `GeurtsTechniques/GeurtsTechnicalTechnique.md` - implementation standards.
-- `GeurtsTechniques/GeurtsFolderStructureTechnique.md` - Unity folder and asset placement standards.
-- `GeurtsTechniques/GeurtsFolderStructureDefinition.json` - machine-readable folder-creation authority.
-- `GeurtsTechniques/GeurtsGameDesignDocumentationTechnique.md` - rules for discovering player-facing design context.
-- `GeurtsTechniques/GeurtsGameForgeIntelligenceIntegrationContract.md` - reusable synchronization, managed-entry, folder-generation, and GDD automation contract.
-- `GeurtsTechniques/GeurtsGitIgnoreTechnique.md` - canonical, hash-validated custom project-root `.gitignore` payload.
-- `<ProjectRoot>/Docs/GameDesign/GameDesignManifest.md` - target game's design-document index when present.
+All listed package-tool operations run without Game Forge Intelligence and are independent of documentation acquisition or replacement. When Game Forge Intelligence applies, its selected technique owns the separate integration lifecycle.
 
-## Game Forge Intelligence Integration
+The default manager command handles native entries only. GDD scaffolding is a separate user-authorized operation that adds `-IncludeGameDesignScaffolding`; native-entry migration never creates `Docs/GameDesign/` implicitly. GDD manifest maintenance is a third independently authorized effect using `-UpdateGameDesignManifest` or the standalone maintainer command.
 
-**Game Forge Intelligence** is the current concrete Unity plugin. **Geurts-compatible Unity AI integration package** is the generic category used for reusable contracts.
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "<ProjectRoot>/GeurtsGameForgeDocumentation/Tools/ManageGeurtsAgentInstructions.ps1" -ProjectRoot "<ProjectRoot>" -IncludeGameDesignScaffolding
+powershell -NoProfile -ExecutionPolicy Bypass -File "<ProjectRoot>/GeurtsGameForgeDocumentation/Tools/ManageGeurtsAgentInstructions.ps1" -ProjectRoot "<ProjectRoot>" -UpdateGameDesignManifest
+```
 
-This repository contains documentation contracts and platform-neutral tooling, not the Game Forge Intelligence Unity plugin source. Plugin-specific Unity implementation belongs in its own source repository.
+Each tool's permissions and preservation boundary are owned by its manifest-selected subject technique. In particular, no workflow may invent project design facts or overwrite user-authored GDD content, silently replace user-authored native entries, automatically delete project folders, or alter a differing project-root `.gitignore`. The separately authorized GDD maintainer may update only its bounded managed manifest index under the Game Design Documentation Technique.
 
-The canonical repository is:
+Every public PowerShell tool accepts `-OutputFormat Text|Json`, reports categorized results, and returns nonzero on validation, conflict, containment, locking, dependency, or filesystem failure. Folder creation adds only definition-authorized missing folders. Native setup changes only supported managed entries by default. GDD scaffolding creates only missing scaffolds when opted in. Manifest maintenance changes only its validated managed region when separately requested. The batch launchers forward the same explicit arguments and exit code to their PowerShell tools.
 
-`https://github.com/Geurtsy/GeurtsGameForge_Documentation.git`
+## Source-Repository Validation
 
-Canonical branch:
+From a documentation source checkout, run the read-only package validator and the isolated automation harness directly; neither command accepts or mutates a real Unity project:
 
-`main`
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File ".\Tools\ValidateGeurtsDocumentation.ps1"
+powershell -NoProfile -ExecutionPolicy Bypass -File ".\Tools\Tests\RunAutomationTests.ps1"
+```
 
-The repository is public. Integrations use anonymous read-only access for normal checks and synchronization by default; optional authentication must not be required for that path.
-
-Normal prompts use the last validated local copy at `GeurtsGameForgeDocumentation/`. They do not contact GitHub on every prompt.
-
-At Unity launch or AI-session initialization, the integration performs one lightweight commit/version check. When an update exists, it reports the current and available identifiers and follows package policy to request approval or update automatically. The manual action is named **Update Geurts Game Forge Documentation**.
-
-Updates must be staged, validated, and swapped safely. A successful update reports the exact synchronized commit. A failed update preserves the last valid copy and reports optional-authentication, network, checkout, validation, or file-lock failure accurately. v0.8.0 has no approved bundled documentation fallback. Explicit policy may permit the last validated local copy as potentially stale; its version and commit must be visible, and it never outranks a newer successfully synchronized canonical copy.
-
-Every generated native AI entry routes through `GeurtsGameForgeDocumentation/AI_READ_FIRST.md`. The full reusable contract is `GeurtsTechniques/GeurtsGameForgeIntelligenceIntegrationContract.md`.
-
-During plugin setup, Game Forge Intelligence uses the marked payload in `GeurtsGameForgeDocumentation/GeurtsTechniques/GeurtsGitIgnoreTechnique.md` to create a missing project-root `.gitignore`. If that custom source cannot be used, the plugin reports and uses its versioned default. A differing existing `.gitignore` remains project-owned and unchanged.
-
-## Game Design Discovery
-
-At session or project initialization, read `<ProjectRoot>/Docs/GameDesign/GameDesignManifest.md` once when it exists and retain a version/hash/timestamp fingerprint. Re-read it when the fingerprint changes.
-
-Do not load every full GDD for every task. Purely technical work may proceed after lightweight discovery; player-facing work must load every relevant design document first. If required intent is missing, state the assumption before changing behaviour. Never fabricate game-design facts.
-
-## Required AI Sequence
-
-`CHECK LOCAL DOCS -> UPDATE WHEN REQUIRED -> READ -> INSPECT -> PLAN -> IMPLEMENT -> VALIDATE -> REPORT`
-
-The mandatory and conditional documents for each task are defined in `AI_READ_FIRST.md` and `GeurtsTechniqueManifest.md`.
-
-## Technical Priority
-
-The current default Geurts technical priority is:
-
-1. **Extendibility**
-2. **Efficiency**
-3. **Readability**
-4. **Updated**
-5. **Documented**
-
-Higher-numbered principles must not silently override lower-numbered principles. Runtime efficiency wins when it genuinely conflicts with readability, while readability remains desirable when it does not add avoidable runtime cost.
-
-For multiplayer systems, **network efficiency overrides all other priorities**.
-
-## Automation Tools
-
-- `Tools/BootstrapGeurtsInstructions.ps1` - use `-Mode Check` for initialization, `-Mode Update` for safe synchronization, and `-Mode Validate` for local validation.
-- `Tools/CreateGeurtsFolderStructure.ps1` - create allowed folders from the machine-readable definition without deleting user content.
-- `Tools/ManageGeurtsAgentInstructions.ps1` - safely create, migrate, and update managed native AI-entry sections.
-- `Tools/UpdateGameDesignManifest.ps1` - deterministically maintain the project GDD manifest.
-
-`Tools/ManageGeurtsAgentInstructions.ps1` creates missing `Docs/GameDesign/README.md` and `Docs/GameDesign/GameDesignManifest.md` from controlled templates without overwriting project-specific content.
+PowerShell 7 may replace `powershell` with `pwsh`. The validator reads the current source checkout and reports package, registry, authority, schema, template, and payload failures without writing repository content. The automation harness creates and removes only guarded temporary Unity-project fixtures outside the checkout, reports its current pass/fail totals, and returns nonzero if any assertion or safe cleanup fails. Both commands accept `-OutputFormat Json`; `-RepositoryRoot` is an optional explicit source-checkout override, not a Unity-project input.
 
 ## Supporting Documents
 
-- `Ideas/GameForgeIntelligenceIdeas.md` - non-normative proposals, open decisions, and deferred plugin work.
-- `Migrations/v0.8.0.md` - migration notes for public access, contract reconciliation, and custom `.gitignore` provisioning.
-- `Migrations/v0.7.0.md` - migration from legacy synchronized layouts and native instruction files.
-
-## Important Classification
-
-`GeurtsTechniques/GeurtsAIResponseControlTechnique_V1.1.md` controls chat-response behaviour. It is not a Unity coding, architecture, engineering, or implementation standard unless a later manifest explicitly reclassifies it.
-
-## Version Selection
-
-When multiple versions of the same technique exist, use the highest semantic version. When versions tie, prefer the canonical repository/path declared by the technique or manifest.
+- `Ideas/GameForgeIntelligenceIdeas.md` - non-normative historical product pointer.
+- `Migrations/v0.9.0.md` - non-normative transition checklist from the three-entry installation to a complete content-only copy and renamed integration technique.
+- `Migrations/v0.8.0.md` and `Migrations/v0.7.0.md` - historical migration context; they do not override the active manifest.
 
 ## Changelog
 
+### Target v0.9.0
+
+- Replaces selective three-entry synchronization with an exact copy of every Git-tracked source file at the selected commit.
+- Makes `GeurtsGameForgeDocumentation/` a content-only top-level project folder and keeps integration artifacts outside it.
+- Establishes copied `AGENTS.md` as the first package entry and centralizes resolution in the manifest.
+- Adds generic automation guidance and selectively adapts non-conflicting engineering source material under the existing Technical Technique priorities.
+- Renames and narrows the Game Forge Intelligence integration document while retaining a short legacy-path redirect.
+- Assigns Game Forge Intelligence lifecycle ownership to its selected technique, retains safe Geurts-owned native-entry migration, and documents migration from existing three-entry installations.
+
 ### v0.8.0
 
-- Aligned canonical synchronization with public anonymous read-only repository access.
-- Added contract reconciliation and explicit compatibility reporting through integration contract v0.9.0.
-- Added a hash-validated custom Unity project `.gitignore` payload and safe create-if-missing plugin setup with a visible default fallback.
-- Preserved the three-entry synchronized top-level layout by storing the payload inside `GeurtsTechniques/`.
+- Added a hash-validated custom Unity `.gitignore` payload while retaining the then-current integration layout.
 
-### v0.7.0
+### v0.7.0 and earlier
 
-- Made AI coding agents and automated development systems the primary audience.
-- Changed the strict technical priority to Extendibility, Efficiency, Readability, Updated, and Documented while retaining the multiplayer override.
-- Added machine-readable folder creation, lightweight GDD discovery, deterministic manifest maintenance, and safe GDD scaffolding contracts.
-- Added safe managed native-entry upgrades and check/update modes that preserve the last valid synchronized copy.
-- Named Game Forge Intelligence as the current plugin and documented authenticated private distribution.
-- Added the integration contract, ideas document, migration guide, and automated validation coverage.
-
-### v0.6.0
-
-- Replaced the legacy hidden synchronization path with the visible project folder `GeurtsGameForgeDocumentation/`.
-- Renamed the canonical implementation-technique directory from `Docs/` to `GeurtsTechniques/`.
-- Separated synchronized Geurts techniques from project-specific GDD files under `<ProjectRoot>/Docs/GameDesign/`.
-- Updated bootstrap configuration, entry files, templates, and validation paths.
-
-### v0.5.0
-
-- Made GitHub the canonical documentation authority.
-- Added `AI_READ_FIRST.md` as the single AI documentation entry point.
-- Added a root repository `AGENTS.md`.
-- Added a pre-code lock and the `SYNC -> READ -> INSPECT -> PLAN -> IMPLEMENT -> VALIDATE -> REPORT` workflow.
-- Classified the response-control technique as chat-only rather than a coding standard.
-- Updated Codex bootstrap guidance for the Unity integration package.
-
-### v0.4.0
-
-- Renamed package terminology to Technique throughout.
-- Updated Copilot, Codex, README, manifest, and design-discovery references to Technique documents.
-- Corrected the response-control document filename and bumped it to v1.1.
+- Added the AI-first entry chain, strict technical priority model, machine-readable folders, lightweight GDD discovery, safe native-entry management, migrations, and automated validation.
+- Historical notes retain upgrade context without runnable alternate workflows.
 
 ## Maintenance
 
-When a technique changes, update `GeurtsTechniqueManifest.md` and any affected entry-point references in the same change. Keep native AI instruction files short and route agents to authoritative documentation rather than copying entire standards into every project.
+When a package file changes, update the manifest registry and affected migrations, schemas, tests, and validator expectations in the same change. Keep native AI entries concise and preserve semantic versions. Human-facing metadata uses `Required package path` or `Required project path`; the JSON `canonicalPath` key remains only as a legacy serialized compatibility field where schema consumers require it.
