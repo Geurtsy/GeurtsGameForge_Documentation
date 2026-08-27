@@ -178,7 +178,7 @@ try {
         foreach ($term in @("package-file selection", "versions", "subject ownership", "applicability", "post-entry reading order", "cross-document conflicts")) {
             if ($resolverBody.IndexOf($term, [System.StringComparison]::OrdinalIgnoreCase) -lt 0) { $resolverFailures.Add("resolver omits $term") | Out-Null }
         }
-        $sequenceLines = @([regex]::Matches($resolverBody, '(?m)^(?<Number>[0-9]+)\.\s+(?<Text>[^\r\n]+)$'))
+        $sequenceLines = @([regex]::Matches($resolverBody, '(?m)^(?<Number>[0-9]+)\.\s+(?<Text>[^\r\n]+)\r?$'))
         if ($sequenceLines.Count -lt 6) { $resolverFailures.Add("numbered file-read sequence is missing or incomplete") | Out-Null }
         else {
             for ($sequenceIndex = 0; $sequenceIndex -lt $sequenceLines.Count; $sequenceIndex++) {
