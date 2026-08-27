@@ -1,228 +1,88 @@
 # Geurts AI Agent Setup Technique
 
-**Native AI Instruction Setup - Copilot, Codex, and Future Agents**  
-**Version:** 0.8.0
-**Status:** Draft supporting technique  
+**Native AI Instruction Setup - Copilot, Codex, and Future Agents**
+**Version:** 0.9.0
+**Status:** Draft normative technique
 **Primary audience:** AI coding agents and automated development systems
 **Secondary audience:** Human developers
-**Canonical path:** `GeurtsTechniques/GeurtsAIAgentSetupTechnique.md`  
-**Canonical repository:** `Geurtsy/GeurtsGameForge_Documentation`
+**Required package path:** `GeurtsTechniques/GeurtsAIAgentSetupTechnique.md`
 
-> **Version Selection Notice:** If multiple copies of this document are found during an AI agent build process, use the copy with the highest semantic version number. If two copies share the same version number, prefer the canonical repository and path shown above.
+## Purpose and Manifest Boundary
 
----
+This technique owns native AI discovery entries, explicitly managed regions, exact-fingerprint legacy migration, and create-if-missing setup scaffolds. `GeurtsTechniqueManifest.md` selects this file and version, determines its place in the package read order, and resolves cross-document applicability and conflicts.
 
-## Purpose
+Native entries remain concise. They route an agent into the synchronized package and do not duplicate package policy, integration lifecycle, technical priorities, game-design rules, or product behaviour.
 
-This document defines how Geurts Game Forge exposes its development rules to Codex, GitHub Copilot, and compatible AI coding agents and automated development systems.
+## Required Native Route
 
-Native agent files must remain concise. Their job is to route agents into the canonical documentation system, not to duplicate every technique.
-
-The authoritative interpretation rules are in `AI_READ_FIRST.md`. AI reliability, explicit ownership, literal paths, and deterministic validation take precedence over stylistic elegance.
-
----
-
-## Integration Identity and Canonical Source
-
-**Game Forge Intelligence** is the current concrete Unity plugin. Use **Geurts-compatible Unity AI integration package** only as the generic category for reusable implementations of this contract.
-
-The authoritative documentation repository is:
-
-`https://github.com/Geurtsy/GeurtsGameForge_Documentation.git`
-
-Canonical branch:
-
-`main`
-
-The current distribution strategy is a public canonical repository plus a validated local synchronized copy. Use anonymous read-only access by default. Optional authentication failures must not block a safe anonymous read-only attempt.
-
-Game Forge Intelligence and compatible packages store the last validated copy at:
-
-`<ProjectRoot>/GeurtsGameForgeDocumentation/`
-
-and direct every native AI entry to:
-
-`<ProjectRoot>/GeurtsGameForgeDocumentation/AI_READ_FIRST.md`
-
-A synchronized local copy is a cache of the canonical repository. It must not become a competing source of truth or be described as current after a failed update check.
-
-The reusable integration requirements are defined in `GeurtsTechniques/GeurtsGameForgeIntelligenceIntegrationContract.md`.
-
----
-
-## Project-Local Documentation Layout
-
-Use this visible project-root directory:
+Every Geurts-managed native AI entry routes first to:
 
 ```text
-<ProjectRoot>/GeurtsGameForgeDocumentation/
+GeurtsGameForgeDocumentation/AGENTS.md
 ```
 
-The required core layout is:
+The copied source `AGENTS.md` routes to its sibling `AI_READ_FIRST.md`, which routes to the package manifest. No managed entry may bypass copied `AGENTS.md` by linking directly to `AI_READ_FIRST.md` or a technique.
+
+Managed native-entry targets are:
 
 ```text
-GeurtsGameForgeDocumentation/
-├── AI_READ_FIRST.md
-├── GeurtsTechniqueManifest.md
-└── GeurtsTechniques/
+<ProjectRoot>/AGENTS.md
+<ProjectRoot>/.github/copilot-instructions.md
+<ProjectRoot>/.github/instructions/geurts-unity.instructions.md
+<ProjectRoot>/.github/instructions/geurts-game-design.instructions.md
 ```
 
-Do not use a hidden or nested substitute for the canonical project-local path unless the user explicitly changes this contract.
+The managed region in project-root `AGENTS.md` is only an external-tool discovery shim to the copied `AGENTS.md`. It contains no substantive Geurts or product policy. An integration that reads the copied package directly does not use this shim as its startup entry.
 
-Project-specific design documents are separate:
+## User-Content Preservation
 
-```text
-<ProjectRoot>/Docs/GameDesign/
+The updater may change only a missing file, a valid supported Geurts-managed region, or an exact supported legacy payload. It must:
+
+- preserve bytes outside the managed region;
+- preserve supported UTF-8, UTF-8-BOM, UTF-16LE-BOM, or UTF-16BE-BOM encoding and the target managed region's newline convention;
+- reject invalid text and UTF-32 without mutation;
+- honor the exact `GEURTS-MANAGED-OPT-OUT` signal;
+- refuse malformed, modified, unknown, or future managed content;
+- create the required narrow per-file backup before any supported edit of an existing native entry;
+- avoid following junctions, symbolic links, or other reparse points outside the validated Unity project root;
+- remain idempotent; and
+- report `created`, `updated`, `preserved`, `skipped`, and `conflicted` outcomes distinctly.
+
+Every atomic write carries an explicit expected target state: absent for a create, or the exact raw-byte fingerprint captured during validation for an update or legacy migration. Immediately before promotion, the manager revalidates containment and the complete path chain for new reparse points, then rejects an unexpected file or any byte drift as a conflict. A backup does not authorize replacing concurrent user content.
+
+Before promoting an adjacent safety backup, the manager likewise revalidates source and backup containment, both complete path chains, the expected raw-byte fingerprint, and the backup's expected absence. A failed backup guard preserves the target and promotes no backup.
+
+The same final containment and full-chain reparse check applies immediately before the manager accepts an existing delegated setup directory or creates a missing one. A path changed after preflight must fail without creating content outside the project.
+
+A recorded version is metadata only and never authorizes replacement. Generic legacy migration is limited to a Geurts-owned legacy template or managed region with structurally valid Geurts markers and an exact supported normalized fingerprint from `Tools/NativeEntryMigrationCatalog.json`.
+
+Markdown managed regions use matching `GEURTS-MANAGED-BEGIN` and `GEURTS-MANAGED-END` HTML comments with an ID, template version, payload SHA-256, and valid comment closers. YAML-frontmatter regions use the catalog's matching `#` markers inside the frontmatter delimiters. A valid newer unsupported managed version is a conflict and must not be downgraded.
+
+The narrow backup made before a supported per-file managed edit protects that native entry only. It is not documentation synchronization rollback and grants no authority over the copied package or plugin state.
+
+## Product-Owned or Unrecognized Legacy Entries
+
+The generic manager and its four-entry Geurts catalog own only Geurts-managed markers and templates. A product-owned or otherwise unrecognized block is outside their mutation authority: preserve it unchanged and report a conflict. Any product-specific migration belongs to that product's integration and must preserve surrounding and user-authored content. Preserved legacy material must not be loaded as a competing Geurts package authority.
+
+## Setup Tool Invocation
+
+The package tools live inside the documentation container. Invoke them from their copied paths and always supply the validated Unity project root explicitly; do not assume a duplicate package-tool copy under `<ProjectRoot>/Tools/` or infer the project from the current working directory. A separate project-owned `<ProjectRoot>/Tools/` directory may still exist under the Folder Structure Technique.
+
+Example from any working directory:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "<ProjectRoot>/GeurtsGameForgeDocumentation/Tools/ManageGeurtsAgentInstructions.ps1" -ProjectRoot "<ProjectRoot>"
 ```
 
-The synchronized documentation layout contains exactly the three visible entries shown above. Never put project GDD files in `GeurtsGameForgeDocumentation/` or canonical techniques in `Docs/GameDesign/`.
+This default changes supported native entries only. Documentation acquisition and replacement are outside this manager. GDD scaffolding and GDD manifest maintenance require the separate positive opt-ins below.
 
----
+PowerShell 7 may use `pwsh` with the same script path and arguments. The compatibility launcher is likewise under `GeurtsGameForgeDocumentation/Tools/CreateAIAgentInstructionFiles.bat` and requires `-ProjectRoot <UnityProjectRoot>` as its first argument.
 
-## AI Documentation Entry Point
+Before writing, the manager validates that `-ProjectRoot` is a Unity project containing `Assets/`, `Packages/`, and `ProjectSettings/`, that the tool is not treating its source or synchronized documentation container as the project root, and that all source and target paths remain within their intended roots.
 
-All AI agents reaching the canonical repository must begin with:
+## Separately Authorized Create-If-Missing GDD Scaffolding
 
-`AI_READ_FIRST.md`
-
-Within a synchronized Unity project, begin with:
-
-`<ProjectRoot>/GeurtsGameForgeDocumentation/AI_READ_FIRST.md`
-
-That file owns the universal reading order, task routing, authority order, path boundary, and pre-code lock.
-
----
-
-## Codex
-
-Codex should receive repository-level instructions from:
-
-`AGENTS.md`
-
-For a Unity project using a compatible integration package, the generated project-root `AGENTS.md` should:
-
-1. identify the canonical GitHub repository;
-2. require successful session initialization before code changes;
-3. point Codex to `GeurtsGameForgeDocumentation/AI_READ_FIRST.md`;
-4. prohibit project changes until required documentation has been read;
-5. keep implementation standards in the synchronized techniques rather than duplicating them locally.
-
----
-
-## Required Initialization and Pre-Code Sequence
-
-Before creating, modifying, moving, renaming, or deleting target-project files, AI agents must follow:
-
-`CHECK LOCAL DOCS -> UPDATE WHEN REQUIRED -> READ -> INSPECT -> PLAN -> IMPLEMENT -> VALIDATE -> REPORT`
-
-### CHECK LOCAL DOCS
-
-Normal prompts use the last validated local documentation and do not contact GitHub.
-
-At Unity-project opening or AI-session initialization, Game Forge Intelligence performs one lightweight commit/version check through:
-
-```text
-Tools/BootstrapGeurtsInstructions.ps1 -Mode Check
-Tools/BootstrapGeurtsInstructions.ps1 -Mode Update
-Tools/BootstrapGeurtsInstructions.ps1 -Mode Validate
-```
-
-Use `-Mode Check` for the lightweight comparison, `-Mode Update` for safe synchronization, and `-Mode Validate` for local validation. When no update exists, report the validated local commit and continue. When an update exists, report current and available versions/commits and follow package policy to update automatically or request approval. After success, report the exact synchronized commit. The manual action is named **Update Geurts Game Forge Documentation**.
-
-The update must acquire a target-scoped single-writer lock, then stage and validate before replacing the live copy. Validation requires `AI_READ_FIRST.md`, `GeurtsTechniqueManifest.md`, every manifest-listed synchronized file with matching version and canonical path, the custom `.gitignore` payload grammar and hash, deep folder-definition safety and Markdown parity, and chat-only classification. Failed optional authentication, network, checkout, validation, or file locking must preserve the previous valid copy and be reported distinctly. An invalid first installation must be removed rather than reported as a valid local copy.
-
-v0.8.0 has no approved bundled documentation fallback. Package policy or the user may explicitly permit the last validated local copy as a potentially stale fallback. Report its version and commit, and never let it outrank a newer successfully synchronized canonical copy. Without an allowed fallback, required synchronization failure blocks project modification.
-
-### READ
-
-Read:
-
-1. `GeurtsGameForgeDocumentation/AI_READ_FIRST.md`.
-2. `GeurtsGameForgeDocumentation/GeurtsTechniqueManifest.md`.
-3. `GeurtsGameForgeDocumentation/GeurtsTechniques/GeurtsAIAgentSetupTechnique.md`.
-4. `GeurtsGameForgeDocumentation/GeurtsTechniques/GeurtsTechnicalTechnique.md`.
-5. `GeurtsGameForgeDocumentation/GeurtsTechniques/GeurtsFolderStructureTechnique.md`.
-6. `GeurtsGameForgeDocumentation/GeurtsTechniques/GeurtsGameForgeIntelligenceIntegrationContract.md` for integration or automation changes.
-7. `GeurtsGameForgeDocumentation/GeurtsTechniques/GeurtsGitIgnoreTechnique.md` for project-root `.gitignore` setup, repair, or validation.
-8. Project-specific design documentation when `AI_READ_FIRST.md` classifies the task as player-facing.
-
-At initialization, read `<ProjectRoot>/Docs/GameDesign/GameDesignManifest.md` once when it exists and retain its version/hash/timestamp fingerprint. Re-read it when the fingerprint changes. This lightweight discovery does not require loading every full GDD.
-
-### INSPECT
-
-Search the target repository for the existing implementation before creating a new system. Avoid duplicate systems and preserve working behaviour unless the task requires changing it.
-
-### PLAN, IMPLEMENT, VALIDATE, REPORT
-
-Choose the smallest maintainable change, implement it, run relevant validation, and report changed files and unresolved issues.
-
----
-
-## GitHub Copilot
-
-GitHub Copilot may use:
-
-`.github/copilot-instructions.md`
-
-and path-specific files under:
-
-`.github/instructions/*.instructions.md`
-
-Those files must route back to `GeurtsGameForgeDocumentation/AI_READ_FIRST.md` and remain concise.
-
----
-
-## Safe Managed Native AI Entries
-
-Use:
-
-```text
-Tools/ManageGeurtsAgentInstructions.ps1
-```
-
-for these project files:
-
-- `AGENTS.md`
-- `.github/copilot-instructions.md`
-- `.github/instructions/geurts-unity.instructions.md`
-- `.github/instructions/geurts-game-design.instructions.md`
-
-The updater must classify each file using the integration contract's stable states:
-
-- `fully-managed`;
-- `partially-managed` through explicit begin/end markers;
-- `user-owned`;
-- `legacy-exact` or `legacy-modified`.
-
-It may refresh Geurts-owned content when the template version changes. It must preserve user-authored content outside managed sections, respect the documented opt-out marker, and never silently replace a user-owned file. Before potentially destructive legacy replacement, create a backup or stop visibly.
-
-Markdown regions use strict HTML `GEURTS-MANAGED-BEGIN` and `GEURTS-MANAGED-END` comments with matching IDs, template version, managed-payload hash, and required `-->` closers. YAML frontmatter uses strict `#` comment markers inside the opening and closing frontmatter delimiters. A valid managed region with a newer unsupported version is a visible conflict and must never be downgraded. The exact file opt-out signal is `GEURTS-MANAGED-OPT-OUT`.
-
-Each run must be idempotent and report `created`, `updated`, `preserved`, `skipped`, and `conflicted` files. Known v0.4, mixed v0.5, and v0.6 entry styles require migration validation coverage.
-
----
-
-## Safe Project Git Ignore Setup
-
-During explicit plugin setup, Game Forge Intelligence reads the canonical custom payload from:
-
-```text
-GeurtsGameForgeDocumentation/GeurtsTechniques/GeurtsGitIgnoreTechnique.md
-```
-
-and may create only a missing:
-
-```text
-<ProjectRoot>/.gitignore
-```
-
-This setup must remain separately rerunnable. It validates the marked payload and uses a visibly reported, versioned plugin default when the custom source cannot be used. It never overwrites, appends to, merges, or reformats a differing existing file, and it never changes Git tracking state. The exact parsing, fallback, target-safety, idempotence, and audit rules are owned by `GeurtsTechniques/GeurtsGameForgeIntelligenceIntegrationContract.md` and `GeurtsTechniques/GeurtsGitIgnoreTechnique.md`.
-
----
-
-## Safe Game Design Scaffolding
-
-`Tools/ManageGeurtsAgentInstructions.ps1` creates only missing:
+Native-entry creation or migration does not implicitly create or update `Docs/GameDesign/`. A separate, explicit user-authorized GDD scaffolding operation may use the setup manager to create only missing:
 
 ```text
 <ProjectRoot>/Docs/GameDesign/
@@ -230,55 +90,36 @@ This setup must remain separately rerunnable. It validates the marked payload an
 <ProjectRoot>/Docs/GameDesign/GameDesignManifest.md
 ```
 
-from controlled templates under `Tools/AIAgentInstructionTemplates/GameDesign/`.
+It uses controlled templates under `GeurtsGameForgeDocumentation/Tools/AIAgentInstructionTemplates/GameDesign/`. Re-running the authorized scaffolding operation preserves every existing project-specific file. Templates identify unknown design decisions as unprovided and must not fabricate project design facts.
 
-Re-running setup must report created and existing paths and must not overwrite project-specific content. Before any mutation, the manager validates the exact migration catalog, native-entry and GDD profile authority, every source and target path, and rejects junctions, symbolic links, or other reparse points that could redirect writes outside `<ProjectRoot>`. Templates must mark unknown design decisions as unprovided and must not fabricate mechanics, narrative, balance values, progression, characters, or other design facts.
+Invoke that separate operation with:
 
-After scaffolding, the managed setup invokes `Tools/UpdateGameDesignManifest.ps1` for deterministic manifest maintenance. The detailed discovery and maintenance rules are in `GeurtsTechniques/GeurtsGameDesignDocumentationTechnique.md` and the plugin-facing contract is in `GeurtsTechniques/GeurtsGameForgeIntelligenceIntegrationContract.md`.
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "<ProjectRoot>/GeurtsGameForgeDocumentation/Tools/ManageGeurtsAgentInstructions.ps1" -ProjectRoot "<ProjectRoot>" -IncludeGameDesignScaffolding
+```
 
----
+`-IncludeGameDesignScaffolding` creates missing scaffolds only; it does not update the GDD manifest. Manifest maintenance is a third independently authorized effect. Invoke it through the manager with the positive opt-in:
 
-## Folder Creation Automation
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "<ProjectRoot>/GeurtsGameForgeDocumentation/Tools/ManageGeurtsAgentInstructions.ps1" -ProjectRoot "<ProjectRoot>" -UpdateGameDesignManifest
+```
 
-`Tools/CreateGeurtsFolderStructure.ps1` consumes `GeurtsTechniques/GeurtsFolderStructureDefinition.json`. The Markdown Folder Structure Technique remains the explanatory and placement authority; the JSON definition is the folder-creation automation authority.
+The same independently authorized maintenance may invoke the copied maintainer directly:
 
-Automation may create only entries that explicitly permit creation. It must never delete user project content merely because a path is removed from a later definition. A contradiction between the JSON definition and the Markdown technique is a validation failure and blocks automated folder changes.
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "<ProjectRoot>/GeurtsGameForgeDocumentation/Tools/UpdateGameDesignManifest.ps1" -ProjectRoot "<ProjectRoot>"
+```
 
----
+The Game Design Documentation Technique owns discovery, import, drift, and no-invention rules. This setup technique owns only safe invocation and create-if-missing scaffolding.
 
-## Chat-Only Classification
+These independent opt-ins describe manual or standalone manager use. A compatible integration may automatically reconcile the four supported native entries while applying the same exact-fingerprint, preservation, conflict, backup, and opt-out rules. It still must not create GDD scaffolding or update the GDD manifest without the separate explicit authorization above.
 
-`GeurtsTechniques/GeurtsAIResponseControlTechnique_V1.1.md` controls chat-response behaviour.
+## Delegated Setup Subjects
 
-It is not a Unity coding, software architecture, engineering, folder, or implementation standard unless a later manifest explicitly reclassifies it.
+- Folder creation uses the copied `Tools/CreateGeurtsFolderStructure.ps1` with explicit `-ProjectRoot`; folder meaning and permitted creation remain owned by the manifest-selected Folder Structure Technique and Definition.
+- Project-root `.gitignore` payload and preservation behaviour remain owned by the manifest-selected Git Ignore Technique.
+- Documentation acquisition, replacement, and any integration-specific startup or activation lifecycle remain owned by the manifest-selected integration technique; direct users obtain the package through ordinary Git or download outside this manager.
 
----
+## Maintenance
 
-## Strict Priority Standards
-
-The current default technical priority order is:
-
-1. **Extendibility**
-2. **Efficiency**
-3. **Readability**
-4. **Updated**
-5. **Documented**
-
-Higher-numbered principles must not silently override lower-numbered principles.
-
-For multiplayer systems, **network efficiency overrides all other priorities**.
-
----
-
-## Maintenance Rule
-
-When canonical techniques change:
-
-- update `GeurtsTechniqueManifest.md`;
-- update `AI_READ_FIRST.md` if reading order, paths, or authority changes;
-- review native AI instruction templates;
-- update `GeurtsTechniques/GeurtsGameForgeIntelligenceIntegrationContract.md` when the shared integration contract changes;
-- preserve compatibility with package bootstrap consumers when practical;
-- explicitly version breaking bootstrap changes.
-
-Do not turn native instruction files into large duplicate manuals unless a specific AI tool requires it.
+When a managed template changes, update its version, normalized payload hash, migration catalog, manifest registry row, manager behaviour, regression tests, and validator expectations together. Never update a template without preserving the safe migration and opt-out contract.
