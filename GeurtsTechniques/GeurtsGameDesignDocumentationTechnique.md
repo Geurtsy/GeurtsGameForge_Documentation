@@ -1,7 +1,7 @@
 # Geurts Game Design Documentation Technique
 
 **Game Design Documentation Discovery - AI and Human Developer Reference**  
-**Version:** 0.8.0
+**Version:** 0.9.0
 **Status:** Draft normative technique
 **Primary audience:** AI coding agents and automated development systems
 **Secondary audience:** Human developers
@@ -23,7 +23,7 @@ Interpret the rules deterministically. Literal paths, explicit metadata, stable 
 
 ## Documentation Boundary
 
-The complete synchronized Geurts Game Forge documentation source belongs at:
+The sole Geurts Game Forge documentation source and authority is `Geurtsy/GeurtsGameForge_Documentation`. Its detached project-local fetched copy belongs at:
 
 ```text
 <ProjectRoot>/GeurtsGameForgeDocumentation/
@@ -35,9 +35,11 @@ Project-specific game design documentation belongs at:
 <ProjectRoot>/Docs/GameDesign/
 ```
 
-Never use a template or example inside `GeurtsGameForgeDocumentation/` as the target game's design authority.
+The fetched copy is outside `com.gameforge.intelligence`; plugin-only `Documentation~` is not a source or duplicate of Geurts documentation. Never use a template or example inside `GeurtsGameForgeDocumentation/` as the target game's design authority.
 
 Never put Geurts source-package files in `Docs/GameDesign/` or project-specific GDD files in `GeurtsGameForgeDocumentation/`.
+
+`Update Geurts Game Forge Documentation` may delete and replace only the fetched copy. It must leave every path and byte under `Docs/GameDesign/` untouched. GDD scaffolding and bounded manifest maintenance remain separate explicit operations under this technique and the AI Agent Setup Technique.
 
 ---
 
@@ -147,7 +149,7 @@ These files are optional starting points. Create only what the project actually 
 
 ## Manifest Rules
 
-`<ProjectRoot>/Docs/GameDesign/GameDesignManifest.md` is the project-specific routing index. It must not list synchronized Geurts source-package files as project design authority.
+`<ProjectRoot>/Docs/GameDesign/GameDesignManifest.md` is the project-specific routing index. It must not list project-local fetched Geurts package files as project design authority.
 
 Each document record must support:
 

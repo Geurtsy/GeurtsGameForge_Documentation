@@ -1,5 +1,5 @@
 # RunAutomationTests.ps1
-# Version: 0.9.0
+# Version: 0.10.0
 
 [CmdletBinding()]
 param(
@@ -109,7 +109,55 @@ function Start-TestScriptAtBarrier([string]$Path, [string[]]$Arguments, [string]
     $process = New-Object System.Diagnostics.Process
     $process.StartInfo = $startInfo
     if (-not $process.Start()) { throw "Unable to start barrier test process." }
-    return [pscustomobject]@{ Process = $process; Barrier = [System.IO.Path]::GetFullPath($BarrierPath); Target = [System.IO.Path]::GetFullPath($TargetPath) }
+    return [pscustomobject]@{ Process = $process; Barrier = [System.IO.Path]::GetFullPath($BarrierPath); Target = [System.IO.Path]::GetFullPath($TargetPath); Disposed = $false }
+}
+
+function Close-TestScriptBarrierProcess($Run) {
+    if ($null -eq $Run -or $Run.Disposed) { return }
+    try {
+        if ($null -ne $Run.Process) { $Run.Process.Dispose() }
+    }
+    finally { $Run.Disposed = $true }
+}
+
+function Stop-TestScriptBarrier($Run) {
+    if ($null -eq $Run -or $Run.Disposed -or $null -eq $Run.Process) { return }
+    try {
+        if (-not $Run.Process.HasExited) {
+            [System.IO.File]::WriteAllText(($Run.Barrier + ".continue"), "continue", $utf8NoBom)
+            $Run.Process.WaitForExit()
+        }
+    }
+    catch {
+        # Cleanup is best-effort and must not replace the primary test failure.
+    }
+    finally {
+        try { Close-TestScriptBarrierProcess -Run $Run }
+        catch { }
+    }
+}
+
+function Restore-TestDirectorySwap([string]$Path, [string]$ExpectedTarget, [string]$SavedPath) {
+    try {
+        if (Test-Path -LiteralPath $Path) {
+            $item = Get-Item -LiteralPath $Path -Force
+            if (($item.Attributes -band [System.IO.FileAttributes]::ReparsePoint) -ne 0) {
+                Remove-TestJunction -Path $Path -ExpectedTarget $ExpectedTarget
+            }
+            elseif (Test-Path -LiteralPath $SavedPath -PathType Container) {
+                throw "Refused to restore a directory swap over a non-junction path: $Path"
+            }
+        }
+        if (Test-Path -LiteralPath $SavedPath -PathType Container) {
+            if (Test-Path -LiteralPath $Path) { throw "Refused to restore a saved directory over an existing path: $Path" }
+            Move-Item -LiteralPath $SavedPath -Destination $Path
+        }
+    }
+    catch {
+        $script:Failed++
+        $script:FailureMessages.Add("Barrier directory cleanup failed for '$Path': $($_.Exception.Message)") | Out-Null
+        if ($OutputFormat -eq "Text") { Write-Host "BARRIER CLEANUP ERROR: $($_.Exception.Message)" -ForegroundColor Red }
+    }
 }
 
 function Wait-TestScriptBarrier($Run) {
@@ -119,7 +167,7 @@ function Wait-TestScriptBarrier($Run) {
         if ($Run.Process.HasExited) {
             $output = $Run.Process.StandardOutput.ReadToEnd() + $Run.Process.StandardError.ReadToEnd()
             $code = $Run.Process.ExitCode
-            $Run.Process.Dispose()
+            Close-TestScriptBarrierProcess -Run $Run
             throw "Barrier test process exited before its write boundary (code $code): $output"
         }
         if ([DateTime]::UtcNow -ge $deadline) { throw "Timed out waiting for the deterministic write barrier." }
@@ -128,13 +176,16 @@ function Wait-TestScriptBarrier($Run) {
 }
 
 function Complete-TestScriptBarrier($Run) {
-    [System.IO.File]::WriteAllText(($Run.Barrier + ".continue"), "continue", $utf8NoBom)
-    $stdout = $Run.Process.StandardOutput.ReadToEnd()
-    $stderr = $Run.Process.StandardError.ReadToEnd()
-    $Run.Process.WaitForExit()
-    $code = $Run.Process.ExitCode
-    $Run.Process.Dispose()
-    return [pscustomobject]@{ Code = $code; Output = (($stdout + $stderr).TrimEnd()) }
+    if ($null -eq $Run -or $Run.Disposed -or $null -eq $Run.Process) { throw "Barrier test process is no longer available for completion." }
+    try {
+        [System.IO.File]::WriteAllText(($Run.Barrier + ".continue"), "continue", $utf8NoBom)
+        $stdout = $Run.Process.StandardOutput.ReadToEnd()
+        $stderr = $Run.Process.StandardError.ReadToEnd()
+        $Run.Process.WaitForExit()
+        $code = $Run.Process.ExitCode
+        return [pscustomobject]@{ Code = $code; Output = (($stdout + $stderr).TrimEnd()) }
+    }
+    finally { Close-TestScriptBarrierProcess -Run $Run }
 }
 
 function Get-HistoricalFile([string]$Specification) {
@@ -157,6 +208,26 @@ function New-TestProject([string]$Parent, [string]$Name) {
     $path = Join-Path $Parent $Name
     New-Item -ItemType Directory -Path $path | Out-Null
     foreach ($marker in @("Assets", "Packages", "ProjectSettings")) { New-Item -ItemType Directory -Path (Join-Path $path $marker) | Out-Null }
+    return $path
+}
+
+function New-StaticValidationFixture([string]$Parent, [string]$Name) {
+    $path = Join-Path $Parent $Name
+    New-Item -ItemType Directory -Path $path | Out-Null
+    foreach ($entryName in @("AGENTS.md", "AI_READ_FIRST.md", "GeurtsTechniqueManifest.md", "GeurtsTechniques", "Ideas", "Migrations", "README.md", "Tools")) {
+        Copy-Item -LiteralPath (Join-Path $RepositoryRoot $entryName) -Destination $path -Recurse -Force
+    }
+    $previousPreference = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    try {
+        $initOutput = @(& git -C $path init --quiet 2>&1)
+        $initExitCode = $LASTEXITCODE
+        $addOutput = @(& git -C $path add --all 2>&1)
+        $addExitCode = $LASTEXITCODE
+    }
+    finally { $ErrorActionPreference = $previousPreference }
+    if ($initExitCode -ne 0) { throw "Unable to initialize a static-validation fixture repository: $path. $($initOutput -join ' ')" }
+    if ($addExitCode -ne 0) { throw "Unable to stage the static-validation fixture inventory: $path. $($addOutput -join ' ')" }
     return $path
 }
 
@@ -198,8 +269,18 @@ try {
 
     $draftManifestText = [System.IO.File]::ReadAllText((Join-Path $RepositoryRoot "GeurtsTechniqueManifest.md"))
     $draftReadmeText = [System.IO.File]::ReadAllText((Join-Path $RepositoryRoot "README.md"))
-    $targetMigrationText = [System.IO.File]::ReadAllText((Join-Path $RepositoryRoot "Migrations/v0.9.0.md"))
-    Assert-True ($draftManifestText -match '(?im)^\*\*Status:\*\*\s*Draft normative package manifest\s*$' -and $draftReadmeText -match '(?im)^\*\*Status:\*\*\s*Draft technique package\s*$' -and $targetMigrationText -match '(?i)planned transition' -and $targetMigrationText -match '(?i)target-release snapshot' -and $targetMigrationText -notmatch '(?i)(?:v0\.9\.0|package v0\.9\.0)[^\r\n]{0,80}(?:is|was|has been) released') "v0.9.0 remains a Draft target release with a planned snapshot rather than a completed-release claim"
+    $targetMigrationText = [System.IO.File]::ReadAllText((Join-Path $RepositoryRoot "Migrations/v0.10.0.md"))
+    Assert-True ($draftManifestText -match '(?im)^\*\*Status:\*\*\s*Draft normative package manifest\s*$' -and $draftReadmeText -match '(?im)^\*\*Status:\*\*\s*Draft technique package\s*$' -and $targetMigrationText -match '(?i)planned transition' -and $targetMigrationText -match '(?i)target-release snapshot' -and $targetMigrationText -notmatch '(?i)(?:v0\.10\.0|package v0\.10\.0)[^\r\n]{0,80}(?:is|was|has been) released') "v0.10.0 remains a Draft target release with a planned snapshot rather than a completed-release claim"
+
+    $gfiContractText = [System.IO.File]::ReadAllText((Join-Path $RepositoryRoot "GeurtsTechniques/GeurtsGameForgeIntelligenceTechnique.md"))
+    Assert-True ($gfiContractText -match '(?i)sole primary source and authority for all Geurts Game Forge documentation' -and $gfiContractText.Contains("<PluginPackageRoot>/Documentation~/") -and $gfiContractText -match '(?i)must not ship a bundled or fallback copy of Geurts documentation') "GFI v2 keeps this repository authoritative and plugin Documentation~ plugin-specific"
+    Assert-True ($gfiContractText -match '(?i)exactly one lightweight remote metadata check' -and $gfiContractText -match '(?i)Update availability is determined only by commit identity' -and $gfiContractText -match '(?i)commit IDs are identical, do not report an Update' -and $gfiContractText -match '(?i)Package-version ordering or inequality is display-only and must not determine availability' -and $gfiContractText -match '(?i)startup comparison result is unknown' -and $gfiContractText -match '(?i)must not download documentation[^\r\n]{0,200}inspect or hash the project-local copy' -and $gfiContractText -match '(?i)performs no additional remote documentation check' -and $gfiContractText -match '(?i)Local edits[^\r\n]{0,100}do not affect update availability') "Startup performs one commit-identity-only notification check without local inspection or lifecycle work"
+    Assert-True ($gfiContractText.Contains("Installed Geurts Documentation: <version | Not installed | Unknown>") -and $gfiContractText.Contains("GameForgeIntelligence Plugin: <version | Unknown>") -and $gfiContractText.Contains("Available Geurts Documentation: <version>") -and $gfiContractText -match '(?i)Never derive[^\r\n]{0,180}mutable project-local documentation files' -and $gfiContractText -match '(?i)distinct values. Never display one as another') "Documentation, available, plugin, technique, and schema versions have separate authoritative labels and unknown states"
+    Assert-True ($gfiContractText -match '(?i)Every successful Update receipt records the authoritative selected commit ID' -and $gfiContractText -match '(?i)Immediately before the first destructive mutation[^\r\n]{0,160}invalidate or clear the current installed receipt' -and $gfiContractText -match '(?i)historical receipt is diagnostic history only and must never drive' -and $gfiContractText -match '(?i)report success only after that receipt is written' -and $gfiContractText -match '(?i)Failure or interruption after receipt invalidation must leave the current receipt absent or invalid' -and $gfiContractText -match '(?is)destination directory is absent.{0,140}`Not installed`.{0,220}directory exists.{0,180}`Unknown`') "Destructive receipt transition prevents stale installed state and writes the selected commit receipt only after success"
+    Assert-True ($gfiContractText -match '(?i)safe default is Cancel' -and $gfiContractText -match '(?i)Every local edit anywhere inside GeurtsGameForgeDocumentation will be overwritten and lost' -and $gfiContractText -match '(?i)no rollback' -and $gfiContractText -match '(?i)missing or incomplete') "Explicit Update warning is cancel-default and fully describes destructive failure semantics"
+    Assert-True ($gfiContractText -match '(?i)complete Git-tracked source tree' -and $gfiContractText -match '(?i)detached, writable content snapshot' -and $gfiContractText -match '(?i)no `\.git` directory or file' -and $gfiContractText -match '(?i)read-only file or directory attributes must be cleared' -and $gfiContractText -match '(?i)residue must never block a later') "Confirmed Update produces a complete detached writable snapshot with non-blocking ephemeral cleanup"
+    Assert-True ($gfiContractText -match '(?i)only project path this documentation Update may delete or replace' -and $gfiContractText -match '(?i)Every file and byte there[^\r\n]{0,160}must remain untouched' -and $gfiContractText -match '(?i)must not invoke native-entry setup') "Documentation Update replaces only GeurtsGameForgeDocumentation and leaves GDD and generic-tool subjects untouched"
+    Assert-True ($gfiContractText -match '(?i)must not create or require an automatic documentation downloader or installer' -and $gfiContractText -match '(?i)Do not recreate any of those mechanisms under different terminology' -and $gfiContractText -match '(?i)legacy evidence[^\r\n]{0,60}untouched' -and $gfiContractText -match '(?i)must not consult it, depend on it, or allow it to block') "Discarded transaction and recovery machinery remains forbidden while legacy Library evidence is untouched and non-blocking"
 
     # Project-mutating tools copied inside the documentation container must never infer that container as a Unity root.
     $rootSafetyProject = New-TestProject -Parent $testRoot -Name "explicit-root-safety"
@@ -222,7 +303,7 @@ try {
     )
     $unsafeNestedWrites = @("Docs", "GeurtsGameForgeDocumentation", ".github", "Assets/_Project") | Where-Object { Test-Path -LiteralPath (Join-Path $copiedDocumentationRoot $_) }
     $markerChildren = @(@("Assets", "Packages", "ProjectSettings") | ForEach-Object { Get-ChildItem -LiteralPath (Join-Path $copiedDocumentationRoot $_) -Force })
-    Assert-True (@($omittedRootRuns | Where-Object { $_.Code -eq 0 -or $_.Output -notmatch '(?i)ProjectRoot is required' }).Count -eq 0 -and @($containerRootRuns | Where-Object { $_.Code -eq 0 -or $_.Output -notmatch '(?i)documentation source(?:/container| or synchronized documentation container)' }).Count -eq 0 -and @($unsafeNestedWrites).Count -eq 0 -and $markerChildren.Count -eq 0) "Copied project-mutating tools reject their documentation container even with fake Unity markers and never create nested project or native-entry content"
+    Assert-True (@($omittedRootRuns | Where-Object { $_.Code -eq 0 -or $_.Output -notmatch '(?i)ProjectRoot is required' }).Count -eq 0 -and @($containerRootRuns | Where-Object { $_.Code -eq 0 -or $_.Output -notmatch '(?i)documentation source or project-local fetched documentation copy' }).Count -eq 0 -and @($unsafeNestedWrites).Count -eq 0 -and $markerChildren.Count -eq 0) "Copied project-mutating tools reject the project-local fetched documentation copy even with fake Unity markers and never create nested project or native-entry content"
 
     $junctionRootTarget = New-TestProject -Parent $testRoot -Name "junction-unity-target"
     $junctionRootPath = Join-Path $testRoot "junction-unity-root"
@@ -251,15 +332,8 @@ try {
         $managerDirectorySwapProcess = $null
     }
     finally {
-        if ($null -ne $managerDirectorySwapProcess) {
-            if (-not $managerDirectorySwapProcess.Process.HasExited) {
-                [System.IO.File]::WriteAllText(($managerDirectorySwapBarrier + ".continue"), "continue", $utf8NoBom)
-                $managerDirectorySwapProcess.Process.WaitForExit()
-            }
-            $managerDirectorySwapProcess.Process.Dispose()
-        }
-        Remove-TestJunction -Path $managerDirectorySwapGitHub -ExpectedTarget $managerDirectorySwapOutside
-        if (Test-Path -LiteralPath $managerDirectorySwapSaved -PathType Container) { Move-Item -LiteralPath $managerDirectorySwapSaved -Destination $managerDirectorySwapGitHub }
+        Stop-TestScriptBarrier -Run $managerDirectorySwapProcess
+        Restore-TestDirectorySwap -Path $managerDirectorySwapGitHub -ExpectedTarget $managerDirectorySwapOutside -SavedPath $managerDirectorySwapSaved
     }
     Assert-True ($managerDirectorySwapRun -and $managerDirectorySwapRun.Code -ne 0 -and $managerDirectorySwapRun.Output -match '(?i)reparse point immediately before acceptance or creation' -and (Get-FileSha -Path $managerDirectorySwapSentinel) -eq $managerDirectorySwapSentinelHash -and -not (Test-Path -LiteralPath (Join-Path $managerDirectorySwapOutside "instructions")) -and -not (Test-Path -LiteralPath (Join-Path $managerDirectorySwapProject "AGENTS.md"))) "Native manager rejects a parent junction introduced at the final directory boundary without creating descendants outside the project"
 
@@ -284,7 +358,7 @@ try {
         Assert-True ($nativeRouteText.Contains('version="0.9.0"') -and $nativeRouteText.Contains("GeurtsGameForgeDocumentation/AGENTS.md") -and $nativeRouteText.Contains("manifest-controlled package chain") -and -not $nativeRouteText.Contains("owns the complete documentation chain") -and -not $nativeRouteText.Contains("GeurtsGameForgeDocumentation/AI_READ_FIRST.md") -and -not $nativeRouteText.Contains("network efficiency")) "$relative is a concise v0.9.0 route through copied AGENTS.md into the manifest-controlled chain without duplicate lifecycle or policy"
     }
     $freshGddReadmeText = [System.IO.File]::ReadAllText((Join-Path $fresh "Docs/GameDesign/README.md"))
-    Assert-True ($freshGddReadmeText -match '(?i)missing information would establish or change player-facing design intent' -and $freshGddReadmeText -match '(?i)reversible technical details that do not create or overwrite design facts' -and $freshGddReadmeText.Contains('GEURTS-SCAFFOLD-BEGIN version="0.9.0"')) "Managed GDD README stops for missing design intent and permits only reversible non-design assumptions"
+    Assert-True ($freshGddReadmeText -match '(?i)project-local fetched Geurts documentation copy' -and $freshGddReadmeText -match '(?i)missing information would establish or change player-facing design intent' -and $freshGddReadmeText -match '(?i)reversible technical details that do not create or overwrite design facts' -and $freshGddReadmeText.Contains('GEURTS-SCAFFOLD-BEGIN version="0.10.0"')) "Managed GDD README remains separate from the fetched copy, stops for missing design intent, and permits only reversible non-design assumptions"
     $trackedFiles = @("AGENTS.md", ".github/copilot-instructions.md", ".github/instructions/geurts-unity.instructions.md", ".github/instructions/geurts-game-design.instructions.md", "Docs/GameDesign/README.md", "Docs/GameDesign/GameDesignManifest.md")
     $before = @{}
     foreach ($relative in $trackedFiles) { $before[$relative] = Get-FileSha -Path (Join-Path $fresh $relative) }
@@ -439,15 +513,8 @@ try {
             $backupSwapProcess = $null
         }
         finally {
-            if ($null -ne $backupSwapProcess) {
-                if (-not $backupSwapProcess.Process.HasExited) {
-                    [System.IO.File]::WriteAllText(($backupSwapBarrier + ".continue"), "continue", $utf8NoBom)
-                    $backupSwapProcess.Process.WaitForExit()
-                }
-                $backupSwapProcess.Process.Dispose()
-            }
-            Remove-TestJunction -Path $backupSwapGitHub -ExpectedTarget $backupSwapOutside
-            if (Test-Path -LiteralPath $backupSwapSaved -PathType Container) { Move-Item -LiteralPath $backupSwapSaved -Destination $backupSwapGitHub }
+            Stop-TestScriptBarrier -Run $backupSwapProcess
+            Restore-TestDirectorySwap -Path $backupSwapGitHub -ExpectedTarget $backupSwapOutside -SavedPath $backupSwapSaved
         }
         $backupSwapDebris = @(
             @(Get-ChildItem -LiteralPath $backupSwapProject -Filter ".ggf-*" -Force -File -ErrorAction SilentlyContinue)
@@ -478,15 +545,8 @@ try {
         $pathSwapProcess = $null
     }
     finally {
-        if ($null -ne $pathSwapProcess) {
-            if (-not $pathSwapProcess.Process.HasExited) {
-                [System.IO.File]::WriteAllText(($pathSwapBarrier + ".continue"), "continue", $utf8NoBom)
-                $pathSwapProcess.Process.WaitForExit()
-            }
-            $pathSwapProcess.Process.Dispose()
-        }
-        Remove-TestJunction -Path $pathSwapGitHub -ExpectedTarget $pathSwapOutside
-        if (Test-Path -LiteralPath $pathSwapSavedGitHub -PathType Container) { Move-Item -LiteralPath $pathSwapSavedGitHub -Destination $pathSwapGitHub }
+        Stop-TestScriptBarrier -Run $pathSwapProcess
+        Restore-TestDirectorySwap -Path $pathSwapGitHub -ExpectedTarget $pathSwapOutside -SavedPath $pathSwapSavedGitHub
     }
     $pathSwapTempFiles = @(
         @(Get-ChildItem -LiteralPath $pathSwapProject -Filter ".ggf-*" -Force -File -ErrorAction SilentlyContinue)
@@ -695,15 +755,8 @@ try {
         $gddParentSwapProcess = $null
     }
     finally {
-        if ($null -ne $gddParentSwapProcess) {
-            if (-not $gddParentSwapProcess.Process.HasExited) {
-                [System.IO.File]::WriteAllText(($gddParentSwapBarrier + ".continue"), "continue", $utf8NoBom)
-                $gddParentSwapProcess.Process.WaitForExit()
-            }
-            $gddParentSwapProcess.Process.Dispose()
-        }
-        Remove-TestJunction -Path $gddParentSwapDirectory -ExpectedTarget $gddParentSwapOutside
-        if (Test-Path -LiteralPath $gddParentSwapSaved -PathType Container) { Move-Item -LiteralPath $gddParentSwapSaved -Destination $gddParentSwapDirectory }
+        Stop-TestScriptBarrier -Run $gddParentSwapProcess
+        Restore-TestDirectorySwap -Path $gddParentSwapDirectory -ExpectedTarget $gddParentSwapOutside -SavedPath $gddParentSwapSaved
     }
     $gddParentSwapDebris = @(
         @(Get-ChildItem -LiteralPath $gddParentSwapProject -Filter ".ggf-*" -Force -File -ErrorAction SilentlyContinue)
@@ -797,12 +850,38 @@ try {
     Assert-True ($duplicateRun.Code -eq 2 -and $duplicateRun.Output.Contains("Conflicted:") -and (Get-FileSha -Path $gddManifestPath) -eq $beforeDuplicate) "Duplicate GDD identifiers report conflict and preserve the last valid manifest"
 
     # Definition consumption, profile selection, idempotence, and path collision safety.
-    $folderProject = New-TestProject -Parent $testRoot -Name "folders"
     # The production contract fixes the full profile at 67 entries. Use the source definition
     # for behavior tests.
     $definitionPath = Join-Path $RepositoryRoot "GeurtsTechniques/GeurtsFolderStructureDefinition.json"
+    $folderTechniqueContractText = [System.IO.File]::ReadAllText((Join-Path $RepositoryRoot "GeurtsTechniques/GeurtsFolderStructureTechnique.md"))
+    $folderDefinitionContract = Get-Content -LiteralPath $definitionPath -Raw | ConvertFrom-Json
+    $folderToolContractText = [System.IO.File]::ReadAllText($folderScript)
+    $managerToolContractText = [System.IO.File]::ReadAllText($manageScript)
+    Assert-True ($folderTechniqueContractText -match '(?im)^\*\*Version:\*\*\s*0\.9\.0\s*$' -and [string]$folderDefinitionContract.definitionVersion -ceq "0.9.0" -and $folderToolContractText.Contains('[string]$definition.definitionVersion -ne "0.9.0"') -and $managerToolContractText.Contains('[string]$definition.definitionVersion -ne "0.9.0"')) "Folder technique, definition, creator, and native manager agree on definition v0.9.0"
+
+    $versionMismatchAuthority = Join-Path $testRoot "folder-version-mismatch-authority"
+    New-Item -ItemType Directory -Path $versionMismatchAuthority | Out-Null
+    $versionMismatchDefinitionPath = Join-Path $versionMismatchAuthority "GeurtsFolderStructureDefinition.json"
+    Copy-Item -LiteralPath (Join-Path $RepositoryRoot "GeurtsTechniques/GeurtsFolderStructureTechnique.md") -Destination (Join-Path $versionMismatchAuthority "GeurtsFolderStructureTechnique.md")
+    $versionMismatchDefinition = Get-Content -LiteralPath $definitionPath -Raw | ConvertFrom-Json
+    $versionMismatchDefinition.definitionVersion = "0.8.0"
+    Write-Utf8 -Path $versionMismatchDefinitionPath -Text ($versionMismatchDefinition | ConvertTo-Json -Depth 12)
+    $versionMismatchProject = New-TestProject -Parent $testRoot -Name "folder-version-mismatch-project"
+    $versionMismatchRun = Invoke-TestScript -Path $folderScript -Arguments @("-ProjectRoot", $versionMismatchProject, "-DefinitionPath", $versionMismatchDefinitionPath)
+    Assert-True ($versionMismatchRun.Code -ne 0 -and $versionMismatchRun.Output.Contains("Folder definition version must be 0.9.0") -and -not (Test-Path -LiteralPath (Join-Path $versionMismatchProject "Assets/_Project"))) "Folder creator rejects a v0.8.0 definition before project mutation"
+
+    $earlyExitProject = New-TestProject -Parent $testRoot -Name "barrier-early-exit-project"
+    $earlyExitBarrierPath = Join-Path $testRoot "barrier-expected-early-exit"
+    $earlyExitRun = Start-TestScriptAtBarrier -Path $folderScript -Arguments @("-ProjectRoot", $earlyExitProject, "-DefinitionPath", $versionMismatchDefinitionPath) -BarrierPath $earlyExitBarrierPath -TargetPath (Join-Path $earlyExitProject "Assets/_Project")
+    $earlyExitMessage = $null
+    try { Wait-TestScriptBarrier -Run $earlyExitRun }
+    catch { $earlyExitMessage = $_.Exception.Message }
+    finally { Stop-TestScriptBarrier -Run $earlyExitRun }
+    Assert-True ($earlyExitMessage -match '(?i)exited before its write boundary.*Folder definition version must be 0\.9\.0' -and $earlyExitMessage -notmatch '(?i)No process is associated|disposed') "Barrier harness preserves the primary early-exit error without double wait or dispose"
+
+    $folderProject = New-TestProject -Parent $testRoot -Name "folders"
     $folderRun = Invoke-TestScript -Path $folderScript -Arguments @("-ProjectRoot", $folderProject, "-DefinitionPath", $definitionPath)
-    Assert-True ($folderRun.Code -eq 0 -and $folderRun.Output.Contains("Skipped: .github") -and $folderRun.Output.Contains("definition 0.8.0") -and (Test-Path -LiteralPath (Join-Path $folderProject "Assets/_Project") -PathType Container) -and -not (Test-Path -LiteralPath (Join-Path $folderProject "GeurtsGameForgeDocumentation"))) "Folder tool consumes the exact definition while never creating the reserved documentation container"
+    Assert-True ($folderRun.Code -eq 0 -and $folderRun.Output.Contains("Skipped: .github") -and $folderRun.Output.Contains("definition 0.9.0") -and (Test-Path -LiteralPath (Join-Path $folderProject "Assets/_Project") -PathType Container) -and -not (Test-Path -LiteralPath (Join-Path $folderProject "GeurtsGameForgeDocumentation"))) "Folder tool consumes the exact definition while never creating the reserved documentation container"
     $folderAgain = Invoke-TestScript -Path $folderScript -Arguments @("-ProjectRoot", $folderProject, "-DefinitionPath", $definitionPath)
     Assert-True ($folderAgain.Code -eq 0 -and $folderAgain.Output.Contains("Exists")) "Folder creation is idempotent"
 
@@ -836,15 +915,8 @@ try {
         $folderDirectorySwapProcess = $null
     }
     finally {
-        if ($null -ne $folderDirectorySwapProcess) {
-            if (-not $folderDirectorySwapProcess.Process.HasExited) {
-                [System.IO.File]::WriteAllText(($folderDirectorySwapBarrier + ".continue"), "continue", $utf8NoBom)
-                $folderDirectorySwapProcess.Process.WaitForExit()
-            }
-            $folderDirectorySwapProcess.Process.Dispose()
-        }
-        Remove-TestJunction -Path $folderDirectorySwapAssets -ExpectedTarget $folderDirectorySwapOutside
-        if (Test-Path -LiteralPath $folderDirectorySwapSaved -PathType Container) { Move-Item -LiteralPath $folderDirectorySwapSaved -Destination $folderDirectorySwapAssets }
+        Stop-TestScriptBarrier -Run $folderDirectorySwapProcess
+        Restore-TestDirectorySwap -Path $folderDirectorySwapAssets -ExpectedTarget $folderDirectorySwapOutside -SavedPath $folderDirectorySwapSaved
     }
     Assert-True ($folderDirectorySwapRun -and $folderDirectorySwapRun.Code -ne 0 -and $folderDirectorySwapRun.Output -match '(?i)reparse point or changed path.*Assets/_Project' -and (Get-FileSha -Path $folderDirectorySwapSentinel) -eq $folderDirectorySwapSentinelHash -and -not (Test-Path -LiteralPath (Join-Path $folderDirectorySwapOutside "_Project"))) "Folder tool rejects a parent junction introduced at the final directory boundary without creating descendants outside the project"
     $wrongOwnerRun = Invoke-TestScript -Path $folderScript -Arguments @("-ProjectRoot", $folderProject, "-DefinitionPath", $definitionPath, "-Profile", "native-entry")
@@ -876,21 +948,80 @@ try {
     Write-Utf8 -Path $reservedDefinitionPath -Text ($reservedDefinition | ConvertTo-Json -Depth 12)
     $reservedProject = New-TestProject -Parent $testRoot -Name "reserved-folder-project"
     $reservedRun = Invoke-TestScript -Path $folderScript -Arguments @("-ProjectRoot", $reservedProject, "-DefinitionPath", $reservedDefinitionPath)
-    Assert-True ($reservedRun.Code -ne 0 -and $reservedRun.Output -match '(?i)reserved read-only placement' -and -not (Test-Path -LiteralPath (Join-Path $reservedProject "GeurtsGameForgeDocumentation"))) "Folder tool rejects a count-preserving attempt to add the documentation container to the creation registry"
+    Assert-True ($reservedRun.Code -ne 0 -and $reservedRun.Output -match '(?i)reserved placement outside folder-tool authority' -and -not (Test-Path -LiteralPath (Join-Path $reservedProject "GeurtsGameForgeDocumentation"))) "Folder tool rejects a count-preserving attempt to add the project-local documentation copy to the creation registry"
     $blockedProject = New-TestProject -Parent $testRoot -Name "folder-blocked"
     Write-Utf8 -Path (Join-Path $blockedProject "Assets/_Project") -Text "blocking file"
     $blockedRun = Invoke-TestScript -Path $folderScript -Arguments @("-ProjectRoot", $blockedProject, "-DefinitionPath", $definitionPath)
     Assert-True ($blockedRun.Code -ne 0 -and $blockedRun.Output.Contains("Conflicted: Assets/_Project") -and (Test-Path -LiteralPath (Join-Path $blockedProject "Assets/_Project") -PathType Leaf)) "Folder collision reports the exact path and fails without deleting user content"
 
-    # Static validation covers manifest existence/version, stable path metadata, GDD boundary,
-    # folder parity, native route, chat-only classification, and multiplayer exception.
+    # Static validation covers manifest/version integrity, source ownership, notification-only startup,
+    # separated UI versions, the manual overwrite boundary, generic safeguards, and payload fidelity.
     $staticValidation = Invoke-TestScript -Path $validatorScript -Arguments @("-RepositoryRoot", $RepositoryRoot)
     Assert-True ($staticValidation.Code -eq 0) "Repository static validation covers all normative acceptance rules"
     $staticJsonValidation = Invoke-TestScript -Path $validatorScript -Arguments @("-RepositoryRoot", $RepositoryRoot, "-OutputFormat", "Json")
     $staticJsonObject = $null
     try { $staticJsonObject = $staticJsonValidation.Output | ConvertFrom-Json }
     catch { }
-    Assert-True ($staticJsonValidation.Code -eq 0 -and $staticJsonObject -and $staticJsonObject.status -eq "VALID" -and @($staticJsonObject.checks | Where-Object { -not $_.passed }).Count -eq 0) "Repository validation JSON output is one parseable document with no failed current checks"
+    $requiredLifecycleChecks = @(
+        "GFI source and compatibility boundary",
+        "Startup notification and manual update trigger",
+        "Separated documentation and plugin versions",
+        "Destructive documentation update warning",
+        "Validated complete-tree replacement",
+        "Current-installed receipt lifecycle and commit identity",
+        "Strict documentation overwrite boundary",
+        "Discarded documentation lifecycle exclusion"
+    )
+    $missingLifecycleChecks = @($requiredLifecycleChecks | Where-Object { $checkName = $_; @($staticJsonObject.checks | Where-Object { $_.name -ceq $checkName -and $_.passed }).Count -ne 1 })
+    Assert-True ($staticJsonValidation.Code -eq 0 -and $staticJsonObject -and $staticJsonObject.status -eq "VALID" -and @($staticJsonObject.checks | Where-Object { -not $_.passed }).Count -eq 0 -and $missingLifecycleChecks.Count -eq 0) "Repository validation JSON output is parseable and contains every passing v2 lifecycle-boundary check"
+
+    $legacyLifecycleFixture = New-StaticValidationFixture -Parent $testRoot -Name "static-old-lifecycle"
+    $legacyLifecycleTechnique = Join-Path $legacyLifecycleFixture "GeurtsTechniques/GeurtsGameForgeIntelligenceTechnique.md"
+    Write-Utf8 -Path $legacyLifecycleTechnique -Text ([System.IO.File]::ReadAllText($legacyLifecycleTechnique) + "`nGame Forge Intelligence performs exactly one routine remote documentation check per Unity project launch or open, then promotes the candidate atomically with combined rollback.`n")
+    $legacyLifecycleValidation = Invoke-TestScript -Path $validatorScript -Arguments @("-RepositoryRoot", $legacyLifecycleFixture)
+    Assert-True ($legacyLifecycleValidation.Code -ne 0 -and $legacyLifecycleValidation.Output.Contains("Discarded documentation lifecycle exclusion")) "Static validation rejects reintroduced stateful launch-check, atomic-promotion, and rollback language while allowing the notification-only metadata check"
+
+    $gddOverwriteFixture = New-StaticValidationFixture -Parent $testRoot -Name "static-gdd-overwrite"
+    $gddOverwriteTechnique = Join-Path $gddOverwriteFixture "GeurtsTechniques/GeurtsGameForgeIntelligenceTechnique.md"
+    Write-Utf8 -Path $gddOverwriteTechnique -Text ([System.IO.File]::ReadAllText($gddOverwriteTechnique) + "`nGame Forge Intelligence may also delete and replace <ProjectRoot>/Docs/GameDesign during documentation Update.`n")
+    $gddOverwriteValidation = Invoke-TestScript -Path $validatorScript -Arguments @("-RepositoryRoot", $gddOverwriteFixture)
+    Assert-True ($gddOverwriteValidation.Code -ne 0 -and $gddOverwriteValidation.Output.Contains("Strict documentation overwrite boundary")) "Static validation rejects any permission to replace project-authored Docs/GameDesign"
+
+    $pluginEmbeddingFixture = New-StaticValidationFixture -Parent $testRoot -Name "static-plugin-embedding"
+    $pluginEmbeddingTechnique = Join-Path $pluginEmbeddingFixture "GeurtsTechniques/GeurtsGameForgeIntelligenceTechnique.md"
+    Write-Utf8 -Path $pluginEmbeddingTechnique -Text ([System.IO.File]::ReadAllText($pluginEmbeddingTechnique) + "`nThe plugin may embed Geurts documentation in <PluginPackageRoot>/Documentation~.`n")
+    $pluginEmbeddingValidation = Invoke-TestScript -Path $validatorScript -Arguments @("-RepositoryRoot", $pluginEmbeddingFixture)
+    Assert-True ($pluginEmbeddingValidation.Code -ne 0 -and $pluginEmbeddingValidation.Output.Contains("GFI source and compatibility boundary")) "Static validation rejects bundled Geurts documentation inside plugin Documentation~"
+
+    $versionConflationFixture = New-StaticValidationFixture -Parent $testRoot -Name "static-version-conflation"
+    $versionConflationTechnique = Join-Path $versionConflationFixture "GeurtsTechniques/GeurtsGameForgeIntelligenceTechnique.md"
+    Write-Utf8 -Path $versionConflationTechnique -Text ([System.IO.File]::ReadAllText($versionConflationTechnique) + "`nThe UI may display the compatibility schema as the GameForgeIntelligence Plugin version.`n")
+    $versionConflationValidation = Invoke-TestScript -Path $validatorScript -Arguments @("-RepositoryRoot", $versionConflationFixture)
+    Assert-True ($versionConflationValidation.Code -ne 0 -and $versionConflationValidation.Output.Contains("Separated documentation and plugin versions")) "Static validation rejects conflation of schema, technique, documentation, and plugin versions"
+
+    $historicalReceiptFixture = New-StaticValidationFixture -Parent $testRoot -Name "static-historical-receipt"
+    $historicalReceiptTechnique = Join-Path $historicalReceiptFixture "GeurtsTechniques/GeurtsGameForgeIntelligenceTechnique.md"
+    Write-Utf8 -Path $historicalReceiptTechnique -Text ([System.IO.File]::ReadAllText($historicalReceiptTechnique) + "`nA historical receipt may continue to drive Installed Geurts Documentation and update comparison after deletion begins.`n")
+    $historicalReceiptValidation = Invoke-TestScript -Path $validatorScript -Arguments @("-RepositoryRoot", $historicalReceiptFixture)
+    Assert-True ($historicalReceiptValidation.Code -ne 0 -and $historicalReceiptValidation.Output.Contains("Current-installed receipt lifecycle and commit identity")) "Static validation rejects historical-receipt fallback after destructive mutation"
+
+    $versionAvailabilityFixture = New-StaticValidationFixture -Parent $testRoot -Name "static-package-version-availability"
+    $versionAvailabilityTechnique = Join-Path $versionAvailabilityFixture "GeurtsTechniques/GeurtsGameForgeIntelligenceTechnique.md"
+    Write-Utf8 -Path $versionAvailabilityTechnique -Text ([System.IO.File]::ReadAllText($versionAvailabilityTechnique) + "`nPackage-version ordering determines whether an Update is available even when commit IDs match.`n")
+    $versionAvailabilityValidation = Invoke-TestScript -Path $validatorScript -Arguments @("-RepositoryRoot", $versionAvailabilityFixture)
+    Assert-True ($versionAvailabilityValidation.Code -ne 0 -and $versionAvailabilityValidation.Output.Contains("Current-installed receipt lifecycle and commit identity")) "Static validation rejects package-version-based update availability"
+
+    $supportingSurfaceFixture = New-StaticValidationFixture -Parent $testRoot -Name "static-supporting-surface-contradictions"
+    $supportingSurfaceReadme = Join-Path $supportingSurfaceFixture "README.md"
+    $supportingSurfaceContradictions = @(
+        "Game Forge Intelligence may embed Geurts documentation inside <PluginPackageRoot>/Documentation~.",
+        "Documentation Update may delete <ProjectRoot>/Docs/GameDesign.",
+        "Package-version ordering determines whether an Update is available even when commit IDs match.",
+        "A historical receipt may continue to drive Installed Geurts Documentation and update comparison after deletion begins."
+    ) -join "`n"
+    Write-Utf8 -Path $supportingSurfaceReadme -Text ([System.IO.File]::ReadAllText($supportingSurfaceReadme) + "`n" + $supportingSurfaceContradictions + "`n")
+    $supportingSurfaceValidation = Invoke-TestScript -Path $validatorScript -Arguments @("-RepositoryRoot", $supportingSurfaceFixture)
+    Assert-True ($supportingSurfaceValidation.Code -ne 0 -and $supportingSurfaceValidation.Output.Contains("GFI source and compatibility boundary") -and $supportingSurfaceValidation.Output.Contains("Startup notification and manual update trigger") -and $supportingSurfaceValidation.Output.Contains("Current-installed receipt lifecycle and commit identity") -and $supportingSurfaceValidation.Output.Contains("Strict documentation overwrite boundary")) "Static validation rejects lifecycle, ownership, and overwrite contradictions in active supporting surfaces"
 }
 catch {
     $script:Failed++

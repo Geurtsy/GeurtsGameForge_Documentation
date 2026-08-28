@@ -29,7 +29,7 @@ Decode the document as valid UTF-8, permitting a byte-order mark only at the beg
 | Normalized SHA-256 | `7223a9449718942d3a5cad00cf4d4e0dee9c89eb64951541fa4ebfb803acb45b` |
 | Approved CRLF source SHA-256 | `c8412a38435bccd89f1fefb855da3c24680612c27609341e64dcbaf99c0f88ab` |
 
-If the marked documentation payload is missing or its metadata, fence structure, normalized line count, terminal newline, or hash does not match, fail safely and preserve the target exactly. Do not create a missing target from an invalid payload and do not copy a partial payload. Package v0.9.0 has `fallbackPolicy: none`; a plugin-owned default asset, if separately documented by that product, neither validates nor substitutes for this payload.
+If the marked documentation payload is missing or its metadata, fence structure, normalized line count, terminal newline, or hash does not match, fail safely and preserve the target exactly. Do not create a missing target from an invalid payload and do not copy a partial payload. This payload contract has `fallbackPolicy: none`; `com.gameforge.intelligence` must not bundle or substitute a plugin-owned copy of this Geurts payload.
 
 A compatible setup operation may act only with explicit user authorization for this `.gitignore` subject. When authorized, it may create `<ProjectRoot>/.gitignore` only when the target is missing and this marked payload validates exactly. An identical existing target is reported unchanged and without rewriting. If the target already exists and differs, preserve its bytes and timestamp exactly and report `preserved` or `conflict`; never append, merge, replace, or reformat it. There is no Git index mutation: never stage, unstage, add, remove, or otherwise change Git tracking state through this operation.
 

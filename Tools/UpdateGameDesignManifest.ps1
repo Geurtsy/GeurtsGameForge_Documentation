@@ -1,5 +1,5 @@
 # UpdateGameDesignManifest.ps1
-# Version: 0.9.0
+# Version: 0.10.0
 
 [CmdletBinding()]
 param(
@@ -32,7 +32,7 @@ function Test-IsContainedPath([string]$Candidate, [string]$Root) {
 function Assert-UnityProjectRoot([string]$Root) {
     $toolContainer = [System.IO.Path]::GetFullPath((Split-Path -Parent $PSScriptRoot)).TrimEnd([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar)
     if ($Root.TrimEnd([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar).Equals($toolContainer, [System.StringComparison]::OrdinalIgnoreCase)) {
-        throw "Project root must not be the documentation source or synchronized documentation container: $Root"
+        throw "Project root must not be the documentation source or project-local fetched documentation copy: $Root"
     }
     foreach ($marker in @("Assets", "Packages", "ProjectSettings")) {
         if (-not (Test-Path -LiteralPath (Join-Path $Root $marker) -PathType Container)) {

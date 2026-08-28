@@ -1,6 +1,6 @@
 # Geurts Technique Package Manifest
 
-**Version:** 0.9.0
+**Version:** 0.10.0
 **Status:** Draft normative package manifest
 **Primary audience:** AI coding agents and automated development systems
 **Secondary audience:** Human developers
@@ -28,7 +28,7 @@ For an installed Unity-project package, steps 1 through 3 use:
 <ProjectRoot>/GeurtsGameForgeDocumentation/GeurtsTechniqueManifest.md
 ```
 
-Every selected package file must come from the same validated package commit. A higher version elsewhere signals an available update; it is not permission to mix files from different commits. The numbered sequence above is the normative post-entry read order. Applicability comes only from the table below. When two selected documents discuss the same action, the table's assigned subject owner controls that subject; if the assignment does not determine a material conflict, surface it to the current user instead of inventing precedence.
+Every selected package file must come from the same validated package commit. For Game Forge Intelligence, only the manifest-selected integration technique's comparison of the authoritative remote `main` head commit ID with the current installed receipt determines update availability; package-version metadata is display-only. A version found elsewhere is not permission to mix files from different commits. The numbered sequence above is the normative post-entry read order. Applicability comes only from the table below. When two selected documents discuss the same action, the table's assigned subject owner controls that subject; if the assignment does not determine a material conflict, surface it to the current user instead of inventing precedence.
 
 The separate `<ProjectRoot>/AGENTS.md` remains user-owned except for an explicitly managed Geurts region. That managed region is only a concise external-tool discovery shim to `GeurtsGameForgeDocumentation/AGENTS.md`; it is not a competing authority or an integration startup entry.
 
@@ -42,7 +42,7 @@ The separate `<ProjectRoot>/AGENTS.md` remains user-owned except for an explicit
 | Exact folder-creation registry | `GeurtsTechniques/GeurtsFolderStructureDefinition.json` | When a tool creates or validates managed folders. |
 | Native AI entries, managed regions, and setup tooling | `GeurtsTechniques/GeurtsAIAgentSetupTechnique.md` | When creating, migrating, validating, or explaining native AI entry files or GDD scaffolds. |
 | Project-specific design-document discovery and maintenance boundary | `GeurtsTechniques/GeurtsGameDesignDocumentationTechnique.md` | Before player-facing work, when design facts are needed, or when GDD discovery/manifest maintenance is requested. Relevant project GDD files selected by `Docs/GameDesign/GameDesignManifest.md` are mandatory design facts. |
-| Game Forge Intelligence documentation-consumption and compatibility boundary | `GeurtsTechniques/GeurtsGameForgeIntelligenceTechnique.md` | Only when Game Forge Intelligence consumes this package or reports its compatibility. |
+| Game Forge Intelligence documentation-availability notification, manual update, source-ownership, and project-local consumption boundary | `GeurtsTechniques/GeurtsGameForgeIntelligenceTechnique.md` | Only when Game Forge Intelligence checks authoritative-source metadata, notifies, fetches, replaces, consumes, or reports compatibility for the project-local copy. |
 | Approved project-root `.gitignore` payload | `GeurtsTechniques/GeurtsGitIgnoreTechnique.md` | When validating or provisioning that exact payload. |
 | Chat-only response style and scope | `GeurtsTechniques/GeurtsAIResponseControlTechnique_V1.1.md` | Only when a compatible chat interface explicitly selects it. It is never a coding or architecture standard. |
 
@@ -61,48 +61,49 @@ The separate `<ProjectRoot>/AGENTS.md` remains user-owned except for an explicit
 
 ## 3. Package File Registry
 
-Every path between the markers is part of the v0.9.0 repository package and must exist. The Role column describes package use only; installation behaviour belongs to the applicable manifest-selected integration technique.
+Every path between the markers is part of the v0.10.0 repository package and must exist. The Role column describes package use only; Game Forge Intelligence source ownership, manual replacement, and consumption behaviour belong to the manifest-selected integration technique.
 
 <!-- GEURTS-PACKAGE-FILES:BEGIN -->
 
 | Path | Version | Role |
 |---|---:|---|
-| `AGENTS.md` | 0.9.0 | First repository entry; routes to `AI_READ_FIRST.md`. |
-| `AI_READ_FIRST.md` | 0.9.0 | Second-stage local-package and session router from `AGENTS.md` to this manifest. |
-| `GeurtsTechniqueManifest.md` | 0.9.0 | Package index and single resolver for selection, versions, applicability, subject ownership, order, and conflicts. |
-| `README.md` | 0.9.0 | Repository overview and package changelog. |
+| `AGENTS.md` | 0.10.0 | First repository entry; routes to `AI_READ_FIRST.md`. |
+| `AI_READ_FIRST.md` | 0.10.0 | Second-stage local-package and session router from `AGENTS.md` to this manifest. |
+| `GeurtsTechniqueManifest.md` | 0.10.0 | Package index and single resolver for selection, versions, applicability, subject ownership, order, and conflicts. |
+| `README.md` | 0.10.0 | Repository overview and package changelog. |
 | `GeurtsTechniques/GeurtsTechnicalTechnique.md` | 0.8.0 | Normative technical implementation technique and strict-priority owner. |
 | `GeurtsTechniques/GeurtsGameForgeAutomationTechnique.md` | 0.9.0 | Normative generic AI-assisted automation technique. |
-| `GeurtsTechniques/GeurtsFolderStructureTechnique.md` | 0.8.0 | Normative explanatory folder authority. |
-| `GeurtsTechniques/GeurtsFolderStructureDefinition.json` | 0.9.0 | Machine-readable folder-creation authority; definition v0.8.0. |
-| `GeurtsTechniques/GeurtsAIAgentSetupTechnique.md` | 0.9.0 | Normative native-entry and setup technique. |
-| `GeurtsTechniques/GeurtsGameDesignDocumentationTechnique.md` | 0.8.0 | Normative GDD discovery and maintenance-boundary technique. |
-| `GeurtsTechniques/GeurtsGameForgeIntelligenceTechnique.md` | 1.0.0 | Normative Game Forge Intelligence documentation-consumption boundary; compatibility schema 1.0.0. |
-| `GeurtsTechniques/GeurtsGameForgeIntelligenceIntegrationContract.md` | 1.0.0 | Non-normative compatibility redirect from the released legacy path; never selected as a second authority. |
+| `GeurtsTechniques/GeurtsFolderStructureTechnique.md` | 0.9.0 | Normative explanatory folder authority, including fetched-copy placement. |
+| `GeurtsTechniques/GeurtsFolderStructureDefinition.json` | 0.10.0 | Machine-readable folder-creation authority; definition v0.9.0. |
+| `GeurtsTechniques/GeurtsAIAgentSetupTechnique.md` | 0.10.0 | Normative native-entry and setup technique, independent from documentation Update. |
+| `GeurtsTechniques/GeurtsGameDesignDocumentationTechnique.md` | 0.9.0 | Normative GDD discovery, byte-preservation, and maintenance-boundary technique. |
+| `GeurtsTechniques/GeurtsGameForgeIntelligenceTechnique.md` | 2.0.0 | Normative commit-identity-based notification-only availability, manual documentation-update, source-ownership, and consumption boundary; compatibility schema 2.0.0. |
+| `GeurtsTechniques/GeurtsGameForgeIntelligenceIntegrationContract.md` | 2.0.0 | Non-normative compatibility redirect from the released legacy path; never selected as a second authority. |
 | `GeurtsTechniques/GeurtsGitIgnoreTechnique.md` | 1.0.0 | Normative approved project-root `.gitignore` payload. |
 | `GeurtsTechniques/GeurtsAIResponseControlTechnique_V1.1.md` | 1.1 | Chat-only response technique; not an implementation standard. |
-| `Ideas/GameForgeIntelligenceIdeas.md` | 0.8.0 | Non-normative historical idea register and product-work pointer. |
-| `Migrations/v0.9.0.md` | 0.9.0 | Non-normative transition checklist and target-release snapshot. |
+| `Ideas/GameForgeIntelligenceIdeas.md` | 0.9.0 | Non-normative historical idea register and product-work pointer. |
+| `Migrations/v0.10.0.md` | 0.10.0 | Non-normative transition guide for the explicit destructive manual-update model. |
+| `Migrations/v0.9.0.md` | 0.9.0 | Non-normative historical note for the obsolete automatic transaction/recovery model. |
 | `Migrations/v0.8.0.md` | 0.8.0 | Non-normative historical note for public access and custom `.gitignore` provisioning. |
 | `Migrations/v0.7.0.md` | 0.7.0 | Non-normative historical note for v0.4-v0.6 integrations. |
 | `Tools/CreateAIAgentInstructionFiles.bat` | 0.9.0 | Compatibility launcher for managed AI setup. |
-| `Tools/ManageGeurtsAgentInstructions.ps1` | 0.9.0 | Native-entry migration and GDD scaffolding manager. |
+| `Tools/ManageGeurtsAgentInstructions.ps1` | 0.10.0 | Native-entry migration and GDD scaffolding manager. |
 | `Tools/CreateGeurtsFolderStructure.bat` | 0.9.0 | Compatibility launcher for definition-driven folder creation. |
-| `Tools/CreateGeurtsFolderStructure.ps1` | 0.9.0 | Definition-driven, create-only folder tool. |
-| `Tools/UpdateGameDesignManifest.ps1` | 0.9.0 | Deterministic GDD manifest maintainer. |
+| `Tools/CreateGeurtsFolderStructure.ps1` | 0.10.0 | Definition-driven, create-only folder tool. |
+| `Tools/UpdateGameDesignManifest.ps1` | 0.10.0 | Deterministic GDD manifest maintainer. |
 | `Tools/NativeEntryMigrationCatalog.json` | 0.9.0 | Native-entry exact-fingerprint migration catalog. |
-| `Tools/ValidateGeurtsDocumentation.ps1` | 0.9.0 | Package, path, version, authority, and payload validator. |
+| `Tools/ValidateGeurtsDocumentation.ps1` | 0.10.0 | Package, path, version, authority, lifecycle-boundary, and payload validator. |
 | `Tools/AIAgentInstructionTemplates/AGENTS.md` | 0.9.0 | Managed Codex discovery-shim template. |
 | `Tools/AIAgentInstructionTemplates/copilot-instructions.md` | 0.9.0 | Managed Copilot discovery-shim template. |
 | `Tools/AIAgentInstructionTemplates/instructions/geurts-unity.instructions.md` | 0.9.0 | Managed scoped Unity discovery-shim template. |
 | `Tools/AIAgentInstructionTemplates/instructions/geurts-game-design.instructions.md` | 0.9.0 | Managed scoped game-design discovery-shim template. |
-| `Tools/AIAgentInstructionTemplates/GameDesign/README.md` | 0.9.0 | Create-if-missing project GDD routing scaffold. |
+| `Tools/AIAgentInstructionTemplates/GameDesign/README.md` | 0.10.0 | Create-if-missing project GDD routing scaffold. |
 | `Tools/AIAgentInstructionTemplates/GameDesign/GameDesignManifest.md` | 0.7.0 | Create-if-missing deterministic GDD manifest scaffold. |
-| `Tools/Tests/RunAutomationTests.ps1` | 0.9.0 | Temporary-project automation and migration regression suite. |
+| `Tools/Tests/RunAutomationTests.ps1` | 0.10.0 | Temporary-project automation and lifecycle-regression suite. |
 
 <!-- GEURTS-PACKAGE-FILES:END -->
 
 ## 4. Owner Pointers
 
-- The selected Game Forge Intelligence Technique owns its documentation-consumption and compatibility boundary. The manifest does not restate that lifecycle.
+- The selected Game Forge Intelligence Technique owns authoritative-source separation, notification-only availability checking, explicit manual replacement of the project-local fetched copy, and its consumption/compatibility boundary. The manifest does not restate that lifecycle.
 - The selected Folder, AI Agent Setup, GDD, Git Ignore, Technical, and Automation authorities own their respective tool and project-work rules.

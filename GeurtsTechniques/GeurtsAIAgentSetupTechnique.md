@@ -1,7 +1,7 @@
 # Geurts AI Agent Setup Technique
 
 **Native AI Instruction Setup - Copilot, Codex, and Future Agents**
-**Version:** 0.9.0
+**Version:** 0.10.0
 **Status:** Draft normative technique
 **Primary audience:** AI coding agents and automated development systems
 **Secondary audience:** Human developers
@@ -11,7 +11,7 @@
 
 This technique owns native AI discovery entries, explicitly managed regions, exact-fingerprint legacy migration, and create-if-missing setup scaffolds. `GeurtsTechniqueManifest.md` selects this file and version, determines its place in the package read order, and resolves cross-document applicability and conflicts.
 
-Native entries remain concise. They route an agent into the synchronized package and do not duplicate package policy, integration lifecycle, technical priorities, game-design rules, or product behaviour.
+Native entries remain concise. They route an agent into the project-local fetched copy and do not duplicate package policy, integration lifecycle, technical priorities, game-design rules, or product behaviour.
 
 ## Required Native Route
 
@@ -58,7 +58,7 @@ A recorded version is metadata only and never authorizes replacement. Generic le
 
 Markdown managed regions use matching `GEURTS-MANAGED-BEGIN` and `GEURTS-MANAGED-END` HTML comments with an ID, template version, payload SHA-256, and valid comment closers. YAML-frontmatter regions use the catalog's matching `#` markers inside the frontmatter delimiters. A valid newer unsupported managed version is a conflict and must not be downgraded.
 
-The narrow backup made before a supported per-file managed edit protects that native entry only. It is not documentation synchronization rollback and grants no authority over the copied package or plugin state.
+The narrow backup made before a supported per-file managed edit protects that native entry only. It is not documentation-copy backup or rollback and grants no authority over the project-local fetched copy or plugin state. This generic per-file safeguard remains independent from the Game Forge Intelligence documentation lifecycle.
 
 ## Product-Owned or Unrecognized Legacy Entries
 
@@ -78,7 +78,7 @@ This default changes supported native entries only. Documentation acquisition an
 
 PowerShell 7 may use `pwsh` with the same script path and arguments. The compatibility launcher is likewise under `GeurtsGameForgeDocumentation/Tools/CreateAIAgentInstructionFiles.bat` and requires `-ProjectRoot <UnityProjectRoot>` as its first argument.
 
-Before writing, the manager validates that `-ProjectRoot` is a Unity project containing `Assets/`, `Packages/`, and `ProjectSettings/`, that the tool is not treating its source or synchronized documentation container as the project root, and that all source and target paths remain within their intended roots.
+Before writing, the manager validates that `-ProjectRoot` is a Unity project containing `Assets/`, `Packages/`, and `ProjectSettings/`, that the tool is not treating its source checkout or project-local fetched documentation copy as the project root, and that all source and target paths remain within their intended roots.
 
 ## Separately Authorized Create-If-Missing GDD Scaffolding
 
@@ -112,13 +112,13 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "<ProjectRoot>/GeurtsGameFor
 
 The Game Design Documentation Technique owns discovery, import, drift, and no-invention rules. This setup technique owns only safe invocation and create-if-missing scaffolding.
 
-These independent opt-ins describe manual or standalone manager use. A compatible integration may automatically reconcile the four supported native entries while applying the same exact-fingerprint, preservation, conflict, backup, and opt-out rules. It still must not create GDD scaffolding or update the GDD manifest without the separate explicit authorization above.
+These independent opt-ins describe manual or standalone manager use. `Update Geurts Game Forge Documentation` must not invoke this manager or reconcile any native entry. Any separately exposed native-entry operation requires its own explicit user action and must apply the exact-fingerprint, preservation, conflict, backup, and opt-out rules above. It still must not create GDD scaffolding or update the GDD manifest without the separate explicit authorization above.
 
 ## Delegated Setup Subjects
 
 - Folder creation uses the copied `Tools/CreateGeurtsFolderStructure.ps1` with explicit `-ProjectRoot`; folder meaning and permitted creation remain owned by the manifest-selected Folder Structure Technique and Definition.
 - Project-root `.gitignore` payload and preservation behaviour remain owned by the manifest-selected Git Ignore Technique.
-- Documentation acquisition, replacement, and any integration-specific startup or activation lifecycle remain owned by the manifest-selected integration technique; direct users obtain the package through ordinary Git or download outside this manager.
+- Documentation acquisition, replacement, and integration-specific reading remain owned by the manifest-selected integration technique; direct users obtain the source through ordinary Git or download outside this manager. The Game Forge Intelligence Update owns only replacement of `<ProjectRoot>/GeurtsGameForgeDocumentation/` and grants no mutation authority over native entries, GDD, or `.gitignore`.
 
 ## Maintenance
 

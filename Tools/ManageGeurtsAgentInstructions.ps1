@@ -1,5 +1,5 @@
 # ManageGeurtsAgentInstructions.ps1
-# Version: 0.9.0
+# Version: 0.10.0
 
 [CmdletBinding()]
 param(
@@ -268,7 +268,7 @@ function Add-Result([string]$Status, [string]$Path, [string]$Message, [string]$B
 function Assert-UnityProjectRoot([string]$Root) {
     $toolContainer = [System.IO.Path]::GetFullPath((Split-Path -Parent $PSScriptRoot)).TrimEnd([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar)
     if ($Root.TrimEnd([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar).Equals($toolContainer, [System.StringComparison]::OrdinalIgnoreCase)) {
-        throw "Project root must not be the documentation source or synchronized documentation container: $Root"
+        throw "Project root must not be the documentation source or project-local fetched documentation copy: $Root"
     }
     foreach ($marker in @("Assets", "Packages", "ProjectSettings")) {
         if (-not (Test-Path -LiteralPath (Join-Path $Root $marker) -PathType Container)) {
@@ -367,8 +367,8 @@ function Get-ManagedFolderDefinition([string]$Root, [bool]$IncludeGameDesign) {
 
     try { $definition = Get-Content -LiteralPath $definitionPath -Raw | ConvertFrom-Json }
     catch { throw "The authoritative folder definition is invalid JSON: $($_.Exception.Message)" }
-    if ([string]$definition.definitionVersion -ne "0.8.0" -or [string]$definition.packageVersion -ne "0.9.0") {
-        throw "Managed setup requires folder definition v0.8.0 from package v0.9.0."
+    if ([string]$definition.definitionVersion -ne "0.9.0" -or [string]$definition.packageVersion -ne "0.10.0") {
+        throw "Managed setup requires folder definition v0.9.0 from package v0.10.0."
     }
 
     $requiredProfiles = @("native-entry")

@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0.0",
-  "definitionVersion": "0.8.0",
-  "packageVersion": "0.9.0",
+  "definitionVersion": "0.9.0",
+  "packageVersion": "0.10.0",
   "canonicalPath": "GeurtsTechniques/GeurtsFolderStructureDefinition.json",
   "pathBase": "<ProjectRoot>",
   "pathSeparator": "/",
@@ -69,7 +69,7 @@
     {
       "path": "Docs",
       "requirement": "required",
-      "purpose": "Project-authored documentation root, separate from synchronized Geurts documentation.",
+      "purpose": "Project-authored documentation root, separate from the project-local fetched Geurts documentation copy.",
       "contentCategory": "documentation",
       "parent": null,
       "automation": { "mayCreate": true, "mayRemove": false, "owner": "folder-structure-tool", "creationProfiles": ["full-project-structure", "gdd-scaffolding"], "delegatedOwners": { "gdd-scaffolding": "native-entry-manager" } }
