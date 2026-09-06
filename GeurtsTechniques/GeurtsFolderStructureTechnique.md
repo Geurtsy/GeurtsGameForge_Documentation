@@ -1,7 +1,7 @@
 # Geurts Folder Structure Technique
 
 **Unity Project Structure - AI-First Automation and Human Developer Reference**
-**Version:** 0.9.0
+**Version:** 0.10.0
 **Status:** Draft normative technique
 **Primary audience:** AI coding agents and automated development systems
 **Secondary audience:** Human developers
@@ -56,7 +56,7 @@ using:
 Tools/CreateGeurtsFolderStructure.ps1
 ```
 
-`Tools/CreateGeurtsFolderStructure.bat` is a compatibility launcher. It must delegate folder selection to the PowerShell tool and must not contain an independent complete path list.
+`Tools/CreateGeurtsFolderStructure.bat` is retained only as a compatibility launcher for a separately invoked manual folder operation. It must delegate folder selection to the PowerShell tool and must not contain an independent complete path list. It is not an external installer or bootstrap for the Documentation Companion.
 
 The definition has three creation profiles:
 
@@ -73,7 +73,7 @@ An automation tool may create a registry entry only when all of these conditions
 3. The calling tool is the declared `automation.owner`, or the entry's `automation.delegatedOwners` object explicitly authorizes that profile's owner.
 4. Every declared parent is already present or is created first from the same authorized profile.
 
-Every v0.9.0 entry has `automation.mayRemove` set to `false`. No folder may be automatically deleted merely because it is absent from a later definition. Missing folders may be created; existing folders and their contents must be preserved.
+Every definition v0.10.0 entry has `automation.mayRemove` set to `false`. No folder may be automatically deleted merely because it is absent from a later definition. Missing folders may be created; existing folders and their contents must be preserved.
 
 `required` means the folder is part of the applicable Geurts project or integration baseline. `optional` means content may not need the folder, although the full creation profile may still create the empty organizational path. Requirement status never grants deletion authority.
 
@@ -97,7 +97,9 @@ powershell -NoProfile -ExecutionPolicy Bypass -File ".\Tools\CreateGeurtsFolderS
 
 That source-checkout path uses the script-adjacent definition after checking for a project-local fetched definition. It never discovers an unselected `<ProjectRoot>/GeurtsTechniques/` definition implicitly; a deliberate alternative requires an explicit `-DefinitionPath`.
 
-The compatibility launcher at `GeurtsGameForgeDocumentation/Tools/CreateGeurtsFolderStructure.bat` likewise requires `-ProjectRoot <UnityProjectRoot>` as its first argument. Documentation acquisition and replacement are outside the folder-definition contract, and native-entry setup is a separate explicitly invoked AI Agent Setup responsibility. No copied tool may infer the Unity root from its documentation-container parent.
+The retained compatibility launcher at `GeurtsGameForgeDocumentation/Tools/CreateGeurtsFolderStructure.bat` likewise requires `-ProjectRoot <UnityProjectRoot>` as its first argument when a user deliberately invokes that manual operation. Documentation acquisition and replacement are outside the folder-definition contract, and optional manual native-entry setup is a separate AI Agent Setup responsibility. No copied tool may infer the Unity root from its documentation-container parent.
+
+The independent Editor-only Documentation Companion never invokes either folder tool. Installing it through Unity Package Manager is the only companion installation route. Its confirmed Update may create only `.github/` and `.github/instructions/` when a missing parent is required for one of the contract's exact AI-route targets; it does not run a general setup or folder-structure plan.
 
 ---
 
@@ -129,10 +131,10 @@ ProjectRoot/
 └── GeurtsGameForgeDocumentation/
 ```
 
-- `.github/` and `.github/instructions/` are owned by the native-entry manager. They hold generated Copilot entry files and other GitHub-native repository configuration. The folder-structure tool must not create them as part of the 67-path project profile.
-- `GeurtsGameForgeDocumentation/` is the placement boundary for a detached, writable project-local fetched copy, not a machine-readable managed folder. The folder-structure tool has no creation, replacement, or lifecycle authority for it. The manifest-selected integration technique owns the explicit manual Update boundary.
+- `.github/` and `.github/instructions/` may be created by the optional manual native-entry manager or by the Documentation Companion only as missing parents for its exact contract-listed AI routes. They also may hold unrelated GitHub-native repository configuration. The folder-structure tool must not create them as part of the 67-path project profile.
+- `GeurtsGameForgeDocumentation/` is the placement boundary for a detached project-local snapshot managed as logically read-only content, not a machine-readable managed folder. The folder-structure tool has no creation, replacement, or lifecycle authority for it. The manifest-selected Documentation Companion Technique and Contract own their explicit confirmed Update boundary.
 - Directories below `GeurtsGameForgeDocumentation/` are deliberately absent from the folder definition, so a new tracked source directory does not require a folder-schema change.
-- The native-entry manager may create its assigned `.github` paths but may never delete existing directories or user content through the folder-definition contract.
+- The native-entry manager may create its assigned `.github` paths but may never delete existing directories or user content through the folder-definition contract. A confirmed companion Update separately authorizes whole-file replacement of only its four contract-listed AI routes; every unlisted path inside `.github/` remains uninspected and untouched.
 - `Docs/` and `Docs/GameDesign/` remain members of the full project profile and additionally delegate the closed `gdd-scaffolding` profile to the native-entry manager, so missing GDD scaffolding can be created without granting that manager access to unrelated folders.
 
 ---
@@ -154,14 +156,14 @@ Geurts source implementation techniques do not belong here. They are copied into
 
 ### GeurtsGameForgeDocumentation/
 
-Top-level placement for the detached, writable project-local copy of authoritative Geurts Game Forge documentation fetched from `Geurtsy/GeurtsGameForge_Documentation`.
+Top-level placement for the detached, archive-sourced project-local snapshot of authoritative Geurts Game Forge documentation fetched from `Geurtsy/GeurtsGameForge_Documentation`.
 
 Rules:
 
-- Treat this directory as local reference content that users may edit, while recognizing that an explicit confirmed documentation Update discards and replaces the entire copy.
+- Treat this directory as logically read-only managed reference content. This is an ownership rule, not a requirement to set Windows read-only attributes. A confirmed companion Update discards and replaces its complete contents without inspecting or preserving local drift.
 - The folder-definition tool must not create, populate, update, replace, or remove it.
-- The applicable manifest-selected integration technique owns the explicit fetch-and-replace operation. No normal launch/open or AI/session initialization receives lifecycle authority from this folder technique.
-- This path is outside `com.gameforge.intelligence`; the plugin's own `Documentation~` may contain only plugin-specific documentation and is not a Geurts source.
+- The manifest-selected Documentation Companion Technique and Contract own the companion's explicit fetch-and-replace operation. Normal Unity launch/open may perform only its permitted remote metadata check; AI/session initialization receives no lifecycle authority from this folder technique.
+- This path is outside the companion's UPM package. The package's own `Documentation~` may contain only companion-specific documentation and is not a Geurts source. The companion is independent of Geurts Game Forge God and Game Forge Intelligence and has no Odin Inspector or Quantum Console dependency.
 - Do not store project-specific GDD files here.
 - Keep project-specific game design documentation under `Docs/GameDesign/`.
 - Do not substitute a hidden, nested, or `Assets/` path for this required top-level placement.
@@ -472,7 +474,7 @@ Before creating folders, any compatible folder-creation consumer must:
 
 1. Load `GeurtsGameForgeDocumentation/GeurtsTechniques/GeurtsFolderStructureDefinition.json` from the active validated package.
 2. Confirm supported `schemaVersion`, `definitionVersion`, and `packageVersion` values.
-3. Confirm `managedFolderCount` is 69 and `projectStructureFolderCount` is 67 for definition v0.9.0.
+3. Confirm `managedFolderCount` is 69 and `projectStructureFolderCount` is 67 for definition v0.10.0.
 4. Reject duplicate paths, absolute paths, traversal segments, backslashes, unknown content categories, missing parents, unknown profiles, or malformed automation objects.
 5. Confirm every registry path appears in the literal Markdown registry below.
 6. Select only the creation profile owned by the calling operation.
@@ -595,7 +597,7 @@ Assets/_Project/
 
 Only expand the structure when search time, onboarding friction, or asset collisions become noticeable.
 
-The `full-project-structure` automation profile creates the complete 67-path structure. Teams may choose the minimal subset manually at the beginning of a small project; v0.9.0 does not define an automated minimal profile. A future profile must be versioned in both authorities and must preserve the no-deletion rule.
+The `full-project-structure` automation profile creates the complete 67-path structure. Teams may choose the minimal subset manually at the beginning of a small project; definition v0.10.0 does not define an automated minimal profile. A future profile must be versioned in both authorities and must preserve the no-deletion rule. The Documentation Companion does not select any profile.
 
 ---
 

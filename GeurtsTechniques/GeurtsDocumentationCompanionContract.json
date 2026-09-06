@@ -1,0 +1,70 @@
+{
+  "schemaVersion": "1.0.0",
+  "packageVersion": "0.11.0",
+  "source": {
+    "repository": "https://github.com/Geurtsy/GeurtsGameForge_Documentation.git",
+    "branch": "main",
+    "selection": "exact-resolved-head-commit-archive"
+  },
+  "destination": {
+    "projectRelativePath": "GeurtsGameForgeDocumentation",
+    "replacement": "complete-directory",
+    "access": "logically-read-only"
+  },
+  "validationEntries": [
+    "AGENTS.md",
+    "AI_READ_FIRST.md",
+    "GeurtsTechniqueManifest.md",
+    "GeurtsTechniques/GeurtsDocumentationCompanionTechnique.md",
+    "GeurtsTechniques/GeurtsDocumentationCompanionContract.json",
+    "Tools/AIAgentInstructionTemplates/AGENTS.md",
+    "Tools/AIAgentInstructionTemplates/copilot-instructions.md",
+    "Tools/AIAgentInstructionTemplates/instructions/geurts-unity.instructions.md",
+    "Tools/AIAgentInstructionTemplates/instructions/geurts-game-design.instructions.md"
+  ],
+  "updateUi": {
+    "actionLabel": "Update Geurts Game Forge Documentation",
+    "confirmationDefault": "cancel",
+    "cancelResult": "no-network-or-filesystem-change",
+    "confirmationTargets": [
+      {
+        "path": "GeurtsGameForgeDocumentation",
+        "effect": "replace-complete-directory"
+      },
+      {
+        "path": "AGENTS.md",
+        "effect": "replace-complete-file"
+      },
+      {
+        "path": ".github/copilot-instructions.md",
+        "effect": "replace-complete-file"
+      },
+      {
+        "path": ".github/instructions/geurts-unity.instructions.md",
+        "effect": "replace-complete-file"
+      },
+      {
+        "path": ".github/instructions/geurts-game-design.instructions.md",
+        "effect": "replace-complete-file"
+      }
+    ]
+  },
+  "routeMappings": [
+    {
+      "template": "Tools/AIAgentInstructionTemplates/AGENTS.md",
+      "target": "AGENTS.md"
+    },
+    {
+      "template": "Tools/AIAgentInstructionTemplates/copilot-instructions.md",
+      "target": ".github/copilot-instructions.md"
+    },
+    {
+      "template": "Tools/AIAgentInstructionTemplates/instructions/geurts-unity.instructions.md",
+      "target": ".github/instructions/geurts-unity.instructions.md"
+    },
+    {
+      "template": "Tools/AIAgentInstructionTemplates/instructions/geurts-game-design.instructions.md",
+      "target": ".github/instructions/geurts-game-design.instructions.md"
+    }
+  ]
+}

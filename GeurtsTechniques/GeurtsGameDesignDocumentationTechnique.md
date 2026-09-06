@@ -1,7 +1,7 @@
 # Geurts Game Design Documentation Technique
 
 **Game Design Documentation Discovery - AI and Human Developer Reference**  
-**Version:** 0.9.0
+**Version:** 0.10.0
 **Status:** Draft normative technique
 **Primary audience:** AI coding agents and automated development systems
 **Secondary audience:** Human developers
@@ -35,11 +35,11 @@ Project-specific game design documentation belongs at:
 <ProjectRoot>/Docs/GameDesign/
 ```
 
-The fetched copy is outside `com.gameforge.intelligence`; plugin-only `Documentation~` is not a source or duplicate of Geurts documentation. Never use a template or example inside `GeurtsGameForgeDocumentation/` as the target game's design authority.
+The managed copy is outside the independent Documentation Companion's Unity Package Manager package. Companion-only `Documentation~` is not a source or duplicate of Geurts documentation. The companion is independent of Geurts Game Forge God and Game Forge Intelligence and has no Odin Inspector or Quantum Console dependency. Never use a template or example inside `GeurtsGameForgeDocumentation/` as the target game's design authority.
 
 Never put Geurts source-package files in `Docs/GameDesign/` or project-specific GDD files in `GeurtsGameForgeDocumentation/`.
 
-`Update Geurts Game Forge Documentation` may delete and replace only the fetched copy. It must leave every path and byte under `Docs/GameDesign/` untouched. GDD scaffolding and bounded manifest maintenance remain separate explicit operations under this technique and the AI Agent Setup Technique.
+After one confirmation, the companion's `Update Geurts Game Forge Documentation` action may replace the complete managed documentation folder and only the four project AI-route files declared by `GeurtsDocumentationCompanionContract.json`. It must not enumerate, inspect, create, validate, hash, modify, or delete any path under `Docs/GameDesign/`. Copying the exact scoped game-design route template to `.github/instructions/geurts-game-design.instructions.md` grants no access to the paths that template may later route an AI tool toward. GDD scaffolding and bounded manifest maintenance remain separate optional manual operations under this technique and the AI Agent Setup Technique.
 
 ---
 
@@ -112,13 +112,13 @@ Rules:
 - Make every rerun idempotent.
 - Report which paths were created and which already existed.
 
-Native-entry migration alone creates no GDD paths. The separately authorized operation uses the copied manager with explicit project root and opt-in:
+Installing the companion through Unity Package Manager and using its Update create no GDD paths and never invoke a script. Native-entry migration alone also creates no GDD paths. A separately authorized optional manual operation may use the copied manager with explicit project root and opt-in:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File "<ProjectRoot>/GeurtsGameForgeDocumentation/Tools/ManageGeurtsAgentInstructions.ps1" -ProjectRoot "<ProjectRoot>" -IncludeGameDesignScaffolding
 ```
 
-The scaffolding opt-in does not update the manifest. Deterministic manifest maintenance requires a separate explicit operation, either the copied manager with `-UpdateGameDesignManifest` or the copied maintainer invocation below. The safe invocation contract is defined in `GeurtsTechniques/GeurtsAIAgentSetupTechnique.md`.
+The manual scaffolding opt-in does not update the manifest. Deterministic manifest maintenance requires another separate explicit manual operation, either the copied manager with `-UpdateGameDesignManifest` or the copied maintainer invocation below. The safe invocation contract is defined in `GeurtsTechniques/GeurtsAIAgentSetupTechnique.md`. None of these manual operations are part of the companion lifecycle.
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File "<ProjectRoot>/GeurtsGameForgeDocumentation/Tools/ManageGeurtsAgentInstructions.ps1" -ProjectRoot "<ProjectRoot>" -UpdateGameDesignManifest
@@ -205,7 +205,7 @@ The managed table is bounded by matching `GEURTS-GDD-MANIFEST-BEGIN` and `GEURTS
 
 New documents without reliable metadata receive `RequiresClassification`. Unsupported files are reported and must not be silently treated as design authority. Duplicate identifiers are conflicts: do not choose a winner or overwrite the manifest silently.
 
-A compatible host may detect imports or debounced file-watcher events, invalidate cached discovery data, report manifest drift, and offer a user-approved handoff to the external maintainer. It must not invoke the maintainer automatically or write project GDD content.
+A compatible host may detect imports or debounced file-watcher events, invalidate cached discovery data, report manifest drift, and offer a user-approved handoff to the external maintainer. It must not invoke the maintainer automatically or write project GDD content. The Documentation Companion is not such a host: its startup metadata check and confirmed Update must not inspect `Docs/GameDesign/` at all.
 
 ### Design Document Conflicts
 

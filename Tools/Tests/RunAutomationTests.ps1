@@ -1,5 +1,5 @@
 # RunAutomationTests.ps1
-# Version: 0.10.0
+# Version: 0.11.0
 
 [CmdletBinding()]
 param(
@@ -269,18 +269,70 @@ try {
 
     $draftManifestText = [System.IO.File]::ReadAllText((Join-Path $RepositoryRoot "GeurtsTechniqueManifest.md"))
     $draftReadmeText = [System.IO.File]::ReadAllText((Join-Path $RepositoryRoot "README.md"))
-    $targetMigrationText = [System.IO.File]::ReadAllText((Join-Path $RepositoryRoot "Migrations/v0.10.0.md"))
-    Assert-True ($draftManifestText -match '(?im)^\*\*Status:\*\*\s*Draft normative package manifest\s*$' -and $draftReadmeText -match '(?im)^\*\*Status:\*\*\s*Draft technique package\s*$' -and $targetMigrationText -match '(?i)planned transition' -and $targetMigrationText -match '(?i)target-release snapshot' -and $targetMigrationText -notmatch '(?i)(?:v0\.10\.0|package v0\.10\.0)[^\r\n]{0,80}(?:is|was|has been) released') "v0.10.0 remains a Draft target release with a planned snapshot rather than a completed-release claim"
+    $targetMigrationText = [System.IO.File]::ReadAllText((Join-Path $RepositoryRoot "Migrations/v0.11.0.md"))
+    Assert-True ($draftManifestText -match '(?im)^\*\*Version:\*\*\s*0\.11\.0\s*$' -and $draftManifestText -match '(?im)^\*\*Status:\*\*\s*Draft normative package manifest\s*$' -and $draftReadmeText -match '(?im)^\*\*Status:\*\*\s*Draft technique package\s*$' -and $targetMigrationText -match '(?i)planned transition' -and $targetMigrationText -match '(?i)target-release snapshot' -and $targetMigrationText -notmatch '(?i)(?:v0\.11\.0|package v0\.11\.0)[^\r\n]{0,80}(?:is|was|has been) released') "v0.11.0 remains a Draft target release with a planned snapshot rather than a completed-release claim"
 
     $gfiContractText = [System.IO.File]::ReadAllText((Join-Path $RepositoryRoot "GeurtsTechniques/GeurtsGameForgeIntelligenceTechnique.md"))
-    Assert-True ($gfiContractText -match '(?i)sole primary source and authority for all Geurts Game Forge documentation' -and $gfiContractText.Contains("<PluginPackageRoot>/Documentation~/") -and $gfiContractText -match '(?i)must not ship a bundled or fallback copy of Geurts documentation') "GFI v2 keeps this repository authoritative and plugin Documentation~ plugin-specific"
-    Assert-True ($gfiContractText -match '(?i)exactly one lightweight remote metadata check' -and $gfiContractText -match '(?i)Update availability is determined only by commit identity' -and $gfiContractText -match '(?i)commit IDs are identical, do not report an Update' -and $gfiContractText -match '(?i)Package-version ordering or inequality is display-only and must not determine availability' -and $gfiContractText -match '(?i)startup comparison result is unknown' -and $gfiContractText -match '(?i)must not download documentation[^\r\n]{0,200}inspect or hash the project-local copy' -and $gfiContractText -match '(?i)performs no additional remote documentation check' -and $gfiContractText -match '(?i)Local edits[^\r\n]{0,100}do not affect update availability') "Startup performs one commit-identity-only notification check without local inspection or lifecycle work"
-    Assert-True ($gfiContractText.Contains("Installed Geurts Documentation: <version | Not installed | Unknown>") -and $gfiContractText.Contains("GameForgeIntelligence Plugin: <version | Unknown>") -and $gfiContractText.Contains("Available Geurts Documentation: <version>") -and $gfiContractText -match '(?i)Never derive[^\r\n]{0,180}mutable project-local documentation files' -and $gfiContractText -match '(?i)distinct values. Never display one as another') "Documentation, available, plugin, technique, and schema versions have separate authoritative labels and unknown states"
-    Assert-True ($gfiContractText -match '(?i)Every successful Update receipt records the authoritative selected commit ID' -and $gfiContractText -match '(?i)Immediately before the first destructive mutation[^\r\n]{0,160}invalidate or clear the current installed receipt' -and $gfiContractText -match '(?i)historical receipt is diagnostic history only and must never drive' -and $gfiContractText -match '(?i)report success only after that receipt is written' -and $gfiContractText -match '(?i)Failure or interruption after receipt invalidation must leave the current receipt absent or invalid' -and $gfiContractText -match '(?is)destination directory is absent.{0,140}`Not installed`.{0,220}directory exists.{0,180}`Unknown`') "Destructive receipt transition prevents stale installed state and writes the selected commit receipt only after success"
-    Assert-True ($gfiContractText -match '(?i)safe default is Cancel' -and $gfiContractText -match '(?i)Every local edit anywhere inside GeurtsGameForgeDocumentation will be overwritten and lost' -and $gfiContractText -match '(?i)no rollback' -and $gfiContractText -match '(?i)missing or incomplete') "Explicit Update warning is cancel-default and fully describes destructive failure semantics"
-    Assert-True ($gfiContractText -match '(?i)complete Git-tracked source tree' -and $gfiContractText -match '(?i)detached, writable content snapshot' -and $gfiContractText -match '(?i)no `\.git` directory or file' -and $gfiContractText -match '(?i)read-only file or directory attributes must be cleared' -and $gfiContractText -match '(?i)residue must never block a later') "Confirmed Update produces a complete detached writable snapshot with non-blocking ephemeral cleanup"
-    Assert-True ($gfiContractText -match '(?i)only project path this documentation Update may delete or replace' -and $gfiContractText -match '(?i)Every file and byte there[^\r\n]{0,160}must remain untouched' -and $gfiContractText -match '(?i)must not invoke native-entry setup') "Documentation Update replaces only GeurtsGameForgeDocumentation and leaves GDD and generic-tool subjects untouched"
-    Assert-True ($gfiContractText -match '(?i)must not create or require an automatic documentation downloader or installer' -and $gfiContractText -match '(?i)Do not recreate any of those mechanisms under different terminology' -and $gfiContractText -match '(?i)legacy evidence[^\r\n]{0,60}untouched' -and $gfiContractText -match '(?i)must not consult it, depend on it, or allow it to block') "Discarded transaction and recovery machinery remains forbidden while legacy Library evidence is untouched and non-blocking"
+    Assert-True ($gfiContractText -match '(?i)sole primary source and authority for all Geurts Game Forge documentation' -and $gfiContractText.Contains("<PluginPackageRoot>/Documentation~/") -and $gfiContractText -match '(?i)must not ship a bundled or fallback copy of Geurts documentation') "Frozen GFI v2 keeps this repository authoritative and plugin Documentation~ plugin-specific"
+    Assert-True ($gfiContractText -match '(?i)exactly one lightweight remote metadata check' -and $gfiContractText -match '(?i)Update availability is determined only by commit identity' -and $gfiContractText -match '(?i)commit IDs are identical, do not report an Update' -and $gfiContractText -match '(?i)Package-version ordering or inequality is display-only and must not determine availability' -and $gfiContractText -match '(?i)startup comparison result is unknown' -and $gfiContractText -match '(?i)must not download documentation[^\r\n]{0,200}inspect or hash the project-local copy' -and $gfiContractText -match '(?i)performs no additional remote documentation check' -and $gfiContractText -match '(?i)Local edits[^\r\n]{0,100}do not affect update availability') "Frozen GFI v2 retains its one commit-identity-only notification check without local inspection or lifecycle work"
+    Assert-True ($gfiContractText.Contains("Installed Geurts Documentation: <version | Not installed | Unknown>") -and $gfiContractText.Contains("GameForgeIntelligence Plugin: <version | Unknown>") -and $gfiContractText.Contains("Available Geurts Documentation: <version>") -and $gfiContractText -match '(?i)Never derive[^\r\n]{0,180}mutable project-local documentation files' -and $gfiContractText -match '(?i)distinct values. Never display one as another') "Frozen GFI v2 keeps documentation, available, plugin, technique, and schema versions separately labelled"
+    Assert-True ($gfiContractText -match '(?i)Every successful Update receipt records the authoritative selected commit ID' -and $gfiContractText -match '(?i)Immediately before the first destructive mutation[^\r\n]{0,160}invalidate or clear the current installed receipt' -and $gfiContractText -match '(?i)historical receipt is diagnostic history only and must never drive' -and $gfiContractText -match '(?i)report success only after that receipt is written' -and $gfiContractText -match '(?i)Failure or interruption after receipt invalidation must leave the current receipt absent or invalid' -and $gfiContractText -match '(?is)destination directory is absent.{0,140}`Not installed`.{0,220}directory exists.{0,180}`Unknown`') "Frozen GFI v2 retains its destructive receipt transition and post-success selected-commit receipt"
+    Assert-True ($gfiContractText -match '(?i)safe default is Cancel' -and $gfiContractText -match '(?i)Every local edit anywhere inside GeurtsGameForgeDocumentation will be overwritten and lost' -and $gfiContractText -match '(?i)no rollback' -and $gfiContractText -match '(?i)missing or incomplete') "Frozen GFI v2 retains its cancel-default destructive warning"
+    Assert-True ($gfiContractText -match '(?i)complete Git-tracked source tree' -and $gfiContractText -match '(?i)detached, writable content snapshot' -and $gfiContractText -match '(?i)no `\.git` directory or file' -and $gfiContractText -match '(?i)read-only file or directory attributes must be cleared' -and $gfiContractText -match '(?i)residue must never block a later') "Frozen GFI v2 retains its detached complete-tree snapshot contract"
+    Assert-True ($gfiContractText -match '(?i)only project path this documentation Update may delete or replace' -and $gfiContractText -match '(?i)Every file and byte there[^\r\n]{0,160}must remain untouched' -and $gfiContractText -match '(?i)must not invoke native-entry setup') "Frozen GFI v2 retains its historical documentation-only boundary and leaves GDD and generic-tool subjects untouched"
+    Assert-True ($gfiContractText -match '(?i)must not create or require an automatic documentation downloader or installer' -and $gfiContractText -match '(?i)Do not recreate any of those mechanisms under different terminology' -and $gfiContractText -match '(?i)legacy evidence[^\r\n]{0,60}untouched' -and $gfiContractText -match '(?i)must not consult it, depend on it, or allow it to block') "Frozen GFI v2 keeps discarded transaction/recovery machinery forbidden and legacy Library evidence non-blocking"
+
+    $companionTechniqueText = [System.IO.File]::ReadAllText((Join-Path $RepositoryRoot "GeurtsTechniques/GeurtsDocumentationCompanionTechnique.md"))
+    $companionContract = Get-Content -LiteralPath (Join-Path $RepositoryRoot "GeurtsTechniques/GeurtsDocumentationCompanionContract.json") -Raw | ConvertFrom-Json
+    $expectedCompanionValidationEntries = @(
+        "AGENTS.md",
+        "AI_READ_FIRST.md",
+        "GeurtsTechniqueManifest.md",
+        "GeurtsTechniques/GeurtsDocumentationCompanionTechnique.md",
+        "GeurtsTechniques/GeurtsDocumentationCompanionContract.json",
+        "Tools/AIAgentInstructionTemplates/AGENTS.md",
+        "Tools/AIAgentInstructionTemplates/copilot-instructions.md",
+        "Tools/AIAgentInstructionTemplates/instructions/geurts-unity.instructions.md",
+        "Tools/AIAgentInstructionTemplates/instructions/geurts-game-design.instructions.md"
+    )
+    $expectedCompanionRoutes = @(
+        "Tools/AIAgentInstructionTemplates/AGENTS.md|AGENTS.md",
+        "Tools/AIAgentInstructionTemplates/copilot-instructions.md|.github/copilot-instructions.md",
+        "Tools/AIAgentInstructionTemplates/instructions/geurts-unity.instructions.md|.github/instructions/geurts-unity.instructions.md",
+        "Tools/AIAgentInstructionTemplates/instructions/geurts-game-design.instructions.md|.github/instructions/geurts-game-design.instructions.md"
+    )
+    $actualCompanionRoutes = @($companionContract.routeMappings | ForEach-Object { "{0}|{1}" -f [string]$_.template, [string]$_.target })
+    $actualConfirmationTargets = @($companionContract.updateUi.confirmationTargets | ForEach-Object { "{0}|{1}" -f [string]$_.path, [string]$_.effect })
+    $expectedConfirmationTargets = @(
+        "GeurtsGameForgeDocumentation|replace-complete-directory",
+        "AGENTS.md|replace-complete-file",
+        ".github/copilot-instructions.md|replace-complete-file",
+        ".github/instructions/geurts-unity.instructions.md|replace-complete-file",
+        ".github/instructions/geurts-game-design.instructions.md|replace-complete-file"
+    )
+    Assert-True ([string]$companionContract.schemaVersion -ceq "1.0.0" -and [string]$companionContract.packageVersion -ceq "0.11.0" -and [string]$companionContract.source.repository -ceq "https://github.com/Geurtsy/GeurtsGameForge_Documentation.git" -and [string]$companionContract.source.branch -ceq "main" -and [string]$companionContract.source.selection -ceq "exact-resolved-head-commit-archive") "Companion contract identifies schema 1.0.0, package v0.11.0, and the official exact-main-commit archive source"
+    Assert-True ([string]$companionContract.destination.projectRelativePath -ceq "GeurtsGameForgeDocumentation" -and [string]$companionContract.destination.replacement -ceq "complete-directory" -and [string]$companionContract.destination.access -ceq "logically-read-only") "Companion contract names the one logically-read-only complete documentation destination"
+    Assert-True ((@($companionContract.validationEntries) -join "|") -ceq ($expectedCompanionValidationEntries -join "|") -and @($companionContract.validationEntries | Select-Object -Unique).Count -eq 9) "Current companion contract names the exact nine unique package-v0.11.0 source-validation entries"
+    Assert-True (($actualCompanionRoutes -join "|") -ceq ($expectedCompanionRoutes -join "|") -and ($actualConfirmationTargets -join "|") -ceq ($expectedConfirmationTargets -join "|") -and [string]$companionContract.updateUi.actionLabel -ceq "Update Geurts Game Forge Documentation" -and [string]$companionContract.updateUi.confirmationDefault -ceq "cancel" -and [string]$companionContract.updateUi.cancelResult -ceq "no-network-or-filesystem-change") "Companion contract fixes four template routes and one cancel-default five-target Update confirmation"
+    Assert-True ($companionTechniqueText -match '(?i)one confirmation dialog' -and $companionTechniqueText -match '(?i)no earlier preview, dry run[^\r\n]{0,100}second confirmation' -and $companionTechniqueText -match '(?i)confirmation occurs before archive acquisition' -and $companionTechniqueText -match '(?i)earlier approval does not authorize a changed or expanded managed target set') "Confirmation uses the built-in schema-1.0.0 target set before acquisition and cannot authorize a changed downloaded target set"
+    Assert-True ($companionTechniqueText -match '(?i)`packageVersion` is source-release metadata, not a companion compatibility gate' -and $companionTechniqueText -match '(?i)later package version alone must not require a companion release' -and $companionTechniqueText -match '(?i)schema-1\.0\.0 consumer may read a later list rather than pinning v0\.11\.0' -and $companionTechniqueText -match '(?i)every entry must be unique, safe, readable, and archive-root-relative') "Schema 1.0.0 keeps package versions and safe validation entries forward-compatible while mutation routes remain fixed"
+    Assert-True ($companionTechniqueText -match '(?i)must not enumerate, inspect, create, validate, hash, modify, or delete anything under' -and $companionTechniqueText.Contains("<ProjectRoot>/Docs/GameDesign/") -and $companionTechniqueText -match '(?i)scan for or execute `\.bat`, `\.cmd`, `\.ps1`' -and $companionTechniqueText -match '(?i)copied as inert content') "Companion never inspects Docs/GameDesign, scans for setup work, or executes documentation/project scripts"
+    Assert-True ($companionTechniqueText -match '(?i)may perform at most one lightweight metadata-only request' -and $companionTechniqueText -match '(?i)last-successful-installed commit value for this Unity project' -and $companionTechniqueText -match '(?i)value for one project must never suppress availability in another') "Companion startup comparison is optional-at-most-once and keeps external state isolated per Unity project"
+    Assert-True ($companionTechniqueText -match '(?i)reports failure plainly and never reports partial completion as success' -and $companionTechniqueText -match '(?i)After every managed-target verification passes, report the content Update as successful and attempt to write' -and $companionTechniqueText -match '(?i)comparison-state write fails, report a warning[^\r\n]{0,160}do not reclassify, undo, or repair the successful five-target replacement' -and $companionTechniqueText -match '(?i)no automatic repair or recovery flow') "Companion reports content success after all five targets and treats later comparison-state persistence failure as a non-destructive warning"
+    Assert-True ($companionTechniqueText -match '(?i)AI tool must support the applicable native instruction file or be explicitly instructed to read and follow `AGENTS\.md`' -and $companionTechniqueText -match '(?i)must not claim universal AI control or compliance') "Companion states the native AI-routing support limitation without claiming universal control"
+
+    $expectedBrickRouteText = 'Before planning or modifying any Geurts Game Forge brick code, read and follow `GeurtsGameForgeDocumentation/AGENTS.md`; it routes to the installed, manifest-selected documentation. Treat that documentation as the source of truth for the work.'
+    $nativeTemplateExpectations = @(
+        @{ Path = "Tools/AIAgentInstructionTemplates/AGENTS.md"; Markers = @('id="agents-body" version="1.0.0" sha256="93464c8bace065ddfe2f305dfedafafbb8a1099cb318c21dad185d46d22451eb"') },
+        @{ Path = "Tools/AIAgentInstructionTemplates/copilot-instructions.md"; Markers = @('id="copilot-body" version="1.0.0" sha256="c4493666c6135143f8c97d0f3b0aafd72375998b68359cf5bca13aa6cdb6a775"') },
+        @{ Path = "Tools/AIAgentInstructionTemplates/instructions/geurts-unity.instructions.md"; Markers = @('id="unity-frontmatter" version="1.0.0" sha256="98e4fd786bbd1474e28d3800b91d749c29ff2acf94b89ef821d6860645829688"', 'id="unity-body" version="1.0.0" sha256="655d9a82ce462a8501ed3542589e5010abc995f2ed27beae4bc30550ecfc28cb"') },
+        @{ Path = "Tools/AIAgentInstructionTemplates/instructions/geurts-game-design.instructions.md"; Markers = @('id="game-design-frontmatter" version="1.0.0" sha256="334b60274fe81a1891e1500785d29a249a0d4e32957bb665a770402163fa2cd4"', 'id="game-design-body" version="1.0.0" sha256="a064e41b0e80aac9c5109203c68cdc74eae6920c47e8e84d369a2395f19e3ec3"') }
+    )
+    foreach ($templateExpectation in $nativeTemplateExpectations) {
+        $templateText = [System.IO.File]::ReadAllText((Join-Path $RepositoryRoot $templateExpectation.Path))
+        $missingMarkers = @($templateExpectation.Markers | Where-Object { -not $templateText.Contains([string]$_) })
+        Assert-True ([regex]::Matches($templateText, [regex]::Escape($expectedBrickRouteText)).Count -eq 1 -and $missingMarkers.Count -eq 0 -and -not $templateText.Contains('version="0.9.0"')) "$($templateExpectation.Path) has the exact v1.0.0 brick-first route and approved managed-region hashes"
+    }
 
     # Project-mutating tools copied inside the documentation container must never infer that container as a Unity root.
     $rootSafetyProject = New-TestProject -Parent $testRoot -Name "explicit-root-safety"
@@ -352,10 +404,10 @@ try {
         Assert-True (Test-Path -LiteralPath (Join-Path $fresh $relative) -PathType Leaf) "Fresh setup creates $relative"
     }
     $freshAgentsText = [System.IO.File]::ReadAllText((Join-Path $fresh "AGENTS.md"))
-    Assert-True ($freshAgentsText.Contains('version="0.9.0"') -and $freshAgentsText.Contains("GeurtsGameForgeDocumentation/AGENTS.md") -and -not $freshAgentsText.Contains("GeurtsGameForgeDocumentation/AI_READ_FIRST.md") -and -not $freshAgentsText.Contains("Docs/GameDesign/")) "Project-root AGENTS is only a v0.9 copied-AGENTS discovery shim"
+    Assert-True ($freshAgentsText.Contains('version="1.0.0"') -and [regex]::Matches($freshAgentsText, [regex]::Escape($expectedBrickRouteText)).Count -eq 1 -and -not $freshAgentsText.Contains("GeurtsGameForgeDocumentation/AI_READ_FIRST.md") -and -not $freshAgentsText.Contains("Docs/GameDesign/")) "Project-root AGENTS is the exact v1.0.0 brick-first copied-AGENTS discovery shim"
     foreach ($relative in @(".github/copilot-instructions.md", ".github/instructions/geurts-unity.instructions.md", ".github/instructions/geurts-game-design.instructions.md")) {
         $nativeRouteText = [System.IO.File]::ReadAllText((Join-Path $fresh $relative))
-        Assert-True ($nativeRouteText.Contains('version="0.9.0"') -and $nativeRouteText.Contains("GeurtsGameForgeDocumentation/AGENTS.md") -and $nativeRouteText.Contains("manifest-controlled package chain") -and -not $nativeRouteText.Contains("owns the complete documentation chain") -and -not $nativeRouteText.Contains("GeurtsGameForgeDocumentation/AI_READ_FIRST.md") -and -not $nativeRouteText.Contains("network efficiency")) "$relative is a concise v0.9.0 route through copied AGENTS.md into the manifest-controlled chain without duplicate lifecycle or policy"
+        Assert-True ($nativeRouteText.Contains('version="1.0.0"') -and [regex]::Matches($nativeRouteText, [regex]::Escape($expectedBrickRouteText)).Count -eq 1 -and -not $nativeRouteText.Contains("owns the complete documentation chain") -and -not $nativeRouteText.Contains("GeurtsGameForgeDocumentation/AI_READ_FIRST.md") -and -not $nativeRouteText.Contains("network efficiency")) "$relative is the exact concise v1.0.0 brick-first route through copied AGENTS.md into the installed manifest-selected documentation"
     }
     $freshGddReadmeText = [System.IO.File]::ReadAllText((Join-Path $fresh "Docs/GameDesign/README.md"))
     Assert-True ($freshGddReadmeText -match '(?i)project-local fetched Geurts documentation copy' -and $freshGddReadmeText -match '(?i)missing information would establish or change player-facing design intent' -and $freshGddReadmeText -match '(?i)reversible technical details that do not create or overwrite design facts' -and $freshGddReadmeText.Contains('GEURTS-SCAFFOLD-BEGIN version="0.10.0"')) "Managed GDD README remains separate from the fetched copy, stops for missing design intent, and permits only reversible non-design assumptions"
@@ -390,8 +442,8 @@ try {
     $managedV07Text = $managedV07Base + "`nUser-owned content outside the managed region.`n"
     Write-Utf8 -Path $managedV07Path -Text $managedV07Text
     $managedV07Run = Invoke-TestScript -Path $manageScript -Arguments @("-ProjectRoot", $managedV07)
-    $managedV09Text = [System.IO.File]::ReadAllText($managedV07Path)
-    Assert-True ($managedV07Run.Code -eq 0 -and $managedV09Text.Contains('version="0.9.0"') -and $managedV09Text.Contains("GeurtsGameForgeDocumentation/AGENTS.md") -and -not $managedV09Text.Contains("GeurtsGameForgeDocumentation/AI_READ_FIRST.md") -and $managedV09Text.Contains("User-owned content outside the managed region.")) "Valid managed v0.7 AGENTS upgrades to the concise v0.9 shim while preserving outside content"
+    $managedV10Text = [System.IO.File]::ReadAllText($managedV07Path)
+    Assert-True ($managedV07Run.Code -eq 0 -and $managedV10Text.Contains('version="1.0.0"') -and [regex]::Matches($managedV10Text, [regex]::Escape($expectedBrickRouteText)).Count -eq 1 -and -not $managedV10Text.Contains("GeurtsGameForgeDocumentation/AI_READ_FIRST.md") -and $managedV10Text.Contains("User-owned content outside the managed region.")) "Valid managed v0.7 AGENTS upgrades to the exact v1.0.0 brick-first shim while preserving outside content"
 
     $utf8BomProject = New-TestProject -Parent $testRoot -Name "managed-utf8-bom-mixed-newlines"
     $utf8BomPath = Join-Path $utf8BomProject "AGENTS.md"
@@ -609,7 +661,7 @@ try {
 
     $futureManaged = New-TestProject -Parent $testRoot -Name "future-managed"
     $futureManagedPath = Join-Path $futureManaged "AGENTS.md"
-    $futureManagedText = [System.IO.File]::ReadAllText((Join-Path $RepositoryRoot "Tools/AIAgentInstructionTemplates/AGENTS.md")).Replace('version="0.9.0"', 'version="1.0.0"')
+    $futureManagedText = [System.IO.File]::ReadAllText((Join-Path $RepositoryRoot "Tools/AIAgentInstructionTemplates/AGENTS.md")).Replace('version="1.0.0"', 'version="2.0.0"')
     Write-Utf8 -Path $futureManagedPath -Text $futureManagedText
     $futureManagedHash = Get-FileSha -Path $futureManagedPath
     $futureManagedRun = Invoke-TestScript -Path $manageScript -Arguments @("-ProjectRoot", $futureManaged)
@@ -652,7 +704,7 @@ try {
         foreach ($relative in $set.Files.Keys) {
             $target = Join-Path $project $relative
             $migratedNativeText = [System.IO.File]::ReadAllText($target)
-            Assert-True ($migratedNativeText.Contains("GEURTS-MANAGED-BEGIN") -and $migratedNativeText.Contains('version="0.9.0"') -and $migratedNativeText.Contains("GeurtsGameForgeDocumentation/AGENTS.md") -and -not $migratedNativeText.Contains("GeurtsGameForgeDocumentation/AI_READ_FIRST.md")) "$($set.Name) $relative migrates to managed v0.9.0 through copied AGENTS.md"
+            Assert-True ($migratedNativeText.Contains("GEURTS-MANAGED-BEGIN") -and $migratedNativeText.Contains('version="1.0.0"') -and [regex]::Matches($migratedNativeText, [regex]::Escape($expectedBrickRouteText)).Count -eq 1 -and -not $migratedNativeText.Contains("GeurtsGameForgeDocumentation/AI_READ_FIRST.md")) "$($set.Name) $relative migrates to the exact managed v1.0.0 brick-first route through copied AGENTS.md"
             Assert-True (Test-Path -LiteralPath ($target + ".pre-v0.9.0.bak") -PathType Leaf) "$($set.Name) $relative receives a pre-v0.9.0 backup"
         }
     }
@@ -665,7 +717,7 @@ try {
     $crlfLegacyHash = Get-FileSha -Path $crlfLegacyPath
     $crlfLegacyRun = Invoke-TestScript -Path $manageScript -Arguments @("-ProjectRoot", $crlfLegacyProject)
     $crlfMigratedText = [System.IO.File]::ReadAllText($crlfLegacyPath)
-    Assert-True ($crlfLegacyRun.Code -eq 0 -and $crlfMigratedText.Contains('version="0.9.0"') -and (Test-CrLfOnly -Text $crlfMigratedText) -and (Get-FileSha -Path ($crlfLegacyPath + ".pre-v0.9.0.bak")) -eq $crlfLegacyHash) "Exact CRLF legacy template migration preserves its whole-file newline convention and byte-identical backup"
+    Assert-True ($crlfLegacyRun.Code -eq 0 -and $crlfMigratedText.Contains('version="1.0.0"') -and [regex]::Matches($crlfMigratedText, [regex]::Escape($expectedBrickRouteText)).Count -eq 1 -and (Test-CrLfOnly -Text $crlfMigratedText) -and (Get-FileSha -Path ($crlfLegacyPath + ".pre-v0.9.0.bak")) -eq $crlfLegacyHash) "Exact CRLF legacy template migration installs the v1.0.0 brick-first route while preserving its whole-file newline convention and byte-identical legacy backup"
 
     $modifiedLegacy = New-TestProject -Parent $testRoot -Name "modified-legacy"
     $modifiedLegacyPath = Join-Path $modifiedLegacy "AGENTS.md"
@@ -857,7 +909,7 @@ try {
     $folderDefinitionContract = Get-Content -LiteralPath $definitionPath -Raw | ConvertFrom-Json
     $folderToolContractText = [System.IO.File]::ReadAllText($folderScript)
     $managerToolContractText = [System.IO.File]::ReadAllText($manageScript)
-    Assert-True ($folderTechniqueContractText -match '(?im)^\*\*Version:\*\*\s*0\.9\.0\s*$' -and [string]$folderDefinitionContract.definitionVersion -ceq "0.9.0" -and $folderToolContractText.Contains('[string]$definition.definitionVersion -ne "0.9.0"') -and $managerToolContractText.Contains('[string]$definition.definitionVersion -ne "0.9.0"')) "Folder technique, definition, creator, and native manager agree on definition v0.9.0"
+    Assert-True ($folderTechniqueContractText -match '(?im)^\*\*Version:\*\*\s*0\.10\.0\s*$' -and [string]$folderDefinitionContract.definitionVersion -ceq "0.10.0" -and [string]$folderDefinitionContract.packageVersion -ceq "0.11.0" -and $folderToolContractText.Contains('[string]$definition.definitionVersion -ne "0.10.0"') -and $managerToolContractText.Contains('[string]$definition.definitionVersion -ne "0.10.0"')) "Folder technique, definition, creator, and native manager agree on definition v0.10.0 in package v0.11.0"
 
     $versionMismatchAuthority = Join-Path $testRoot "folder-version-mismatch-authority"
     New-Item -ItemType Directory -Path $versionMismatchAuthority | Out-Null
@@ -868,7 +920,7 @@ try {
     Write-Utf8 -Path $versionMismatchDefinitionPath -Text ($versionMismatchDefinition | ConvertTo-Json -Depth 12)
     $versionMismatchProject = New-TestProject -Parent $testRoot -Name "folder-version-mismatch-project"
     $versionMismatchRun = Invoke-TestScript -Path $folderScript -Arguments @("-ProjectRoot", $versionMismatchProject, "-DefinitionPath", $versionMismatchDefinitionPath)
-    Assert-True ($versionMismatchRun.Code -ne 0 -and $versionMismatchRun.Output.Contains("Folder definition version must be 0.9.0") -and -not (Test-Path -LiteralPath (Join-Path $versionMismatchProject "Assets/_Project"))) "Folder creator rejects a v0.8.0 definition before project mutation"
+    Assert-True ($versionMismatchRun.Code -ne 0 -and $versionMismatchRun.Output.Contains("Folder definition version must be 0.10.0") -and -not (Test-Path -LiteralPath (Join-Path $versionMismatchProject "Assets/_Project"))) "Folder creator rejects a v0.8.0 definition before project mutation"
 
     $earlyExitProject = New-TestProject -Parent $testRoot -Name "barrier-early-exit-project"
     $earlyExitBarrierPath = Join-Path $testRoot "barrier-expected-early-exit"
@@ -877,11 +929,11 @@ try {
     try { Wait-TestScriptBarrier -Run $earlyExitRun }
     catch { $earlyExitMessage = $_.Exception.Message }
     finally { Stop-TestScriptBarrier -Run $earlyExitRun }
-    Assert-True ($earlyExitMessage -match '(?i)exited before its write boundary.*Folder definition version must be 0\.9\.0' -and $earlyExitMessage -notmatch '(?i)No process is associated|disposed') "Barrier harness preserves the primary early-exit error without double wait or dispose"
+    Assert-True ($earlyExitMessage -match '(?i)exited before its write boundary.*Folder definition version must be 0\.10\.0' -and $earlyExitMessage -notmatch '(?i)No process is associated|disposed') "Barrier harness preserves the primary early-exit error without double wait or dispose"
 
     $folderProject = New-TestProject -Parent $testRoot -Name "folders"
     $folderRun = Invoke-TestScript -Path $folderScript -Arguments @("-ProjectRoot", $folderProject, "-DefinitionPath", $definitionPath)
-    Assert-True ($folderRun.Code -eq 0 -and $folderRun.Output.Contains("Skipped: .github") -and $folderRun.Output.Contains("definition 0.9.0") -and (Test-Path -LiteralPath (Join-Path $folderProject "Assets/_Project") -PathType Container) -and -not (Test-Path -LiteralPath (Join-Path $folderProject "GeurtsGameForgeDocumentation"))) "Folder tool consumes the exact definition while never creating the reserved documentation container"
+    Assert-True ($folderRun.Code -eq 0 -and $folderRun.Output.Contains("Skipped: .github") -and $folderRun.Output.Contains("definition 0.10.0") -and (Test-Path -LiteralPath (Join-Path $folderProject "Assets/_Project") -PathType Container) -and -not (Test-Path -LiteralPath (Join-Path $folderProject "GeurtsGameForgeDocumentation"))) "Folder tool consumes the exact definition while never creating the reserved documentation container"
     $folderAgain = Invoke-TestScript -Path $folderScript -Arguments @("-ProjectRoot", $folderProject, "-DefinitionPath", $definitionPath)
     Assert-True ($folderAgain.Code -eq 0 -and $folderAgain.Output.Contains("Exists")) "Folder creation is idempotent"
 
@@ -963,65 +1015,153 @@ try {
     try { $staticJsonObject = $staticJsonValidation.Output | ConvertFrom-Json }
     catch { }
     $requiredLifecycleChecks = @(
-        "GFI source and compatibility boundary",
-        "Startup notification and manual update trigger",
-        "Separated documentation and plugin versions",
-        "Destructive documentation update warning",
-        "Validated complete-tree replacement",
-        "Current-installed receipt lifecycle and commit identity",
-        "Strict documentation overwrite boundary",
-        "Discarded documentation lifecycle exclusion"
+        "Frozen GFI v2 source and compatibility boundary",
+        "Frozen GFI v2 startup and manual trigger",
+        "Frozen GFI v2 separated versions",
+        "Frozen GFI v2 destructive warning",
+        "Frozen GFI v2 complete-tree replacement",
+        "Frozen GFI v2 receipt lifecycle",
+        "Frozen GFI v2 overwrite boundary",
+        "Frozen GFI v2 discarded lifecycle exclusion",
+        "Documentation companion closed contract",
+        "Companion schema forward compatibility",
+        "Documentation companion architecture boundary",
+        "No Unity companion implementation in documentation source",
+        "Companion metadata-only startup",
+        "Companion confirmation and complete update",
+        "Companion bounded project and script boundary",
+        "Companion minimal lifecycle exclusions",
+        "Companion AI-routing limitation"
     )
     $missingLifecycleChecks = @($requiredLifecycleChecks | Where-Object { $checkName = $_; @($staticJsonObject.checks | Where-Object { $_.name -ceq $checkName -and $_.passed }).Count -ne 1 })
-    Assert-True ($staticJsonValidation.Code -eq 0 -and $staticJsonObject -and $staticJsonObject.status -eq "VALID" -and @($staticJsonObject.checks | Where-Object { -not $_.passed }).Count -eq 0 -and $missingLifecycleChecks.Count -eq 0) "Repository validation JSON output is parseable and contains every passing v2 lifecycle-boundary check"
+    Assert-True ($staticJsonValidation.Code -eq 0 -and $staticJsonObject -and $staticJsonObject.status -eq "VALID" -and @($staticJsonObject.checks | Where-Object { -not $_.passed }).Count -eq 0 -and $missingLifecycleChecks.Count -eq 0) "Repository validation JSON output is parseable and contains every passing companion and frozen-GFI boundary check"
+
+    $brickRouteFixture = New-StaticValidationFixture -Parent $testRoot -Name "static-native-brick-route"
+    $brickRouteTemplatePath = Join-Path $brickRouteFixture "Tools/AIAgentInstructionTemplates/AGENTS.md"
+    $weakenedBrickRoute = 'Read and follow `GeurtsGameForgeDocumentation/AGENTS.md`; it routes to the installed documentation.'
+    Write-Utf8 -Path $brickRouteTemplatePath -Text ([System.IO.File]::ReadAllText($brickRouteTemplatePath).Replace($expectedBrickRouteText, $weakenedBrickRoute))
+    $brickRouteValidation = Invoke-TestScript -Path $validatorScript -Arguments @("-RepositoryRoot", $brickRouteFixture)
+    Assert-True ($brickRouteValidation.Code -ne 0 -and $brickRouteValidation.Output.Contains("Managed native routes")) "Static validation rejects a route that drops the brick-before-planning and manifest-selected source-of-truth instruction"
+
+    $templateHashFixture = New-StaticValidationFixture -Parent $testRoot -Name "static-native-template-hash"
+    $templateHashPath = Join-Path $templateHashFixture "Tools/AIAgentInstructionTemplates/AGENTS.md"
+    Write-Utf8 -Path $templateHashPath -Text ([System.IO.File]::ReadAllText($templateHashPath).Replace('sha256="93464c8bace065ddfe2f305dfedafafbb8a1099cb318c21dad185d46d22451eb"', 'sha256="03464c8bace065ddfe2f305dfedafafbb8a1099cb318c21dad185d46d22451eb"'))
+    $templateHashValidation = Invoke-TestScript -Path $validatorScript -Arguments @("-RepositoryRoot", $templateHashFixture)
+    Assert-True ($templateHashValidation.Code -ne 0 -and $templateHashValidation.Output.Contains("Managed template integrity")) "Static validation rejects drift from the exact approved v1.0.0 managed-region hashes"
+
+    $extraRouteFixture = New-StaticValidationFixture -Parent $testRoot -Name "static-companion-extra-route"
+    $extraRouteContractPath = Join-Path $extraRouteFixture "GeurtsTechniques/GeurtsDocumentationCompanionContract.json"
+    $extraRouteContract = Get-Content -LiteralPath $extraRouteContractPath -Raw | ConvertFrom-Json
+    $extraRouteContract.routeMappings += [pscustomobject]@{ template = "Tools/AIAgentInstructionTemplates/AGENTS.md"; target = ".cursor/rules/geurts.md" }
+    Write-Utf8 -Path $extraRouteContractPath -Text ($extraRouteContract | ConvertTo-Json -Depth 10)
+    $extraRouteValidation = Invoke-TestScript -Path $validatorScript -Arguments @("-RepositoryRoot", $extraRouteFixture)
+    Assert-True ($extraRouteValidation.Code -ne 0 -and $extraRouteValidation.Output.Contains("Documentation companion closed contract")) "Static validation rejects an added companion AI-route mapping"
+
+    $docsRouteFixture = New-StaticValidationFixture -Parent $testRoot -Name "static-companion-docs-route"
+    $docsRouteContractPath = Join-Path $docsRouteFixture "GeurtsTechniques/GeurtsDocumentationCompanionContract.json"
+    $docsRouteContract = Get-Content -LiteralPath $docsRouteContractPath -Raw | ConvertFrom-Json
+    $docsRouteContract.routeMappings[3].target = "Docs/GameDesign/geurts-game-design.instructions.md"
+    $docsRouteContract.updateUi.confirmationTargets[4].path = "Docs/GameDesign/geurts-game-design.instructions.md"
+    Write-Utf8 -Path $docsRouteContractPath -Text ($docsRouteContract | ConvertTo-Json -Depth 10)
+    $docsRouteValidation = Invoke-TestScript -Path $validatorScript -Arguments @("-RepositoryRoot", $docsRouteFixture)
+    Assert-True ($docsRouteValidation.Code -ne 0 -and $docsRouteValidation.Output.Contains("Documentation companion closed contract")) "Static validation rejects a contract route or confirmation target under Docs/GameDesign"
+
+    $forbiddenLifecycleFixture = New-StaticValidationFixture -Parent $testRoot -Name "static-companion-forbidden-lifecycle"
+    $forbiddenLifecycleTechnique = Join-Path $forbiddenLifecycleFixture "GeurtsTechniques/GeurtsDocumentationCompanionTechnique.md"
+    Write-Utf8 -Path $forbiddenLifecycleTechnique -Text ([System.IO.File]::ReadAllText($forbiddenLifecycleTechnique) + "`nThe companion provides a preview, backup, rollback journal, and migration path for Update, then requires a second confirmation.`n")
+    $forbiddenLifecycleValidation = Invoke-TestScript -Path $validatorScript -Arguments @("-RepositoryRoot", $forbiddenLifecycleFixture)
+    Assert-True ($forbiddenLifecycleValidation.Code -ne 0 -and $forbiddenLifecycleValidation.Output.Contains("Companion minimal lifecycle exclusions")) "Static validation rejects affirmative preview, backup, rollback, journal, migration, and second-confirmation behavior"
+
+    $secondConfirmationFixture = New-StaticValidationFixture -Parent $testRoot -Name "static-companion-second-confirmation"
+    $secondConfirmationTechnique = Join-Path $secondConfirmationFixture "GeurtsTechniques/GeurtsDocumentationCompanionTechnique.md"
+    Write-Utf8 -Path $secondConfirmationTechnique -Text ([System.IO.File]::ReadAllText($secondConfirmationTechnique) + "`nThe companion requires a second confirmation after archive validation.`n")
+    $secondConfirmationValidation = Invoke-TestScript -Path $validatorScript -Arguments @("-RepositoryRoot", $secondConfirmationFixture)
+    Assert-True ($secondConfirmationValidation.Code -ne 0 -and $secondConfirmationValidation.Output.Contains("Companion minimal lifecycle exclusions")) "Static validation independently rejects a second Update confirmation"
+
+    $startupMutationFixture = New-StaticValidationFixture -Parent $testRoot -Name "static-companion-startup-mutation"
+    $startupMutationTechnique = Join-Path $startupMutationFixture "GeurtsTechniques/GeurtsDocumentationCompanionTechnique.md"
+    Write-Utf8 -Path $startupMutationTechnique -Text ([System.IO.File]::ReadAllText($startupMutationTechnique) + "`nAt Unity open, the companion automatically downloads and replaces documentation.`n")
+    $startupMutationValidation = Invoke-TestScript -Path $validatorScript -Arguments @("-RepositoryRoot", $startupMutationFixture)
+    Assert-True ($startupMutationValidation.Code -ne 0 -and $startupMutationValidation.Output.Contains("Companion metadata-only startup")) "Static validation rejects automatic download or replacement during Unity open"
+
+    $bootstrapFixture = New-StaticValidationFixture -Parent $testRoot -Name "static-companion-bootstrap"
+    $bootstrapTechnique = Join-Path $bootstrapFixture "GeurtsTechniques/GeurtsDocumentationCompanionTechnique.md"
+    Write-Utf8 -Path $bootstrapTechnique -Text ([System.IO.File]::ReadAllText($bootstrapTechnique) + "`nThe companion uses an external batch bootstrap to execute .bat setup scripts.`n")
+    $bootstrapValidation = Invoke-TestScript -Path $validatorScript -Arguments @("-RepositoryRoot", $bootstrapFixture)
+    Assert-True ($bootstrapValidation.Code -ne 0 -and $bootstrapValidation.Output.Contains("Companion minimal lifecycle exclusions")) "Static validation rejects an external batch/bootstrap setup claim"
+
+    $expandedDownloadedContractFixture = New-StaticValidationFixture -Parent $testRoot -Name "static-companion-expanded-downloaded-contract"
+    $expandedDownloadedContractTechnique = Join-Path $expandedDownloadedContractFixture "GeurtsTechniques/GeurtsDocumentationCompanionTechnique.md"
+    Write-Utf8 -Path $expandedDownloadedContractTechnique -Text ([System.IO.File]::ReadAllText($expandedDownloadedContractTechnique) + "`nThe downloaded contract may add a managed target after confirmation.`n")
+    $expandedDownloadedContractValidation = Invoke-TestScript -Path $validatorScript -Arguments @("-RepositoryRoot", $expandedDownloadedContractFixture)
+    Assert-True ($expandedDownloadedContractValidation.Code -ne 0 -and $expandedDownloadedContractValidation.Output.Contains("Companion confirmation and complete update")) "Static validation rejects a downloaded contract that expands the pre-approved managed target set"
+
+    $comparisonStateFailureFixture = New-StaticValidationFixture -Parent $testRoot -Name "static-companion-comparison-state-failure"
+    $comparisonStateFailureTechnique = Join-Path $comparisonStateFailureFixture "GeurtsTechniques/GeurtsDocumentationCompanionTechnique.md"
+    Write-Utf8 -Path $comparisonStateFailureTechnique -Text ([System.IO.File]::ReadAllText($comparisonStateFailureTechnique) + "`nA comparison-state write failure reclassifies the content Update as failed and rolls back the replacement.`n")
+    $comparisonStateFailureValidation = Invoke-TestScript -Path $validatorScript -Arguments @("-RepositoryRoot", $comparisonStateFailureFixture)
+    Assert-True ($comparisonStateFailureValidation.Code -ne 0 -and $comparisonStateFailureValidation.Output.Contains("Companion confirmation and complete update")) "Static validation rejects treating comparison-state persistence failure as failed or rolled-back managed content"
+
+    $pluginCodeFixture = New-StaticValidationFixture -Parent $testRoot -Name "static-companion-plugin-code"
+    $pluginCodePath = Join-Path $pluginCodeFixture "Editor/DocumentationCompanion.cs"
+    Write-Utf8 -Path $pluginCodePath -Text "internal static class DocumentationCompanionFixture { }`n"
+    $previousPreference = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    try {
+        $pluginCodeAddOutput = @(& git -C $pluginCodeFixture add -- "Editor/DocumentationCompanion.cs" 2>&1)
+        $pluginCodeAddExitCode = $LASTEXITCODE
+    }
+    finally { $ErrorActionPreference = $previousPreference }
+    if ($pluginCodeAddExitCode -ne 0) { throw "Unable to stage plugin-code fixture: $($pluginCodeAddOutput -join ' ')" }
+    $pluginCodeValidation = Invoke-TestScript -Path $validatorScript -Arguments @("-RepositoryRoot", $pluginCodeFixture)
+    Assert-True ($pluginCodeValidation.Code -ne 0 -and $pluginCodeValidation.Output.Contains("No Unity companion implementation in documentation source")) "Static validation rejects tracked C# companion implementation in the documentation repository"
 
     $legacyLifecycleFixture = New-StaticValidationFixture -Parent $testRoot -Name "static-old-lifecycle"
     $legacyLifecycleTechnique = Join-Path $legacyLifecycleFixture "GeurtsTechniques/GeurtsGameForgeIntelligenceTechnique.md"
     Write-Utf8 -Path $legacyLifecycleTechnique -Text ([System.IO.File]::ReadAllText($legacyLifecycleTechnique) + "`nGame Forge Intelligence performs exactly one routine remote documentation check per Unity project launch or open, then promotes the candidate atomically with combined rollback.`n")
     $legacyLifecycleValidation = Invoke-TestScript -Path $validatorScript -Arguments @("-RepositoryRoot", $legacyLifecycleFixture)
-    Assert-True ($legacyLifecycleValidation.Code -ne 0 -and $legacyLifecycleValidation.Output.Contains("Discarded documentation lifecycle exclusion")) "Static validation rejects reintroduced stateful launch-check, atomic-promotion, and rollback language while allowing the notification-only metadata check"
+    Assert-True ($legacyLifecycleValidation.Code -ne 0 -and $legacyLifecycleValidation.Output.Contains("Frozen GFI v2 discarded lifecycle exclusion")) "Static validation rejects reintroduced stateful launch-check, atomic-promotion, and rollback language in the frozen GFI v2 contract"
 
     $gddOverwriteFixture = New-StaticValidationFixture -Parent $testRoot -Name "static-gdd-overwrite"
     $gddOverwriteTechnique = Join-Path $gddOverwriteFixture "GeurtsTechniques/GeurtsGameForgeIntelligenceTechnique.md"
     Write-Utf8 -Path $gddOverwriteTechnique -Text ([System.IO.File]::ReadAllText($gddOverwriteTechnique) + "`nGame Forge Intelligence may also delete and replace <ProjectRoot>/Docs/GameDesign during documentation Update.`n")
     $gddOverwriteValidation = Invoke-TestScript -Path $validatorScript -Arguments @("-RepositoryRoot", $gddOverwriteFixture)
-    Assert-True ($gddOverwriteValidation.Code -ne 0 -and $gddOverwriteValidation.Output.Contains("Strict documentation overwrite boundary")) "Static validation rejects any permission to replace project-authored Docs/GameDesign"
+    Assert-True ($gddOverwriteValidation.Code -ne 0 -and $gddOverwriteValidation.Output.Contains("Frozen GFI v2 overwrite boundary")) "Static validation rejects any permission for the frozen GFI v2 contract to replace project-authored Docs/GameDesign"
 
     $pluginEmbeddingFixture = New-StaticValidationFixture -Parent $testRoot -Name "static-plugin-embedding"
     $pluginEmbeddingTechnique = Join-Path $pluginEmbeddingFixture "GeurtsTechniques/GeurtsGameForgeIntelligenceTechnique.md"
     Write-Utf8 -Path $pluginEmbeddingTechnique -Text ([System.IO.File]::ReadAllText($pluginEmbeddingTechnique) + "`nThe plugin may embed Geurts documentation in <PluginPackageRoot>/Documentation~.`n")
     $pluginEmbeddingValidation = Invoke-TestScript -Path $validatorScript -Arguments @("-RepositoryRoot", $pluginEmbeddingFixture)
-    Assert-True ($pluginEmbeddingValidation.Code -ne 0 -and $pluginEmbeddingValidation.Output.Contains("GFI source and compatibility boundary")) "Static validation rejects bundled Geurts documentation inside plugin Documentation~"
+    Assert-True ($pluginEmbeddingValidation.Code -ne 0 -and $pluginEmbeddingValidation.Output.Contains("Frozen GFI v2 source and compatibility boundary")) "Static validation rejects bundled Geurts documentation inside the frozen GFI plugin Documentation~ boundary"
 
     $versionConflationFixture = New-StaticValidationFixture -Parent $testRoot -Name "static-version-conflation"
     $versionConflationTechnique = Join-Path $versionConflationFixture "GeurtsTechniques/GeurtsGameForgeIntelligenceTechnique.md"
     Write-Utf8 -Path $versionConflationTechnique -Text ([System.IO.File]::ReadAllText($versionConflationTechnique) + "`nThe UI may display the compatibility schema as the GameForgeIntelligence Plugin version.`n")
     $versionConflationValidation = Invoke-TestScript -Path $validatorScript -Arguments @("-RepositoryRoot", $versionConflationFixture)
-    Assert-True ($versionConflationValidation.Code -ne 0 -and $versionConflationValidation.Output.Contains("Separated documentation and plugin versions")) "Static validation rejects conflation of schema, technique, documentation, and plugin versions"
+    Assert-True ($versionConflationValidation.Code -ne 0 -and $versionConflationValidation.Output.Contains("Frozen GFI v2 separated versions")) "Static validation rejects conflation of frozen GFI v2 schema, technique, documentation, and plugin versions"
 
     $historicalReceiptFixture = New-StaticValidationFixture -Parent $testRoot -Name "static-historical-receipt"
     $historicalReceiptTechnique = Join-Path $historicalReceiptFixture "GeurtsTechniques/GeurtsGameForgeIntelligenceTechnique.md"
     Write-Utf8 -Path $historicalReceiptTechnique -Text ([System.IO.File]::ReadAllText($historicalReceiptTechnique) + "`nA historical receipt may continue to drive Installed Geurts Documentation and update comparison after deletion begins.`n")
     $historicalReceiptValidation = Invoke-TestScript -Path $validatorScript -Arguments @("-RepositoryRoot", $historicalReceiptFixture)
-    Assert-True ($historicalReceiptValidation.Code -ne 0 -and $historicalReceiptValidation.Output.Contains("Current-installed receipt lifecycle and commit identity")) "Static validation rejects historical-receipt fallback after destructive mutation"
+    Assert-True ($historicalReceiptValidation.Code -ne 0 -and $historicalReceiptValidation.Output.Contains("Frozen GFI v2 receipt lifecycle")) "Static validation rejects historical-receipt fallback inside the frozen GFI v2 contract"
 
     $versionAvailabilityFixture = New-StaticValidationFixture -Parent $testRoot -Name "static-package-version-availability"
     $versionAvailabilityTechnique = Join-Path $versionAvailabilityFixture "GeurtsTechniques/GeurtsGameForgeIntelligenceTechnique.md"
     Write-Utf8 -Path $versionAvailabilityTechnique -Text ([System.IO.File]::ReadAllText($versionAvailabilityTechnique) + "`nPackage-version ordering determines whether an Update is available even when commit IDs match.`n")
     $versionAvailabilityValidation = Invoke-TestScript -Path $validatorScript -Arguments @("-RepositoryRoot", $versionAvailabilityFixture)
-    Assert-True ($versionAvailabilityValidation.Code -ne 0 -and $versionAvailabilityValidation.Output.Contains("Current-installed receipt lifecycle and commit identity")) "Static validation rejects package-version-based update availability"
+    Assert-True ($versionAvailabilityValidation.Code -ne 0 -and $versionAvailabilityValidation.Output.Contains("Frozen GFI v2 receipt lifecycle")) "Static validation rejects package-version-based availability inside the frozen GFI v2 contract"
 
     $supportingSurfaceFixture = New-StaticValidationFixture -Parent $testRoot -Name "static-supporting-surface-contradictions"
     $supportingSurfaceReadme = Join-Path $supportingSurfaceFixture "README.md"
     $supportingSurfaceContradictions = @(
-        "Game Forge Intelligence may embed Geurts documentation inside <PluginPackageRoot>/Documentation~.",
-        "Documentation Update may delete <ProjectRoot>/Docs/GameDesign.",
-        "Package-version ordering determines whether an Update is available even when commit IDs match.",
-        "A historical receipt may continue to drive Installed Geurts Documentation and update comparison after deletion begins."
+        "At Unity open, the companion automatically downloads and replaces documentation.",
+        "The downloaded contract may add a managed target after confirmation.",
+        "The companion uses an external batch bootstrap to execute .bat setup scripts."
     ) -join "`n"
     Write-Utf8 -Path $supportingSurfaceReadme -Text ([System.IO.File]::ReadAllText($supportingSurfaceReadme) + "`n" + $supportingSurfaceContradictions + "`n")
     $supportingSurfaceValidation = Invoke-TestScript -Path $validatorScript -Arguments @("-RepositoryRoot", $supportingSurfaceFixture)
-    Assert-True ($supportingSurfaceValidation.Code -ne 0 -and $supportingSurfaceValidation.Output.Contains("GFI source and compatibility boundary") -and $supportingSurfaceValidation.Output.Contains("Startup notification and manual update trigger") -and $supportingSurfaceValidation.Output.Contains("Current-installed receipt lifecycle and commit identity") -and $supportingSurfaceValidation.Output.Contains("Strict documentation overwrite boundary")) "Static validation rejects lifecycle, ownership, and overwrite contradictions in active supporting surfaces"
+    Assert-True ($supportingSurfaceValidation.Code -ne 0 -and $supportingSurfaceValidation.Output.Contains("Companion metadata-only startup") -and $supportingSurfaceValidation.Output.Contains("Companion confirmation and complete update") -and $supportingSurfaceValidation.Output.Contains("Companion minimal lifecycle exclusions")) "Static validation rejects startup mutation, expanded approval, and bootstrap contradictions in current supporting surfaces"
 }
 catch {
     $script:Failed++

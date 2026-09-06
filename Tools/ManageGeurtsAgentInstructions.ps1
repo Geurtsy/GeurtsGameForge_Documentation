@@ -1,5 +1,5 @@
 # ManageGeurtsAgentInstructions.ps1
-# Version: 0.10.0
+# Version: 0.11.0
 
 [CmdletBinding()]
 param(
@@ -278,15 +278,16 @@ function Assert-UnityProjectRoot([string]$Root) {
 }
 
 function Get-CurrentNativeTemplateVersion($Entry) {
-    return "0.9.0"
+    return "1.0.0"
 }
 
 function Test-NativeTemplateRoute($Entry, [string]$Text) {
     if (-not $Text.Contains("GeurtsGameForgeDocumentation/AGENTS.md") -or $Text.Contains("GeurtsGameForgeDocumentation/AI_READ_FIRST.md")) { return $false }
+    if (-not $Text.Contains("Before planning or modifying any Geurts Game Forge brick code") -or -not $Text.Contains("installed, manifest-selected documentation") -or -not $Text.Contains("source of truth")) { return $false }
     if ([string]$Entry.targetPath -ceq "AGENTS.md") {
         return -not $Text.Contains("Docs/GameDesign/")
     }
-    return $Text.Contains("manifest-controlled package chain") -and -not $Text.Contains("owns the complete documentation chain")
+    return -not $Text.Contains("owns the complete documentation chain")
 }
 
 function Invoke-ChildPowerShell([string]$ScriptPath, [string[]]$Arguments, [bool]$EmitOutput) {
@@ -320,8 +321,8 @@ function Test-NativeMigrationCatalog($Catalog, [string]$Templates, [string]$Root
         ".github/instructions/geurts-unity.instructions.md" = @{ Template = "instructions/geurts-unity.instructions.md"; Hashes = @{ "0.4.0" = "27bff44e8cd8a26962b2b2890b3ca6c02a5a1ee6c0531c195514d70b9ffde92f"; "0.5.0" = "27bff44e8cd8a26962b2b2890b3ca6c02a5a1ee6c0531c195514d70b9ffde92f"; "0.6.0" = "799fe2cc0a720cd5e9f7f350b7480d219c0f92309a4a6201953e3a452faa0fa3" } }
         ".github/instructions/geurts-game-design.instructions.md" = @{ Template = "instructions/geurts-game-design.instructions.md"; Hashes = @{ "0.4.0" = "724549bbd75e2ed1f83167992747f5b56adac9d0b4e40886085b65d497cddbd9"; "0.5.0" = "724549bbd75e2ed1f83167992747f5b56adac9d0b4e40886085b65d497cddbd9"; "0.6.0" = "2805d6be2804eff71668625a83725d02338070a9b6988bde20bc521d455d17c0" } }
     }
-    if ([string]$Catalog.schemaVersion -cne "0.9.0" -or [string]$Catalog.normalization -cne "utf8-text-with-lf-newlines-and-terminal-lf" -or @($Catalog.entries).Count -ne 4) {
-        throw "Migration catalog metadata does not match the exact v0.9.0 contract."
+    if ([string]$Catalog.schemaVersion -cne "1.0.0" -or [string]$Catalog.normalization -cne "utf8-text-with-lf-newlines-and-terminal-lf" -or @($Catalog.entries).Count -ne 4) {
+        throw "Migration catalog metadata does not match the exact v1.0.0 contract."
     }
     $seenTargets = New-Object 'System.Collections.Generic.HashSet[string]' ([System.StringComparer]::Ordinal)
     foreach ($entry in @($Catalog.entries)) {
@@ -367,8 +368,8 @@ function Get-ManagedFolderDefinition([string]$Root, [bool]$IncludeGameDesign) {
 
     try { $definition = Get-Content -LiteralPath $definitionPath -Raw | ConvertFrom-Json }
     catch { throw "The authoritative folder definition is invalid JSON: $($_.Exception.Message)" }
-    if ([string]$definition.definitionVersion -ne "0.9.0" -or [string]$definition.packageVersion -ne "0.10.0") {
-        throw "Managed setup requires folder definition v0.9.0 from package v0.10.0."
+    if ([string]$definition.definitionVersion -ne "0.10.0" -or [string]$definition.packageVersion -ne "0.11.0") {
+        throw "Managed setup requires folder definition v0.10.0 from package v0.11.0."
     }
 
     $requiredProfiles = @("native-entry")
@@ -499,7 +500,7 @@ function Update-NativeEntry($Entry, [string]$Templates, [string]$Root) {
                 Add-Result "Conflicted" ([string]$Entry.targetPath) "Managed region '$($region.Id)' was edited; no content was overwritten." $null
                 return
             }
-            $supportedTargetVersions = if ([string]$Entry.targetPath -ceq "AGENTS.md") { @("0.7.0", "0.8.0", "0.9.0") } else { @("0.7.0", "0.9.0") }
+            $supportedTargetVersions = if ([string]$Entry.targetPath -ceq "AGENTS.md") { @("0.7.0", "0.8.0", "0.9.0", "1.0.0") } else { @("0.7.0", "0.9.0", "1.0.0") }
             if ($supportedTargetVersions -notcontains $region.Version) {
                 Add-Result "Conflicted" ([string]$Entry.targetPath) "Managed region '$($region.Id)' uses unsupported version '$($region.Version)'; no downgrade or overwrite occurred." $null
                 return

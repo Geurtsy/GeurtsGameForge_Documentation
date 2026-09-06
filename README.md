@@ -1,6 +1,6 @@
 # Geurts Game Forge Documentation
 
-**Version:** 0.10.0
+**Version:** 0.11.0
 **Status:** Draft technique package
 **Primary audience:** AI coding agents and automated development systems
 **Secondary audience:** Human developers
@@ -14,16 +14,18 @@ The manifest is the single resolver for package-file selection, versions, subjec
 
 ## Source and Ownership Boundary
 
-This repository and its `main` branch are the sole primary source and authority for all Geurts Game Forge documentation. All Geurts techniques are sourced, versioned, and updated here. A documentation release does not require a `com.gameforge.intelligence` Unity-package release.
+This repository and its `main` branch are the sole primary source and authority for all generic Geurts Game Forge documentation. All Geurts techniques are sourced, versioned, and updated here. The separate Editor-only Geurts Documentation Companion consumes this repository but does not own or embed its content. A documentation release requires a companion-package release only when the machine-readable contract schema itself changes incompatibly.
 
-The four relevant locations have different owners:
+The relevant locations have different owners:
 
 | Location | Meaning and owner |
 |---|---|
 | `Geurtsy/GeurtsGameForge_Documentation` | Authoritative source for all Geurts Game Forge documentation. |
-| `<ProjectRoot>/GeurtsGameForgeDocumentation/` | Detached, writable project-local fetched copy used by AI and tools. It is replaceable in full only through the confirmed Game Forge Intelligence Update action. |
-| `<PluginPackageRoot>/Documentation~/` in `com.gameforge.intelligence` | Plugin-specific operation, implementation, and maintenance documentation only. It may reference this repository but must not embed, duplicate, or become authority for Geurts documentation. |
-| `<ProjectRoot>/Docs/GameDesign/` | Project-authored game-design authority. It is outside the fetched copy and remains byte-untouched by documentation Update. |
+| `<ProjectRoot>/GeurtsGameForgeDocumentation/` | Detached, archive-sourced project-local snapshot managed as logically read-only content. A confirmed companion Update replaces it completely. |
+| `Geurtsy/com.geurts.gameforge.documentation` | Owns the Windows-only, Editor-only Unity Package Manager implementation, package metadata, and companion-specific documentation. No companion code lives here. It has no Geurts Game Forge God or Game Forge Intelligence dependency. |
+| The four project AI-route targets declared in `GeurtsDocumentationCompanionContract.json` | Whole files managed by the companion. One confirmation explicitly authorizes replacement from the four documentation-owned templates. |
+| `<ProjectRoot>/Docs/GameDesign/` | Project-authored game-design authority. The companion must not inspect or change it. |
+| Game Forge Intelligence | A separate optional product with a frozen v2 compatibility technique. Its historical documentation updater is superseded and it is not required by the companion. |
 
 The project-local fetched copy contains the complete supported Git-tracked source tree from one selected `main` commit:
 
@@ -39,21 +41,40 @@ The project-local fetched copy contains the complete supported Git-tracked sourc
 └── Tools/
 ```
 
-Those are the current tracked top-level entries, not an installation allowlist. The selected Git tree defines the complete content set. The fetched copy contains no `.git` metadata, repository/worktree/remote connection, or acquisition-preserved read-only attributes. Users may edit it locally, but the next confirmed Update unconditionally discards and replaces all content inside it.
+Those are the current tracked top-level entries, not an installation allowlist. The selected Git tree defines the complete content set. The managed copy contains no `.git` metadata or continuing repository, worktree, branch, remote, or synchronization connection. Logical read-only status is an ownership rule rather than a Windows file-attribute requirement: local edits are unsupported and the next confirmed Update discards them without drift inspection or preservation.
 
-## Game Forge Intelligence Manual Update
+## Independent Unity Editor Companion
 
-Each normal Unity project launch/open performs exactly one lightweight remote metadata check against the authoritative repository's `main` branch. When the exact destination exists, it compares the remote head commit ID with the authoritative selected commit ID in the current installed receipt and notifies only when those commit identities differ. Package version is display-only and never determines availability. If the remote commit is unavailable, the destination is absent, or there is no valid installed commit ID, availability is unknown and the plugin must not infer it from local files or package-version comparison. The check does not download documentation, install or synchronize files, inspect local content, mutate the project, recover content, or reintegrate anything. Failure is non-blocking. Ordinary AI/session initialization uses the existing local copy and performs no additional remote check.
+The Windows-only, Editor-only companion is installed into an existing Unity project from its separate Git repository through Unity Package Manager. That is the only companion installation mechanism. There is no external installer, Windows bootstrap, batch-driven setup, separate setup action, or dependency on Geurts Game Forge God, Odin Inspector, Quantum Console, or Game Forge Intelligence.
 
-The current installed receipt lives outside the fetched copy. Every successful Update records its authoritative selected commit ID and its authoritative package version when valid. The receipt is not a Git connection, repository/worktree/remote, local-drift ledger, backup, recovery gate, or authority. Local edits do not affect update availability. A missing copy remains unavailable until the user explicitly selects `Update Geurts Game Forge Documentation`.
+In Unity Package Manager, choose **Add package from Git URL** and use the companion repository's currently supported Windows package source. While package pull request #2 remains unmerged, keep the complete revision selector shown here; the unqualified repository URL still selects the earlier package:
 
-The Geurts Documentation UI keeps version identities separate. `Installed Geurts Documentation` uses only the valid package version in the current installed receipt, never mutable local file bytes. It shows `Not installed` when the exact destination is known missing and `Unknown` when a copy exists without a trustworthy current receipt and valid package version. `GameForgeIntelligence Plugin` uses only the canonical installed Unity package version and shows `Unknown` when that metadata is unavailable or invalid. When commit-ID inequality establishes availability and bounded remote metadata provides a valid package version, the notification also shows `Available Geurts Documentation`; otherwise that notification says the available version is unknown. Integration Technique and Compatibility Schema versions are separate diagnostic values and must not be substituted for either primary label.
+```text
+https://github.com/Geurtsy/com.geurts.gameforge.documentation.git#codex/fix-bounded-metadata-check
+```
 
-The action first presents a destructive warning with Cancel as the safe default. It states that the fetched copy will be deleted and replaced from the official repository's current `main`, every local edit inside it will be overwritten and lost, `Docs/GameDesign` and every other project file will remain untouched, and without rollback a failure or interruption can leave the copy missing or incomplete.
+On each normal Unity project launch or open, the companion may perform at most one remote metadata-only request for the authoritative repository's current `main` head commit and compare it with a companion-owned last-successful commit value scoped to that Unity project and stored outside the project and installed package. One project's value must never suppress another project's update signal. The check must not download an archive, inspect the managed documentation folder or AI routes, mutate the project, execute setup work, or synchronize content. A skipped or failed check is non-blocking. Ordinary AI/session initialization performs no additional remote check.
 
-After confirmation, Game Forge Intelligence may use an ephemeral acquisition location and proportionate source/package validation, then replaces only `<ProjectRoot>/GeurtsGameForgeDocumentation/`. Immediately before destructive live deletion it invalidates the current installed receipt; a historical receipt can never drive the installed label afterward. It writes the new receipt only after the complete copy succeeds. Failure after invalidation shows `Not installed` when the destination is absent and `Unknown` when an incomplete directory exists. It does not track or preserve local drift, merge changes, create a backup, request an override, or maintain transaction/recovery state. Ephemeral cleanup is best-effort and never blocks a later Update. Legacy recovery evidence under `Library/GameForgeIntelligence/` remains untouched and cannot block use or Update.
+The UI exposes one action labelled `Update Geurts Game Forge Documentation`. Selecting it immediately shows one confirmation dialog, with Cancel as the initially focused default. There is no earlier preview or dry run and no second confirmation. Cancelling or dismissing the dialog causes no network or filesystem change from the Update action.
 
-The manifest-selected `GeurtsTechniques/GeurtsGameForgeIntelligenceTechnique.md` is the normative owner of this source, replacement, and consumption boundary. The separate Game Forge Intelligence repository owns its plugin implementation and warning UI. No Unity plugin source lives in this repository.
+The confirmation lists all five destructive targets: the complete `GeurtsGameForgeDocumentation/` folder and these four whole files:
+
+```text
+AGENTS.md
+.github/copilot-instructions.md
+.github/instructions/geurts-unity.instructions.md
+.github/instructions/geurts-game-design.instructions.md
+```
+
+It states that every local change in those five targets will be overwritten and lost, there is no backup or rollback, and `Docs/GameDesign/` plus every unlisted project path will not be accessed or changed. Approval applies only to that closed set; the companion does not scan for other AI configuration.
+
+After confirmation, the companion resolves the exact current `main` head commit, downloads an archive pinned to that commit outside the Unity project, and performs the basic validation required by `GeurtsTechniques/GeurtsDocumentationCompanionContract.json`. Only a complete valid candidate may proceed. It then replaces the complete documentation destination and writes each AI route from its exact mapped source template in that same archive. It may create only `.github/` and `.github/instructions/` when needed as parents for the listed routes. It never runs a repository or project script.
+
+Update succeeds only when the complete documentation folder and all four route files are present and complete. The per-project comparison commit is then written on a best-effort basis; a storage failure produces a warning and may make the same Update appear available again, but it does not undo or reclassify the successful five-target replacement. A managed-target failure may leave a partial result and must be reported plainly; the user may retry only through another explicit Update and the same confirmation. There is no preview, dry run, backup, rollback, journal, recovery, migration, drift-preservation, or setup-plan engine.
+
+All four route files tell agents to read `GeurtsGameForgeDocumentation/AGENTS.md` before planning or modifying any Geurts Game Forge brick code and to treat the installed, manifest-selected documentation as the source of truth for that work. They help only AI tools that support those native instruction surfaces or have been explicitly told to read and follow `AGENTS.md`; neither the documentation nor the companion can force every AI product to discover or obey them automatically.
+
+The manifest-selected `GeurtsTechniques/GeurtsDocumentationCompanionTechnique.md` owns this lifecycle, and `GeurtsTechniques/GeurtsDocumentationCompanionContract.json` owns its exact machine-readable source, destination, validation entries, confirmation targets, and route mappings. The companion implementation lives only in its separate package repository.
 
 ## Package Map
 
@@ -63,17 +84,18 @@ The manifest-selected `GeurtsTechniques/GeurtsGameForgeIntelligenceTechnique.md`
 - `GeurtsTechniques/GeurtsTechnicalTechnique.md` - technical implementation and the package's sole technical-priority owner.
 - `GeurtsTechniques/GeurtsGameForgeAutomationTechnique.md` - generic AI-assisted automation behaviour.
 - `GeurtsTechniques/GeurtsFolderStructureTechnique.md` and `GeurtsTechniques/GeurtsFolderStructureDefinition.json` - folder meaning and exact creation registry.
-- `GeurtsTechniques/GeurtsAIAgentSetupTechnique.md` - concise native-entry setup, safe migration, and create-if-missing scaffolding.
-- `GeurtsTechniques/GeurtsGameDesignDocumentationTechnique.md` - GDD discovery and maintenance boundary.
-- `GeurtsTechniques/GeurtsGameForgeIntelligenceTechnique.md` - Game Forge Intelligence notification-only availability, manual documentation-update, ownership, and consumption boundary.
+- `GeurtsTechniques/GeurtsAIAgentSetupTechnique.md` - exact companion AI routes and whole-file replacement exception, plus separate preservation-based manual tooling.
+- `GeurtsTechniques/GeurtsGameDesignDocumentationTechnique.md` - GDD discovery, maintenance, and companion no-access boundary.
+- `GeurtsTechniques/GeurtsDocumentationCompanionTechnique.md` and `GeurtsTechniques/GeurtsDocumentationCompanionContract.json` - independent Windows-only, Editor-only UPM lifecycle and its closed machine-readable contract.
+- `GeurtsTechniques/GeurtsGameForgeIntelligenceTechnique.md` - frozen compatibility contract for released v2 consumers; not a current documentation updater.
 - `GeurtsTechniques/GeurtsGitIgnoreTechnique.md` - approved, hash-validated project-root `.gitignore` payload.
 - `GeurtsTechniques/GeurtsAIResponseControlTechnique_V1.1.md` - chat-only response behaviour, never a coding standard.
 
-The former `GeurtsGameForgeIntelligenceIntegrationContract.md` is only a non-normative compatibility redirect for a released consumer. The manifest selects the renamed technique only; do not load both as authorities.
+The former `GeurtsGameForgeIntelligenceIntegrationContract.md` is only a non-normative compatibility redirect for a released consumer. The manifest may select the renamed technique only for that bounded compatibility work; neither file owns current documentation setup or Update.
 
-## Package Tools in a Unity Project
+## Legacy Manual Utilities (Not Companion Setup)
 
-Package scripts are present under `GeurtsGameForgeDocumentation/Tools/` and are not duplicated into project-root `Tools/`. The Folder Structure Technique still requires a separate project-owned `<ProjectRoot>/Tools/` directory for project automation and integration tooling. Always pass the Unity project root explicitly to project-mutating scripts.
+Package scripts remain available under `GeurtsGameForgeDocumentation/Tools/` for legacy or separately authorized generic maintenance. They are not a supported alternative for provisioning or updating companion-managed documentation or AI routes in a companion project. Such a project uses only Unity Package Manager to install the companion and its confirmed in-Editor Update for those five targets. The scripts are inert documentation-package content, are not duplicated into project-root `Tools/`, and are not part of companion installation, setup, or Update. The companion must not scan for or execute `.bat`, `.cmd`, `.ps1`, or any other script. Always pass the Unity project root explicitly when deliberately invoking a project-mutating legacy utility outside that lifecycle.
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File "<ProjectRoot>/GeurtsGameForgeDocumentation/Tools/ManageGeurtsAgentInstructions.ps1" -ProjectRoot "<ProjectRoot>"
@@ -81,16 +103,16 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "<ProjectRoot>/GeurtsGameFor
 powershell -NoProfile -ExecutionPolicy Bypass -File "<ProjectRoot>/GeurtsGameForgeDocumentation/Tools/UpdateGameDesignManifest.ps1" -ProjectRoot "<ProjectRoot>"
 ```
 
-PowerShell 7 may use `pwsh` with the same paths and arguments. The two batch compatibility launchers also require `-ProjectRoot <UnityProjectRoot>` as their first argument.
+PowerShell 7 may use `pwsh` with the same paths and arguments. Retained batch files are legacy compatibility launchers for separately chosen manual operations; they are not external installers or bootstraps.
 
-These tools run without Game Forge Intelligence and are independent of documentation acquisition or replacement. `Update Geurts Game Forge Documentation` does not invoke them. The default manager command handles native entries only and does not implicitly create or update `Docs/GameDesign/`. GDD scaffolding and GDD manifest maintenance are separate positive opt-ins:
+These utilities run independently from the companion and from Game Forge Intelligence. `Update Geurts Game Forge Documentation` does not invoke them. The legacy manager preserves supported managed regions; unlike the companion's confirmed whole-file route replacement, it does not silently replace arbitrary user content. It does not implicitly create or update `Docs/GameDesign/`. GDD scaffolding and GDD manifest maintenance remain separate positive manual opt-ins outside the companion lifecycle:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File "<ProjectRoot>/GeurtsGameForgeDocumentation/Tools/ManageGeurtsAgentInstructions.ps1" -ProjectRoot "<ProjectRoot>" -IncludeGameDesignScaffolding
 powershell -NoProfile -ExecutionPolicy Bypass -File "<ProjectRoot>/GeurtsGameForgeDocumentation/Tools/ManageGeurtsAgentInstructions.ps1" -ProjectRoot "<ProjectRoot>" -UpdateGameDesignManifest
 ```
 
-Each tool's permissions and preservation boundary are owned by its manifest-selected subject technique. Generic tools must not invent project design facts, overwrite project-authored GDD, silently replace user-authored native entries, automatically delete project folders, or alter a differing project-root `.gitignore`. The separately authorized GDD maintainer may update only its bounded managed manifest index.
+Each manual tool's permissions and preservation boundary are owned by its manifest-selected subject technique. Generic tools must not invent project design facts, overwrite project-authored GDD, automatically delete project folders, or alter a differing project-root `.gitignore`. The separately authorized GDD maintainer may update only its bounded managed manifest index. These manual rules do not reduce the companion's separately confirmed authority to replace its four exact whole-file routes.
 
 ## Source-Repository Validation
 
@@ -105,13 +127,26 @@ PowerShell 7 may replace `powershell` with `pwsh`. The validator checks package,
 
 ## Supporting Documents
 
-- `Migrations/v0.10.0.md` - non-normative transition guide for the explicit destructive manual-update model.
+- `Migrations/v0.11.0.md` - non-normative transition guide for the independent companion and closed whole-file AI-route contract.
+- `Migrations/v0.10.0.md` - superseded transition guide for the Game Forge Intelligence manual-update model.
 - `Migrations/v0.9.0.md`, `Migrations/v0.8.0.md`, and `Migrations/v0.7.0.md` - superseded historical notes; they do not define an executable current workflow.
 - `Ideas/GameForgeIntelligenceIdeas.md` - non-normative historical product pointer.
 
 ## Changelog
 
-### Target v0.10.0
+### Target v0.11.0
+
+- Defines the independent Windows-only, Editor-only Geurts Documentation Companion installed from Git through Unity Package Manager, with no God, Game Forge Intelligence, Odin Inspector, or Quantum Console dependency.
+- Adds the schema 1.0.0 machine-readable companion contract for the authoritative source, one complete documentation destination, basic validation entries, confirmation targets, and four exact template-to-route mappings.
+- Permits one metadata-only remote check at Unity open and requires one explicit in-Editor Update action with one cancel-default confirmation; there is no earlier preview, dry run, or second confirmation.
+- Makes `GeurtsGameForgeDocumentation/` logically read-only managed content and authorizes confirmed complete replacement together with whole-file replacement of exactly four project AI routes.
+- Removes external installer/bootstrap and script-driven setup expectations from the companion lifecycle. Existing package scripts remain optional manual tools and are never discovered or executed by the companion.
+- Requires complete success across the documentation folder and all four AI routes, honest partial-failure reporting, and explicit retry without backup, rollback, journal, recovery, migration, drift preservation, or a setup-plan engine.
+- Prohibits access to `Docs/GameDesign/` and every unlisted project path, and documents that AI routing works only for tools that support the routes or are instructed to follow `AGENTS.md`.
+- Updates all four v1.0.0 AI-route templates so Geurts Game Forge brick work reads the installed manifest-selected documentation before planning or code changes and treats it as source of truth.
+- Freezes Game Forge Intelligence 2.0.0 as released-consumer compatibility while making its historical updater non-applicable; it is not a companion dependency.
+
+### v0.10.0
 
 - Makes this repository the explicit sole authority for all Geurts documentation and prohibits embedding or duplicating it in `com.gameforge.intelligence`.
 - Replaces automatic launch-time download/installation and the transaction/recovery lifecycle with one notification-only metadata check plus an explicit `Update Geurts Game Forge Documentation` action.
@@ -126,7 +161,7 @@ PowerShell 7 may replace `powershell` with `pwsh`. The validator checks package,
 ### v0.9.0
 
 - Introduced complete-tree copying and the renamed Game Forge Intelligence technique.
-- Its stateful launch-check/download, transaction, rollback, recovery, drift-preservation, and reintegration model is obsolete and must not be implemented; only the new notification metadata check remains.
+- Its stateful launch-check/download, transaction, rollback, recovery, drift-preservation, and reintegration model became obsolete under the v0.10.0 Game Forge Intelligence contract.
 
 ### v0.8.0 and earlier
 

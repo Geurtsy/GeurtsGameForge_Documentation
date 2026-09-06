@@ -1,7 +1,7 @@
-<!-- GEURTS-MANAGED-BEGIN id="agents-body" version="0.9.0" sha256="b3859084fe5202b172263931205c5f6296fbd49e141092700edf9a27f6712f71" -->
+<!-- GEURTS-MANAGED-BEGIN id="agents-body" version="1.0.0" sha256="93464c8bace065ddfe2f305dfedafafbb8a1099cb318c21dad185d46d22451eb" -->
 # Geurts Game Forge external-tool route
 
-**Template Version:** 0.9.0
+**Template Version:** 1.0.0
 
-Read and follow `GeurtsGameForgeDocumentation/AGENTS.md`.
+Before planning or modifying any Geurts Game Forge brick code, read and follow `GeurtsGameForgeDocumentation/AGENTS.md`; it routes to the installed, manifest-selected documentation. Treat that documentation as the source of truth for the work.
 <!-- GEURTS-MANAGED-END id="agents-body" -->
