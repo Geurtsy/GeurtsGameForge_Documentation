@@ -68,7 +68,13 @@ Before Unity implementation, read `ProjectSettings/ProjectVersion.txt`, `Package
 
 Use the latest stable **6000.3.x** patch compatible with the project's platforms and dependencies when establishing or updating its Editor baseline. Check the [Unity release archive](https://unity.com/releases/editor/archive) and that patch's release notes when doing the work; do not freeze a moving "latest patch" number in generic guidance. Commit the exact selected `ProjectVersion.txt` and package manifest/lockfile in the consuming project. A project pinned to an older Editor requires an explicit, validated migration; do not silently open it in another Editor or report it as 6.3-compatible without evidence. Later Unity update releases and previews do not replace this 6.3 LTS target automatically.
 
-Use the newest stable package release verified compatible with **6000.3** and the actual dependency graph. Review [Package Manager version history](https://docs.unity3d.com/6000.3/Documentation/Manual/upm-ui-update.html), compatibility information, changelogs, and installed source before changing APIs. Update required dependencies together through supported package workflows and retain reproducible versions; do not blindly select `latest`, preview/experimental releases, or dependencies requiring a later Editor. Optional systems remain conditional on project selection. A compatible stable API takes precedence over a newer incompatible API.
+Use the newest stable package release verified compatible with **6000.3** and the actual dependency graph. Review [Package Manager version history](https://docs.unity3d.com/6000.3/Documentation/Manual/upm-ui-update.html), compatibility information, changelogs, and installed source before changing APIs. Update required dependencies together through supported package workflows and retain reproducible versions; do not blindly select `latest`, preview/experimental releases, or dependencies requiring a later Editor. A compatible stable API takes precedence over a newer incompatible API.
+
+**Odin Inspector and Quantum Console are required dependencies** for Geurts gameplay, reusable framework, runtime-system, and developer-tool implementation. Use current stable releases compatible with Unity 6.3 LTS and the project's target platforms. Verify Odin was acquired through a licensed distribution and Quantum Console through its supported distribution; do not copy, vendor, or redistribute either package without the applicable rights. Missing dependencies are implementation blockers. If either dependency is missing, incompatible, or unlicensed, report that concrete blocker and do not create a fallback inspector, serializer, command console, or parallel diagnostics framework to bypass the requirement.
+
+Use both dependencies wherever their supported features improve configuration, validation, inspection, diagnostics, tuning, or developer operation. "Use as much as possible" means meaningful adoption across applicable Geurts-owned code, not decorating every member, serializing unsupported data unnecessarily, exposing unsafe commands, or adding runtime work without a benefit. Preserve established project data and behavior while migrating duplicate custom tooling onto these required systems.
+
+The dependency requirement excludes this documentation-only repository, its host-side PowerShell utilities, project-authored design documents, third-party or generated code, and the independent Geurts Documentation Companion. The companion retains its manifest-selected zero-dependency contract and must not acquire Odin Inspector or Quantum Console. A separately selected legacy compatibility contract remains frozen unless its owning document explicitly permits a change.
 
 For a separately maintained UPM package that requires this baseline, declare `"unity": "6000.3"` in its `package.json`; add `unityRelease` only when a specific patch is the verified minimum. This field declares a minimum, not a promise of support for every later Editor. Consult the [package manifest reference](https://docs.unity3d.com/6000.3/Documentation/Manual/upm-manifestPkg.html). Do not add a Unity package manifest to this documentation repository or change the companion's closed JSON schema to carry Editor requirements.
 
@@ -183,7 +189,7 @@ Folder placement, automated folder creation, design-document discovery, and miss
 
 - **Modular AI Components:** Implement behaviours as separate scripts.
 - **Data-Driven Design:** Use ScriptableObjects for AI configuration.
-- **Validation:** Validate serialized inputs and safe parameter ranges through project-supported Unity or framework mechanisms. Odin-specific attributes apply only under the conditional Odin section below.
+- **Validation:** Use Odin Inspector attributes and validation for serialized inputs, required references, safe ranges, and authoring constraints wherever the rule can be expressed clearly.
 - **Explainability:** Add tooltips and comments for all AI-related fields.
 - **Performance:** Optimise AI decision-making for FPS.
 
@@ -278,15 +284,20 @@ Comments must be updated when behaviour changes.
 
 ## Odin Inspector Usage
 
-Apply this section only when Odin Inspector is already installed in the project or the current user/project has explicitly selected it. This documentation does not require or authorize installing Odin. Otherwise use the project's selected inspector and serialization equivalents.
+Odin Inspector is required within the implementation scope defined by the Unity 6.3 dependency baseline. Confirm a current stable Unity 6-compatible release is installed, licensed, and referenced by each applicable assembly definition before implementing or modifying scoped code. Use the [official Odin patch notes](https://odininspector.com/patch-notes) to verify compatibility; record the installed version in implementation evidence rather than pinning a moving release in this technique.
+
+Use Odin attributes as the default authoring layer for Geurts-owned components and ScriptableObjects. Prefer Odin's declarative drawers, validation, buttons, tables, and grouping over new one-off custom inspectors when they express the workflow clearly. Keep ordinary Unity serialization when it supports the required data. Use Odin serialization only for an intentional unsupported data shape or polymorphic contract, and test prefab overrides, asset persistence, domain reload behavior, IL2CPP/AOT, and stripping where applicable.
 
 - Group related variables with `[BoxGroup]`.
 - Organise major sections using `[TabGroup]` and subsections with `[FoldoutGroup]`.
-- Use `[Button]` for safe editor actions.
-- Apply `[OdinSerialize]` for non-Unity serialisable types.
-- Document every group, tab, and button with comments.
+- Mark mandatory asset and component references with `[Required]` and express safe numeric limits with `[MinValue]`, `[MaxValue]`, or another suitable Odin constraint.
+- Use `[ValidateInput]` for domain rules that cannot be expressed by a simpler constraint, with a concise actionable message.
+- Use `[ReadOnly]` or `[ShowInInspector]` for useful live diagnostic state that should be visible without becoming serialized configuration.
+- Use `[Button]` for safe, useful Editor actions such as validation, preview, setup, and test operations.
+- Apply `[OdinSerialize]` only when Odin serialization is required; do not add it to Unity-supported fields merely to increase attribute use.
+- Document every non-obvious group, tab, validation rule, and button through labels, tooltips, or concise comments.
 
-Editor buttons should be safe to run and should avoid destructive actions unless clearly labelled and guarded.
+Editor buttons must support Undo and dirty/prefab recording when they change Unity-owned serialized data. Destructive actions require explicit labels, a clear confirmation, precise scope, and useful failure reporting. Do not duplicate an existing Odin workflow with a custom Editor window unless the custom interaction is materially better and the reason is documented.
 
 ---
 
@@ -300,13 +311,17 @@ Runtime debugging and logging should be comprehensive, filterable, and accessibl
 
 ## Runtime Console Integration
 
-### Conditional Quantum Console Use
+### Required Quantum Console Use
 
-Apply the Quantum Console-specific rules below only when Quantum Console is already installed or explicitly selected by the current user/project. This documentation does not require or authorize installing it. Otherwise use the project's selected logging and command equivalents.
+Quantum Console is the required runtime developer console within the implementation scope defined by the Unity 6.3 dependency baseline. Confirm a current stable compatible release is installed and referenced by applicable assembly definitions. Use its `QFSW.QC` APIs, `[Command]`, `[CommandDescription]`, supported-platform controls, command processor, logging integration, and console lifecycle events instead of building a parallel runtime command or console system. Follow the [official getting-started guide](https://www.qfsw.co.uk/docs/QC/articles/quickstart/quickstart.html) and [command documentation](https://www.qfsw.co.uk/docs/QC/articles/docs/commands.html).
+
+Every gameplay project must include a validated developer-console setup reachable in Play Mode and development builds. Provide the required EventSystem, use Quantum Console's SRP-compatible prefab/theme when the selected render pipeline requires it, and integrate its activate/deactivate events with the Input System so gameplay input does not continue unintentionally while the console has focus. Keep the console UI and command execution unavailable to players by default; a project GDD or explicit current-user decision is required before any player-facing access.
+
+Expose useful Geurts-owned inspection, validation, tuning, recovery, performance, AI, and multiplayer diagnostics as Quantum Console commands when they can be invoked safely. Route routine runtime diagnostics through one project logging facade that preserves Unity Console output and is captured or forwarded by Quantum Console. Avoid per-frame log spam, duplicate command surfaces, secrets, personal data, production-only internals, and state-changing commands without appropriate authorization and guards.
 
 ### Accessibility
 
-- The selected console should be available to developers at runtime when appropriate.
+- Quantum Console must be available to developers at runtime in Play Mode and development builds.
 - Player access is off by default and requires explicit project GDD or current-user selection.
 
 ### Modes
@@ -339,6 +354,8 @@ When a player-facing console is explicitly selected, its permitted filters and a
 ### Full Names Only
 
 Commands must use complete words. Do not use abbreviations.
+
+Declare commands with Quantum Console's `[Command]` attribute and supply a useful description through the supported attribute API. Restrict supported platforms when a command is Editor- or development-only. Command parameters must be parseable, bounded, and validated before state changes.
 
 Use:
 
@@ -406,6 +423,8 @@ Do not expose any command to players by default. When player command access is e
 
 Sensitive commands appear in help listings only in Developer Mode.
 
+`Sensitive` and `Cheat` are Geurts policy classifications, not assumed Quantum Console attributes. Record them in the project's command wrapper or registry and include the classification in the command description/help output. Enforce access in code before executing the command.
+
 Example:
 
 ```text
@@ -420,7 +439,7 @@ Commands that alter the game state must be flagged as `Cheat`.
 
 ## Logging Standards
 
-Route runtime logs through the project-selected logging system. When Quantum Console is the selected system, use its categories and filters consistently.
+Route Geurts-owned runtime logs through the project's central logging facade and integrate that facade with Quantum Console. Preserve Unity Console output for Editor diagnostics and use Quantum Console categories, severity filters, storage limits, and thread-safe logging APIs consistently. Do not call multiple log sinks independently from gameplay code.
 
 Severity colours:
 
@@ -472,7 +491,7 @@ The overlay must be disabled for players by default. If explicitly selected, exp
   - BottomLeft
   - BottomRight
 
-### Example Commands When Quantum Console Is Selected
+### Example Quantum Console Commands
 
 ```text
 Performance.ToggleStats
@@ -516,6 +535,7 @@ A generated or modified Unity C# script is complete only when it:
 - Includes XML summaries for public methods.
 - Avoids unnecessary per-frame allocations.
 - Avoids expensive logic inside `Update()` unless justified.
-- Routes runtime debug output through the project-selected logging or console system where relevant; applies Quantum Console-specific rules only when that package is installed or selected.
+- Uses Odin Inspector meaningfully for applicable serialized configuration, validation, diagnostics, and safe Editor actions, with its installed compatible version recorded.
+- Routes Geurts-owned runtime diagnostics and applicable developer operations through Quantum Console, with its installed compatible version and developer-console validation recorded.
 - Preserves multiplayer network efficiency where relevant.
 - Satisfies every applicable GDD requirement selected by the manifest before changing player-facing behaviour.

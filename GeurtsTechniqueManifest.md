@@ -75,7 +75,7 @@ Every path between the markers is part of the v0.11.0 repository package and mus
 | `AI_READ_FIRST.md` | 0.11.0 | Second-stage local-package and session router from `AGENTS.md` to this manifest. |
 | `GeurtsTechniqueManifest.md` | 0.11.0 | Package index and single resolver for selection, versions, applicability, subject ownership, order, and conflicts. |
 | `README.md` | 0.11.0 | Repository overview and package changelog. |
-| `GeurtsTechniques/GeurtsTechnicalTechnique.md` | 0.9.0 | Normative technical implementation, Unity 6.3 LTS compatibility baseline, and strict-priority owner. |
+| `GeurtsTechniques/GeurtsTechnicalTechnique.md` | 0.9.0 | Normative technical implementation, Unity 6.3 LTS and required Odin Inspector/Quantum Console baseline, and strict-priority owner. |
 | `GeurtsTechniques/GeurtsGameForgeAutomationTechnique.md` | 0.9.0 | Normative generic AI-assisted automation technique. |
 | `GeurtsTechniques/GeurtsFolderStructureTechnique.md` | 0.10.0 | Normative explanatory folder authority, including companion-managed placement and strict non-managed boundaries. |
 | `GeurtsTechniques/GeurtsFolderStructureDefinition.json` | 0.11.0 | Machine-readable folder-creation authority; definition v0.10.0. |

@@ -1017,6 +1017,7 @@ try {
     $requiredLifecycleChecks = @(
         "Unity 6.3 LTS target",
         "Unity C# example patterns",
+        "Required technical dependencies and policies",
         "Frozen GFI v2 source and compatibility boundary",
         "Frozen GFI v2 startup and manual trigger",
         "Frozen GFI v2 separated versions",
@@ -1069,6 +1070,20 @@ try {
         $exampleRun = Invoke-TestScript -Path $validatorScript -Arguments @("-RepositoryRoot", $exampleFixture)
         Assert-True ($exampleRun.Code -ne 0 -and $exampleRun.Output.Contains("[FAIL] Unity C# example patterns")) ("Static validation rejects unsupported current C# example: " + $exampleCase.Name)
     }
+
+    $optionalOdinFixture = New-StaticValidationFixture -Parent $testRoot -Name "static-optional-odin"
+    $optionalOdinTechnique = Join-Path $optionalOdinFixture "GeurtsTechniques/GeurtsTechnicalTechnique.md"
+    $optionalOdinText = [System.IO.File]::ReadAllText($optionalOdinTechnique).Replace('Odin Inspector is required within the implementation scope defined by the Unity 6.3 dependency baseline.', 'Odin Inspector is optional within the implementation scope defined by the Unity 6.3 dependency baseline.')
+    Write-Utf8 -Path $optionalOdinTechnique -Text $optionalOdinText
+    $optionalOdinRun = Invoke-TestScript -Path $validatorScript -Arguments @("-RepositoryRoot", $optionalOdinFixture)
+    Assert-True ($optionalOdinRun.Code -ne 0 -and $optionalOdinRun.Output.Contains("[FAIL] Required technical dependencies and policies")) "Static validation rejects making Odin Inspector optional"
+
+    $optionalQuantumFixture = New-StaticValidationFixture -Parent $testRoot -Name "static-optional-quantum"
+    $optionalQuantumTechnique = Join-Path $optionalQuantumFixture "GeurtsTechniques/GeurtsTechnicalTechnique.md"
+    $optionalQuantumText = [System.IO.File]::ReadAllText($optionalQuantumTechnique).Replace('Quantum Console is the required runtime developer console', 'Quantum Console is an optional runtime developer console')
+    Write-Utf8 -Path $optionalQuantumTechnique -Text $optionalQuantumText
+    $optionalQuantumRun = Invoke-TestScript -Path $validatorScript -Arguments @("-RepositoryRoot", $optionalQuantumFixture)
+    Assert-True ($optionalQuantumRun.Code -ne 0 -and $optionalQuantumRun.Output.Contains("[FAIL] Required technical dependencies and policies")) "Static validation rejects making Quantum Console optional"
 
     $brickRouteFixture = New-StaticValidationFixture -Parent $testRoot -Name "static-native-brick-route"
     $brickRouteTemplatePath = Join-Path $brickRouteFixture "Tools/AIAgentInstructionTemplates/AGENTS.md"
