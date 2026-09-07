@@ -1,6 +1,7 @@
 # Geurts Technique Package Manifest
 
 **Version:** 0.11.0
+**Unity target:** Unity 6.3 LTS (6000.3)
 **Status:** Draft normative package manifest
 **Primary audience:** AI coding agents and automated development systems
 **Secondary audience:** Human developers
@@ -74,7 +75,7 @@ Every path between the markers is part of the v0.11.0 repository package and mus
 | `AI_READ_FIRST.md` | 0.11.0 | Second-stage local-package and session router from `AGENTS.md` to this manifest. |
 | `GeurtsTechniqueManifest.md` | 0.11.0 | Package index and single resolver for selection, versions, applicability, subject ownership, order, and conflicts. |
 | `README.md` | 0.11.0 | Repository overview and package changelog. |
-| `GeurtsTechniques/GeurtsTechnicalTechnique.md` | 0.8.0 | Normative technical implementation technique and strict-priority owner. |
+| `GeurtsTechniques/GeurtsTechnicalTechnique.md` | 0.9.0 | Normative technical implementation, Unity 6.3 LTS compatibility baseline, and strict-priority owner. |
 | `GeurtsTechniques/GeurtsGameForgeAutomationTechnique.md` | 0.9.0 | Normative generic AI-assisted automation technique. |
 | `GeurtsTechniques/GeurtsFolderStructureTechnique.md` | 0.10.0 | Normative explanatory folder authority, including companion-managed placement and strict non-managed boundaries. |
 | `GeurtsTechniques/GeurtsFolderStructureDefinition.json` | 0.11.0 | Machine-readable folder-creation authority; definition v0.10.0. |
@@ -98,14 +99,14 @@ Every path between the markers is part of the v0.11.0 repository package and mus
 | `Tools/CreateGeurtsFolderStructure.ps1` | 0.11.0 | Definition-driven, create-only folder tool; never invoked by the companion. |
 | `Tools/UpdateGameDesignManifest.ps1` | 0.10.0 | Deterministic GDD manifest maintainer. |
 | `Tools/NativeEntryMigrationCatalog.json` | 1.0.0 | Native-entry exact-fingerprint migration catalog for the four v1.0.0 brick-aware route templates. |
-| `Tools/ValidateGeurtsDocumentation.ps1` | 0.11.0 | Package, path, version, authority, companion-contract, lifecycle-boundary, and payload validator. |
+| `Tools/ValidateGeurtsDocumentation.ps1` | 0.11.1 | Package, Unity-target/example, path, version, authority, companion-contract, lifecycle-boundary, and payload validator. |
 | `Tools/AIAgentInstructionTemplates/AGENTS.md` | 1.0.0 | Managed Codex route requiring brick agents to read the installed documentation before planning or modifying code. |
 | `Tools/AIAgentInstructionTemplates/copilot-instructions.md` | 1.0.0 | Managed Copilot route requiring brick agents to read the installed documentation before planning or modifying code. |
 | `Tools/AIAgentInstructionTemplates/instructions/geurts-unity.instructions.md` | 1.0.0 | Managed scoped Unity route requiring brick agents to use the installed documentation as source of truth. |
 | `Tools/AIAgentInstructionTemplates/instructions/geurts-game-design.instructions.md` | 1.0.0 | Managed scoped game-design route requiring brick agents to use the installed documentation as source of truth. |
 | `Tools/AIAgentInstructionTemplates/GameDesign/README.md` | 0.10.0 | Create-if-missing project GDD routing scaffold. |
 | `Tools/AIAgentInstructionTemplates/GameDesign/GameDesignManifest.md` | 0.7.0 | Create-if-missing deterministic GDD manifest scaffold. |
-| `Tools/Tests/RunAutomationTests.ps1` | 0.11.0 | Temporary-project automation and lifecycle-regression suite. |
+| `Tools/Tests/RunAutomationTests.ps1` | 0.11.1 | Temporary-project automation, Unity-target/example, and lifecycle-regression suite. |
 
 <!-- GEURTS-PACKAGE-FILES:END -->
 

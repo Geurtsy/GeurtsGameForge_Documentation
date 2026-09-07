@@ -1,5 +1,5 @@
 # ValidateGeurtsDocumentation.ps1
-# Version: 0.11.0
+# Version: 0.11.1
 
 [CmdletBinding()]
 param(
@@ -804,6 +804,55 @@ try {
 
     $technicalRelative = "GeurtsTechniques/GeurtsTechnicalTechnique.md"
     $technicalText = [System.IO.File]::ReadAllText((Join-Path $RepositoryRoot $technicalRelative))
+    $unityTargetFailures = New-Object System.Collections.Generic.List[string]
+    foreach ($relative in @("README.md", "GeurtsTechniqueManifest.md", $technicalRelative)) {
+        $targetText = [System.IO.File]::ReadAllText((Join-Path $RepositoryRoot $relative))
+        $targetMatches = @([regex]::Matches($targetText, '(?m)^\*\*Unity target:\*\*\s*(?<Target>[^\r\n]+)\r?$'))
+        if ($targetMatches.Count -ne 1 -or $targetMatches[0].Groups["Target"].Value.Trim() -cne "Unity 6.3 LTS (6000.3)") {
+            $unityTargetFailures.Add("$relative must declare exactly one Unity 6.3 LTS (6000.3) target") | Out-Null
+        }
+    }
+    $baselineSection = [regex]::Match($technicalText, '(?ms)^## Unity 6\.3 LTS Compatibility Baseline\s*(?<Body>.*?)(?=^## )')
+    $baselineBody = if ($baselineSection.Success) { $baselineSection.Groups["Body"].Value } else { "" }
+    foreach ($requiredTerm in @(
+        "ProjectSettings/ProjectVersion.txt", "Packages/manifest.json", "Packages/packages-lock.json",
+        "6000.3.x", "newest stable package release verified compatible", "C# 9.0", ".NET Standard 2.1",
+        ".NET Framework 4.8", "Input System", "Build Profiles", "UnityEngine.Awaitable",
+        "Render Graph", "Edit Mode", "Play Mode", "IL2CPP", "do not certify separate game or companion repositories"
+    )) {
+        if ($baselineBody.IndexOf($requiredTerm, [System.StringComparison]::Ordinal) -lt 0) {
+            $unityTargetFailures.Add("Technical compatibility baseline omits '$requiredTerm'") | Out-Null
+        }
+    }
+    Add-Check "Unity 6.3 LTS target" ($unityTargetFailures.Count -eq 0) $(if ($unityTargetFailures.Count) { $unityTargetFailures -join "; " } else { "README, manifest, and the Technical Technique agree on 6000.3; the technical owner declares dependency, language/API, migration, and verification requirements." })
+
+    # This is a bounded lint of current Markdown examples, not a Unity compiler or API compatibility proof.
+    $exampleFailures = New-Object System.Collections.Generic.List[string]
+    $exampleCount = 0
+    $unsupportedExamplePatterns = @(
+        @{ Name = "obsolete object discovery"; Pattern = '\bFind(?:ObjectOfType|ObjectsOfType)\s*(?:<|\()' },
+        @{ Name = "legacy input polling"; Pattern = '\b(?:UnityEngine\.)?Input\s*\.\s*Get(?:Axis(?:Raw)?|Button(?:Down|Up)?|Key(?:Down|Up)?|MouseButton(?:Down|Up)?)\s*\(' },
+        @{ Name = "legacy Netcode RPC attribute"; Pattern = '\[\s*(?:Unity\.Netcode\.)?(?:ServerRpc|ClientRpc)(?:Attribute)?\b' },
+        @{ Name = "legacy UXML factory or traits"; Pattern = '\b(?:UxmlFactory|UxmlTraits)\b' },
+        @{ Name = "C# 10 file-scoped namespace"; Pattern = '(?m)^\s*namespace\s+[A-Za-z_][\w.]*\s*;' },
+        @{ Name = "C# 10 global using"; Pattern = '(?m)^\s*global\s+using\s+' },
+        @{ Name = "C# 10 record struct"; Pattern = '\brecord\s+struct\s+' }
+    )
+    $examplePaths = @($trackedPaths | Where-Object { $_ -like "*.md" -and $_ -notmatch '^(?:Migrations|Ideas)/' -and $_ -notmatch 'GeurtsGameForgeIntelligence(?:Technique|IntegrationContract)\.md$' })
+    foreach ($relative in $examplePaths) {
+        $exampleText = [System.IO.File]::ReadAllText((Join-Path $RepositoryRoot $relative))
+        foreach ($fence in [regex]::Matches($exampleText, '(?ms)^```(?:csharp|cs|c#)[ \t]*\r?\n(?<Code>.*?)^```[ \t]*\r?$')) {
+            $exampleCount++
+            foreach ($rule in $unsupportedExamplePatterns) {
+                if ([regex]::IsMatch($fence.Groups["Code"].Value, $rule.Pattern)) {
+                    $line = 1 + [regex]::Matches($exampleText.Substring(0, $fence.Index), '\n').Count
+                    $exampleFailures.Add("${relative}:${line} uses $($rule.Name)") | Out-Null
+                }
+            }
+        }
+    }
+    Add-Check "Unity C# example patterns" ($exampleCount -gt 0 -and $exampleFailures.Count -eq 0) $(if ($exampleFailures.Count) { $exampleFailures -join "; " } else { "$exampleCount current C# fragments pass the bounded legacy-API and language-pattern lint; Unity compilation and player compatibility are not established by this check." })
+
     $priorityPattern = '(?ms)^1\.\s+\*\*Extendibility\*\*.*?^2\.\s+\*\*Efficiency\*\*.*?^3\.\s+\*\*Readability\*\*.*?^4\.\s+\*\*Updated\*\*.*?^5\.\s+\*\*Documented\*\*'
     $technicalPriorityMatches = @([regex]::Matches($technicalText, $priorityPattern))
     $duplicatePriorityFiles = New-Object System.Collections.Generic.List[string]

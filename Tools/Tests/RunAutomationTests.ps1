@@ -1,5 +1,5 @@
 # RunAutomationTests.ps1
-# Version: 0.11.0
+# Version: 0.11.1
 
 [CmdletBinding()]
 param(
@@ -1015,6 +1015,8 @@ try {
     try { $staticJsonObject = $staticJsonValidation.Output | ConvertFrom-Json }
     catch { }
     $requiredLifecycleChecks = @(
+        "Unity 6.3 LTS target",
+        "Unity C# example patterns",
         "Frozen GFI v2 source and compatibility boundary",
         "Frozen GFI v2 startup and manual trigger",
         "Frozen GFI v2 separated versions",
@@ -1035,6 +1037,38 @@ try {
     )
     $missingLifecycleChecks = @($requiredLifecycleChecks | Where-Object { $checkName = $_; @($staticJsonObject.checks | Where-Object { $_.name -ceq $checkName -and $_.passed }).Count -ne 1 })
     Assert-True ($staticJsonValidation.Code -eq 0 -and $staticJsonObject -and $staticJsonObject.status -eq "VALID" -and @($staticJsonObject.checks | Where-Object { -not $_.passed }).Count -eq 0 -and $missingLifecycleChecks.Count -eq 0) "Repository validation JSON output is parseable and contains every passing companion and frozen-GFI boundary check"
+
+    # Mutated package fixtures must fail without changing the source checkout or any Unity project.
+    $unityTargetFixture = New-StaticValidationFixture -Parent $testRoot -Name "static-unity-target"
+    $unityTargetReadme = Join-Path $unityTargetFixture "README.md"
+    Write-Utf8 -Path $unityTargetReadme -Text ([System.IO.File]::ReadAllText($unityTargetReadme).Replace('**Unity target:** Unity 6.3 LTS (6000.3)', '**Unity target:** Unity 6.0 LTS (6000.0)'))
+    $unityTargetRun = Invoke-TestScript -Path $validatorScript -Arguments @("-RepositoryRoot", $unityTargetFixture)
+    Assert-True ($unityTargetRun.Code -ne 0 -and $unityTargetRun.Output.Contains("[FAIL] Unity 6.3 LTS target")) "Static validation rejects a conflicting Unity target in a package entry surface"
+
+    $unityBaselineFixture = New-StaticValidationFixture -Parent $testRoot -Name "static-unity-baseline-missing"
+    $unityBaselineTechnique = Join-Path $unityBaselineFixture "GeurtsTechniques/GeurtsTechnicalTechnique.md"
+    $withoutBaseline = [regex]::Replace([System.IO.File]::ReadAllText($unityBaselineTechnique), '(?ms)^## Unity 6\.3 LTS Compatibility Baseline\s*.*?(?=^## )', '')
+    Write-Utf8 -Path $unityBaselineTechnique -Text $withoutBaseline
+    $unityBaselineRun = Invoke-TestScript -Path $validatorScript -Arguments @("-RepositoryRoot", $unityBaselineFixture)
+    Assert-True ($unityBaselineRun.Code -ne 0 -and $unityBaselineRun.Output.Contains("[FAIL] Unity 6.3 LTS target")) "Static validation rejects target metadata without the technical compatibility baseline"
+
+    $invalidUnityExamples = @(
+        @{ Name = "obsolete-find"; Code = 'var items = UnityEngine.Object.FindObjectsOfType<UnityEngine.Collider>();' },
+        @{ Name = "legacy-input"; Code = 'float movement = UnityEngine.Input.GetAxis("Horizontal");' },
+        @{ Name = "legacy-rpc"; Code = '[ServerRpc] public void PingServerRpc() { }' },
+        @{ Name = "legacy-uxml"; Code = 'public class Factory : UxmlFactory<Example> { }' },
+        @{ Name = "file-namespace"; Code = 'namespace Example;' },
+        @{ Name = "global-using"; Code = 'global using UnityEngine;' },
+        @{ Name = "record-struct"; Code = 'public record struct Example(int Value);' }
+    )
+    foreach ($exampleCase in $invalidUnityExamples) {
+        $exampleFixture = New-StaticValidationFixture -Parent $testRoot -Name ("static-unity-example-" + $exampleCase.Name)
+        $exampleTechnique = Join-Path $exampleFixture "GeurtsTechniques/GeurtsTechnicalTechnique.md"
+        $invalidFence = [Environment]::NewLine + '```csharp' + [Environment]::NewLine + $exampleCase.Code + [Environment]::NewLine + '```' + [Environment]::NewLine
+        Write-Utf8 -Path $exampleTechnique -Text ([System.IO.File]::ReadAllText($exampleTechnique) + $invalidFence)
+        $exampleRun = Invoke-TestScript -Path $validatorScript -Arguments @("-RepositoryRoot", $exampleFixture)
+        Assert-True ($exampleRun.Code -ne 0 -and $exampleRun.Output.Contains("[FAIL] Unity C# example patterns")) ("Static validation rejects unsupported current C# example: " + $exampleCase.Name)
+    }
 
     $brickRouteFixture = New-StaticValidationFixture -Parent $testRoot -Name "static-native-brick-route"
     $brickRouteTemplatePath = Join-Path $brickRouteFixture "Tools/AIAgentInstructionTemplates/AGENTS.md"
