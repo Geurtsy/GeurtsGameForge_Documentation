@@ -4,11 +4,11 @@
 
 Adds the manifest-selected [brick contract](GeurtsTechniques/GeurtsBrickContract.md) and [machine-readable catalogue](GeurtsTechniques/GeurtsBrickCatalogue.json). AI-assisted Unity development must use a suitable available Geurts brick before recreating its functionality. God owns package management, lifecycle, shared contracts and settings. The current user's mandatory Odin Inspector and Quantum Console requirement supersedes older Unity companion tool exemptions. Documentation-interface implementation remains in its separately maintained repository.
 
-The catalogue pins God 0.2.1, the minimal Diagnostics test consumer 0.2.0 and Documentation Companion 0.5.3 to exact verified Git revisions. Merge the corresponding package release changes before adopting this catalogue update. God and Documentation label Odin Inspector and Quantum Console as required external dependencies in their package interfaces. Six roadmap bricks are listed as **Planned**: Settings System; Scene Loading and Bootstrap; Save and Load; Audio; User Interface Foundations; Object Pooling. These entries have no release version or installation source and do not represent published packages.
+God 0.3.1, the minimal Diagnostics test consumer 0.2.0 and Documentation Companion 0.7.0 are selected by the catalogue with exact Git revisions. Merge the God 0.3.1 package change before adopting this catalogue update. Six roadmap bricks are listed as **Planned**: Settings System; Scene Loading and Bootstrap; Save and Load; Audio; User Interface Foundations; Object Pooling. These entries have no release version or installation source and do not represent published packages.
 
 Brick Manager distinguishes **Planned**, **Available** and **Installed** independently of update status. `released: false` marks a planned catalogue entry; `released: true` marks a published release. Installed is determined from the actual Unity project. Planned entries carry no installation actions or update checks. Their package identifiers reserve catalogue identities; release versions, sources and verified compatibility are selected when the packages are implemented and published.
 
-**Version:** 0.11.2
+**Version:** 0.12.1
 **Unity target:** Unity 6.3 LTS (6000.3)
 **Status:** Draft technique package
 **Primary audience:** AI coding agents and automated development systems
@@ -17,7 +17,7 @@ Brick Manager distinguishes **Planned**, **Available** and **Installed** indepen
 
 ## Start Here
 
-Begin with `AGENTS.md`, then its sibling `AI_READ_FIRST.md`, then `GeurtsTechniqueManifest.md`. Do not start implementation from this README.
+Begin with `AI_READ_FIRST.md`, then `GeurtsTechniqueManifest.md`. Do not start implementation from this README.
 
 The manifest is the single resolver for package-file selection, versions, subject ownership, applicability, post-entry order, and cross-document conflicts. It selects every required technique from one validated source checkout or project-local fetched copy. When it selects the GDD Technique, that technique uses the project-authored `Docs/GameDesign/GameDesignManifest.md` to identify relevant design facts.
 
@@ -27,7 +27,7 @@ New and modified Unity code and examples target **Unity 6.3 LTS (6000.3)**. The 
 
 Within its declared implementation scope, the Technical Technique requires licensed, Unity 6.3-compatible Odin Inspector and Quantum Console dependencies and requires meaningful use of their authoring, validation, inspection, command, logging, and diagnostics capabilities. Missing dependencies are implementation blockers. The manifest-selected Brick Contract extends that requirement to the independent Documentation Companion; this documentation source repository contains no commercial tool assets.
 
-This repository contains documentation, C# fragments, and host-side PowerShell utilities. It contains no Unity project or companion implementation. Its checks validate the documentation package and tools; actual Unity compilation and player compatibility must be verified in the consuming project. The package remains the v0.11.2 draft; the Technical Technique advances independently to v0.9.0.
+This repository contains documentation, C# fragments, and host-side PowerShell utilities. It contains no Unity project or companion implementation. Its checks validate the documentation package and tools; actual Unity compilation and player compatibility must be verified in the consuming project. The package remains the v0.12.1 draft; the Technical Technique advances independently to v0.9.0.
 
 ## Source and Ownership Boundary
 
@@ -40,7 +40,7 @@ The relevant locations have different owners:
 | `Geurtsy/GeurtsGameForge_Documentation` | Authoritative source for all Geurts Game Forge documentation. |
 | `<ProjectRoot>/GeurtsGameForgeDocumentation/` | Detached, archive-sourced project-local snapshot managed as logically read-only content. A confirmed companion Update replaces it completely. |
 | `Geurtsy/com.geurts.gameforge.documentation` | Owns the Windows-only, Editor-only Unity Package Manager implementation, package metadata, and companion-specific documentation. No companion code lives here. It has no Geurts Game Forge God or Game Forge Intelligence dependency. |
-| The four project AI-route targets declared in `GeurtsDocumentationCompanionContract.json` | Whole files managed by the companion. One confirmation explicitly authorizes replacement from the four documentation-owned templates. |
+| The three project AI-route targets declared in `GeurtsDocumentationCompanionContract.json` | Whole files managed by the companion. One confirmation explicitly authorizes replacement from the three documentation-owned templates. |
 | `<ProjectRoot>/Docs/GameDesign/` | Project-authored game-design authority. The companion must not inspect or change it. |
 | Game Forge Intelligence | A separate optional product with a frozen v2 compatibility technique. Its historical documentation updater is superseded and it is not required by the companion. |
 
@@ -48,14 +48,13 @@ The project-local fetched copy contains the complete supported Git-tracked sourc
 
 ```text
 <ProjectRoot>/GeurtsGameForgeDocumentation/
-├── AGENTS.md
-├── AI_READ_FIRST.md
-├── GeurtsTechniqueManifest.md
-├── GeurtsTechniques/
-├── Ideas/
-├── Migrations/
-├── README.md
-└── Tools/
+â”œâ”€â”€ AI_READ_FIRST.md
+â”œâ”€â”€ GeurtsTechniqueManifest.md
+â”œâ”€â”€ GeurtsTechniques/
+â”œâ”€â”€ Ideas/
+â”œâ”€â”€ Migrations/
+â”œâ”€â”€ README.md
+â””â”€â”€ Tools/
 ```
 
 Those are the current tracked top-level entries, not an installation allowlist. The selected Git tree defines the complete content set. The managed copy contains no `.git` metadata or continuing repository, worktree, branch, remote, or synchronization connection. Logical read-only status is an ownership rule rather than a Windows file-attribute requirement: local edits are unsupported and the next confirmed Update discards them without drift inspection or preservation.
@@ -74,29 +73,27 @@ On each normal Unity project launch or open, the companion may perform at most o
 
 The UI exposes one action labelled `Update Geurts Game Forge Documentation`. Selecting it immediately shows one confirmation dialog, with Cancel as the initially focused default. There is no earlier preview or dry run and no second confirmation. Cancelling or dismissing the dialog causes no network or filesystem change from the Update action.
 
-The confirmation lists all five destructive targets: the complete `GeurtsGameForgeDocumentation/` folder and these four whole files:
+The confirmation lists all four destructive targets: the complete `GeurtsGameForgeDocumentation/` folder and these three whole files:
 
 ```text
-AGENTS.md
 .github/copilot-instructions.md
 .github/instructions/geurts-unity.instructions.md
 .github/instructions/geurts-game-design.instructions.md
 ```
 
-It states that every local change in those five targets will be overwritten and lost, there is no backup or rollback, and `Docs/GameDesign/` plus every unlisted project path will not be accessed or changed. Approval applies only to that closed set; the companion does not scan for other AI configuration.
+It states that every local change in those four targets will be overwritten and lost, there is no backup or rollback, and `Docs/GameDesign/` plus every unlisted project path will not be accessed or changed. Approval applies only to that closed set; the companion does not scan for other AI configuration.
 
 After confirmation, the companion resolves the exact current `main` head commit, downloads an archive pinned to that commit outside the Unity project, and performs the basic validation required by `GeurtsTechniques/GeurtsDocumentationCompanionContract.json`. Only a complete valid candidate may proceed. It then replaces the complete documentation destination and writes each AI route from its exact mapped source template in that same archive. It may create only `.github/` and `.github/instructions/` when needed as parents for the listed routes. It never runs a repository or project script.
 
-Update succeeds only when the complete documentation folder and all four route files are present and complete. The per-project comparison commit is then written on a best-effort basis; a storage failure produces a warning and may make the same Update appear available again, but it does not undo or reclassify the successful five-target replacement. A managed-target failure may leave a partial result and must be reported plainly; the user may retry only through another explicit Update and the same confirmation. There is no preview, dry run, backup, rollback, journal, recovery, migration, drift-preservation, or setup-plan engine.
+Update succeeds only when the complete documentation folder and all three route files are present and complete. The per-project comparison commit is then written on a best-effort basis; a storage failure produces a warning and may make the same Update appear available again, but it does not undo or reclassify the successful four-target replacement. A managed-target failure may leave a partial result and must be reported plainly; the user may retry only through another explicit Update and the same confirmation. There is no preview, dry run, backup, rollback, journal, recovery, migration, drift-preservation, or setup-plan engine.
 
-All four route files tell agents to read `GeurtsGameForgeDocumentation/AGENTS.md` before planning or modifying any Geurts Game Forge brick code and to treat the installed, manifest-selected documentation as the source of truth for that work. They help only AI tools that support those native instruction surfaces or have been explicitly told to read and follow `AGENTS.md`; neither the documentation nor the companion can force every AI product to discover or obey them automatically.
+All three route files tell agents to read `GeurtsGameForgeDocumentation/AI_READ_FIRST.md` before planning or modifying any Geurts Game Forge brick code and to treat the installed, manifest-selected documentation as the source of truth for that work. They help only AI tools that support those native instruction surfaces or have been explicitly told to read and follow `AI_READ_FIRST.md`; neither the documentation nor the companion can force every AI product to discover or obey them automatically.
 
 The manifest-selected `GeurtsTechniques/GeurtsDocumentationCompanionTechnique.md` owns this lifecycle, and `GeurtsTechniques/GeurtsDocumentationCompanionContract.json` owns its exact machine-readable source, destination, validation entries, confirmation targets, and route mappings. The companion implementation lives only in its separate package repository.
 
 ## Package Map
 
-- `AGENTS.md` - first repository entry; routes to the sibling AI router.
-- `AI_READ_FIRST.md` - second-stage local-copy and session boundary; routes to the manifest.
+- `AI_READ_FIRST.md` - first-entry local-copy and session boundary; routes to the manifest.
 - `GeurtsTechniqueManifest.md` - package registry and sole resolver.
 - `GeurtsTechniques/GeurtsTechnicalTechnique.md` - technical implementation and the package's sole technical-priority owner.
 - `GeurtsTechniques/GeurtsGameForgeAutomationTechnique.md` - generic AI-assisted automation behaviour.
@@ -112,7 +109,7 @@ The former `GeurtsGameForgeIntelligenceIntegrationContract.md` is only a non-nor
 
 ## Legacy Manual Utilities (Not Companion Setup)
 
-Package scripts remain available under `GeurtsGameForgeDocumentation/Tools/` for legacy or separately authorized generic maintenance. They are not a supported alternative for provisioning or updating companion-managed documentation or AI routes in a companion project. Such a project uses only Unity Package Manager to install the companion and its confirmed in-Editor Update for those five targets. The scripts are inert documentation-package content, are not duplicated into project-root `Tools/`, and are not part of companion installation, setup, or Update. The companion must not scan for or execute `.bat`, `.cmd`, `.ps1`, or any other script. Always pass the Unity project root explicitly when deliberately invoking a project-mutating legacy utility outside that lifecycle.
+Package scripts remain available under `GeurtsGameForgeDocumentation/Tools/` for legacy or separately authorized generic maintenance. They are not a supported alternative for provisioning or updating companion-managed documentation or AI routes in a companion project. Such a project uses only Unity Package Manager to install the companion and its confirmed in-Editor Update for those four targets. The scripts are inert documentation-package content, are not duplicated into project-root `Tools/`, and are not part of companion installation, setup, or Update. The companion must not scan for or execute `.bat`, `.cmd`, `.ps1`, or any other script. Always pass the Unity project root explicitly when deliberately invoking a project-mutating legacy utility outside that lifecycle.
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File "<ProjectRoot>/GeurtsGameForgeDocumentation/Tools/ManageGeurtsAgentInstructions.ps1" -ProjectRoot "<ProjectRoot>"
@@ -129,7 +126,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "<ProjectRoot>/GeurtsGameFor
 powershell -NoProfile -ExecutionPolicy Bypass -File "<ProjectRoot>/GeurtsGameForgeDocumentation/Tools/ManageGeurtsAgentInstructions.ps1" -ProjectRoot "<ProjectRoot>" -UpdateGameDesignManifest
 ```
 
-Each manual tool's permissions and preservation boundary are owned by its manifest-selected subject technique. Generic tools must not invent project design facts, overwrite project-authored GDD, automatically delete project folders, or alter a differing project-root `.gitignore`. The separately authorized GDD maintainer may update only its bounded managed manifest index. These manual rules do not reduce the companion's separately confirmed authority to replace its four exact whole-file routes.
+Each manual tool's permissions and preservation boundary are owned by its manifest-selected subject technique. Generic tools must not invent project design facts, overwrite project-authored GDD, automatically delete project folders, or alter a differing project-root `.gitignore`. The separately authorized GDD maintainer may update only its bounded managed manifest index. These manual rules do not reduce the companion's separately confirmed authority to replace its three exact whole-file routes.
 
 ## Source-Repository Validation
 
@@ -149,13 +146,44 @@ PowerShell 7 may replace `powershell` with `pwsh`. The validator checks package,
 - `Migrations/v0.9.0.md`, `Migrations/v0.8.0.md`, and `Migrations/v0.7.0.md` - superseded historical notes; they do not define an executable current workflow.
 - `Ideas/GameForgeIntelligenceIdeas.md` - non-normative historical product pointer.
 
+## Codex guide installation
+
+Update the companion package to 0.7.0 before updating documentation to 0.12.1 (contract schema 2.0.0). In Geurts Documentation, select **Install Codex guide**, choose a location and confirm the displayed entry point. The installer creates AGENTS.md for automatic Codex discovery. The template exists only in GeurtsAgentTechnique.md. Normal documentation updates no longer manage a root Codex guide; replace an old guide by selecting its location in the new installer.
+
 ## Changelog
 
-### v0.11.2 — Dependency labels
+### v0.12.1 — Dependency readiness labels
 
-- Synchronizes the Documentation and God dependency-label releases with their catalogue entries. Both interfaces label Odin Inspector and Quantum Console as required external dependencies installed separately.
-- Dependency boxes turn green and show Installed and ready when the tool types are loaded and Unity has no script compilation errors; compilation/import and unavailable states remain visible.
-- Advances package release metadata and matching validator/tool version checks together; the companion schema and its five replacement targets are unchanged.
+- Publish God 0.3.1 with required external dependency boxes on the Documentation card. Loaded tools are green when Unity reports no script compilation errors.
+- Preserve Documentation 0.7.0, the Codex guide installer, schema 2.0.0 and the current three-route documentation update contract.
+- Synchronize the package metadata and versioned tool checks without restoring obsolete documentation entry files.
+
+### v0.12.0
+
+- Make AI_READ_FIRST.md the direct documentation entry point.
+- Add one technique-owned Codex guide template and user-selected installation.
+- Remove both deprecated AGENTS.md files and exclude Codex guides from documentation Update and the manual native-entry manager.
+- Move the three Copilot routes to the direct entry point and adopt companion contract schema 2.0.0.
+
+### v0.11.5
+
+- Publishes God 0.3.0 with a Dependencies section for Odin Inspector, Quantum Console and project-defined Asset Store tools. Tracks installation and downloaded versions separately from current Unity-account ownership, including hidden purchases; installation uses Unity My Assets and native import choices.
+- Synchronizes the exact God catalogue pin, package metadata and validator expectations while retaining Documentation Companion 0.6.1.
+
+### v0.11.4
+
+- Publishes Documentation Companion 0.6.1 with a dedicated Check for updates box and a larger button.
+- Synchronizes the catalogue pin, documentation metadata and version expectations for this visual patch.
+
+### v0.11.3
+
+- Publishes Documentation Companion 0.6.0 with matching dependency status colours, owned-asset access through Unity My Assets, and interactive import of licensed package files.
+- Synchronizes package metadata and validator expectations; the documentation replacement boundary stays unchanged.
+
+### v0.11.2
+
+- Publishes God 0.2.1: the Developer Mode header is pinned only while enabled and scrolls with the Brick Manager while disabled.
+- Synchronizes documentation package metadata and validator expectations for this catalogue patch.
 
 ### v0.11.1
 
