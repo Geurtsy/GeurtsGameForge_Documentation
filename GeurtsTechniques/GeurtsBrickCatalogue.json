@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "packageVersion": "0.11.0",
-  "publishedUtc": "2026-09-08T04:06:59Z",
+  "publishedUtc": "2026-09-08T04:22:46Z",
   "bricks": [
     {
       "id": "com.geurts.gameforge.documentation",
@@ -26,11 +26,11 @@
       "name": "Geurts Game Forge God",
       "description": "Brick Manager and shared foundation for package operations, lifecycle, settings and optional brick cooperation.",
       "website": "https://github.com/Geurtsy/GeurtsGameForge",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "released": true,
       "developmentOnly": false,
       "sourceKind": "git",
-      "source": "https://github.com/Geurtsy/GeurtsGameForge.git?path=/Packages/com.geurts.gameforge.god#76e94ad6a0c4236b255cafadc05fc07655362e0b",
+      "source": "https://github.com/Geurtsy/GeurtsGameForge.git?path=/Packages/com.geurts.gameforge.god#96b29c2fc54613e37d354acac3affff9521601f0",
       "minimumUnity": "6000.3",
       "maximumUnity": "6000.3",
       "requiredTools": [
@@ -64,6 +64,144 @@
         {
           "id": "com.geurts.gameforge.god",
           "minimumVersion": "0.1.0"
+        }
+      ]
+    },
+    {
+      "id": "com.geurts.gameforge.settings",
+      "name": "Geurts Game Forge Settings System",
+      "description": "Shared configuration and settings.",
+      "website": "https://github.com/Geurtsy/GeurtsGameForge#existing-work-and-scope",
+      "version": "",
+      "released": false,
+      "developmentOnly": false,
+      "sourceKind": "",
+      "source": "",
+      "minimumUnity": "",
+      "maximumUnity": "",
+      "requiredTools": [
+        "Odin Inspector",
+        "Quantum Console"
+      ],
+      "dependencies": [
+        {
+          "id": "com.geurts.gameforge.god",
+          "minimumVersion": ""
+        }
+      ]
+    },
+    {
+      "id": "com.geurts.gameforge.sceneloading",
+      "name": "Geurts Game Forge Scene Loading and Bootstrap",
+      "description": "Shared scene loading and bootstrap support.",
+      "website": "https://github.com/Geurtsy/GeurtsGameForge#existing-work-and-scope",
+      "version": "",
+      "released": false,
+      "developmentOnly": false,
+      "sourceKind": "",
+      "source": "",
+      "minimumUnity": "",
+      "maximumUnity": "",
+      "requiredTools": [
+        "Odin Inspector",
+        "Quantum Console"
+      ],
+      "dependencies": [
+        {
+          "id": "com.geurts.gameforge.god",
+          "minimumVersion": ""
+        }
+      ]
+    },
+    {
+      "id": "com.geurts.gameforge.saveload",
+      "name": "Geurts Game Forge Save and Load",
+      "description": "Shared saving and loading support.",
+      "website": "https://github.com/Geurtsy/GeurtsGameForge#existing-work-and-scope",
+      "version": "",
+      "released": false,
+      "developmentOnly": false,
+      "sourceKind": "",
+      "source": "",
+      "minimumUnity": "",
+      "maximumUnity": "",
+      "requiredTools": [
+        "Odin Inspector",
+        "Quantum Console"
+      ],
+      "dependencies": [
+        {
+          "id": "com.geurts.gameforge.god",
+          "minimumVersion": ""
+        }
+      ]
+    },
+    {
+      "id": "com.geurts.gameforge.audio",
+      "name": "Geurts Game Forge Audio",
+      "description": "Shared audio support.",
+      "website": "https://github.com/Geurtsy/GeurtsGameForge#existing-work-and-scope",
+      "version": "",
+      "released": false,
+      "developmentOnly": false,
+      "sourceKind": "",
+      "source": "",
+      "minimumUnity": "",
+      "maximumUnity": "",
+      "requiredTools": [
+        "Odin Inspector",
+        "Quantum Console"
+      ],
+      "dependencies": [
+        {
+          "id": "com.geurts.gameforge.god",
+          "minimumVersion": ""
+        }
+      ]
+    },
+    {
+      "id": "com.geurts.gameforge.userinterface",
+      "name": "Geurts Game Forge User Interface Foundations",
+      "description": "Shared user interface foundations.",
+      "website": "https://github.com/Geurtsy/GeurtsGameForge#existing-work-and-scope",
+      "version": "",
+      "released": false,
+      "developmentOnly": false,
+      "sourceKind": "",
+      "source": "",
+      "minimumUnity": "",
+      "maximumUnity": "",
+      "requiredTools": [
+        "Odin Inspector",
+        "Quantum Console"
+      ],
+      "dependencies": [
+        {
+          "id": "com.geurts.gameforge.god",
+          "minimumVersion": ""
+        }
+      ]
+    },
+    {
+      "id": "com.geurts.gameforge.objectpooling",
+      "name": "Geurts Game Forge Object Pooling",
+      "description": "Reusable object pools.",
+      "website": "https://github.com/Geurtsy/GeurtsGameForge#existing-work-and-scope",
+      "version": "",
+      "released": false,
+      "developmentOnly": false,
+      "sourceKind": "",
+      "source": "",
+      "minimumUnity": "",
+      "maximumUnity": "",
+      "requiredTools": [
+        "Odin Inspector",
+        "Quantum Console"
+      ],
+      "dependencies": [
+        {
+          "id": "com.geurts.gameforge.god",
+          "minimumVersion": ""
         }
       ]
     }
