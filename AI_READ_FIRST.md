@@ -1,6 +1,6 @@
 # Geurts Game Forge AI Entry Point
 
-**Version:** 0.11.0
+**Version:** 0.11.1
 **Purpose:** Second-stage package and session boundary after `AGENTS.md`, before manifest resolution.
 **Required package path:** `AI_READ_FIRST.md`
 
@@ -13,6 +13,24 @@ GeurtsTechniqueManifest.md
 ```
 
 The manifest alone selects and orders applicable techniques, owns package version resolution and subject ownership, and resolves cross-document conflicts. This file does not provide an alternate reading order or task-routing table.
+
+## Mandatory Reading and Version Bumps
+
+Before planning or editing any part of Geurts Game Forge, read this documentation through the entry and manifest chain above. This includes package code, Editor UI, runtime code, tests, tools, catalogue data, configuration and documentation. Memory of an earlier session is not a substitute for reading the applicable current guidance.
+
+**It is vital to bump the owning package or documentation version whenever an update occurs, no matter how small. Never publish changed content under the same version.** Text corrections, visual adjustments, catalogue changes, tests and small fixes all count. Apply the bump within the same change before delivery; intermediate edits belonging to that one unreleased update can share its new version.
+
+Use `MAJOR.MINOR.PATCH` (for example, `1.4.2`):
+
+| Part | Increment for | Example |
+|---|---|---|
+| Major | Incompatible changes that break the existing public contract. | Replace the package architecture with an incompatible API. |
+| Minor | New functionality that keeps the existing public contract compatible. | Add a save system or Developer Mode. |
+| Patch | Bug fixes, documentation corrections and small compatible improvements. | Fix a version display or clarify instructions. |
+
+Reset the lower components when increasing a higher component. For pre-1.0 packages, continue to increment versions and clearly document breaking changes.
+
+Bump each affected independently released package and the documentation package when its content changes. Keep package.json, runtime-reported versions, documentation manifest/contract/catalogue metadata and changelogs consistent. Individually versioned techniques advance when their own rules change; unchanged schema versions and historical records do not need artificial changes. A catalogue pin must resolve to the exact published package identity and version. Validate that the new version exceeds the previous published version before merging or publishing. Do not describe an equal-number changed release as a normal successful version update.
 
 ## Local Package Boundary
 
