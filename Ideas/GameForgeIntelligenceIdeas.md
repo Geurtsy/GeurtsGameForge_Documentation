@@ -1,3 +1,4 @@
+<!-- GEURTS-AUDIENCE: HUMAN-ONLY -->
 # Game Forge Intelligence Ideas
 
 **Version:** 0.11.0

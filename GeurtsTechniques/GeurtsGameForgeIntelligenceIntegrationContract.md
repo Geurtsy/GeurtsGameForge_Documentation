@@ -1,3 +1,4 @@
+<!-- GEURTS-AUDIENCE: AI-READ -->
 # Moved: Geurts Game Forge Intelligence Integration Contract
 
 **Version:** 2.0.0

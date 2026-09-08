@@ -1,3 +1,4 @@
+<!-- GEURTS-AUDIENCE: AI-READ -->
 # Geurts Game Forge Automation Technique
 
 **Version:** 0.9.0
@@ -10,9 +11,12 @@
 
 This technique defines concise, reusable operational behaviour for AI-assisted game development. It does not define a document resolver, technical priority system, integration lifecycle, or product feature. `GeurtsTechniqueManifest.md` alone decides when this technique applies, where it is read, and which subject owner resolves a conflict.
 
+<!-- GEURTS-SECTION:BEGIN HUMAN-ONLY -->
 ### Provenance
 
 Reusable operational guidance was selectively adapted from the supplied Game Forge Intelligence generated-project `AGENTS.md`. The adaptation is governed by the existing Geurts hierarchy and technical priorities. Product-specific policy was deliberately excluded, and the supplied file is not an authority for this package.
+
+<!-- GEURTS-SECTION:END -->
 
 ## Active Request
 

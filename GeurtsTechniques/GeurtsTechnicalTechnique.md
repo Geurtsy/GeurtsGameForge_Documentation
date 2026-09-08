@@ -1,3 +1,4 @@
+<!-- GEURTS-AUDIENCE: AI-READ -->
 # Geurts Technical Technique
 
 **Unity Game Development - AI Instruction Manual**  
@@ -129,6 +130,7 @@ For documentation-only changes, verify examples against versioned Unity and pack
 
 ---
 
+<!-- GEURTS-SECTION:BEGIN FORGE-DEVELOPMENT-ONLY -->
 ## Reusable Framework Compliance Header
 
 GitHub Copilot, Codex, ChatGPT, and any other AI coding assistant must follow the manifest-selected Geurts techniques.
@@ -142,6 +144,8 @@ Insert the following comment only when the AI creates or materially edits a reus
 Geurts Game Forge Bricks is a positive example of shared framework code. An ordinary game-specific implementation is excluded even when AI-generated; for example, a project-specific 2D map generator does not receive this header merely because an AI created it. AI authorship alone is insufficient. If intended ownership or reuse is unclear, ask before adding the header.
 
 Never modify third-party packages, vendored code, generated code, read-only files, or a format/tooling surface that forbids the header merely to add compliance text.
+
+<!-- GEURTS-SECTION:END -->
 
 All code suggestions, refactoring, and automated completions must comply with the requirements for modularity, readability, efficiency, documentation, AI integration, runtime debugging, project structure, and game design awareness described in the Geurts technique documents.
 

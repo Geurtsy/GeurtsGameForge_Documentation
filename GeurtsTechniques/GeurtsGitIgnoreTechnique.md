@@ -1,3 +1,4 @@
+<!-- GEURTS-AUDIENCE: AI-READ -->
 # Geurts Git Ignore Technique
 
 **Version:** 1.0.0

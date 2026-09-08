@@ -1,3 +1,4 @@
+<!-- GEURTS-AUDIENCE: AI-READ -->
 # Geurts Chat AI Response Technique
 
 **Version:** 1.1  
