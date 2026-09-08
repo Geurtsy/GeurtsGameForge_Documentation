@@ -5,7 +5,7 @@
 
 Adds the manifest-selected [brick contract](GeurtsTechniques/GeurtsBrickContract.md) and [machine-readable catalogue](GeurtsTechniques/GeurtsBrickCatalogue.json). AI-assisted Unity development must use a suitable available Geurts brick before recreating its functionality. God owns package management, lifecycle, shared contracts and settings. The current user's mandatory Odin Inspector and Quantum Console requirement supersedes older Unity companion tool exemptions. Documentation-interface implementation remains in its separately maintained repository.
 
-God 0.3.0, the minimal Diagnostics test consumer 0.2.0 and Documentation Companion 0.7.0 are available from their merged Git sources. The catalogue pins those exact verified revisions. Six roadmap bricks are listed as **Planned**: Settings System; Scene Loading and Bootstrap; Save and Load; Audio; User Interface Foundations; Object Pooling. These entries have no release version or installation source and do not represent published packages.
+God 0.3.1, the minimal Diagnostics test consumer 0.2.0 and Documentation Companion 0.7.0 are available from their merged Git sources. The catalogue pins those exact verified revisions. Six roadmap bricks are listed as **Planned**: Settings System; Scene Loading and Bootstrap; Save and Load; Audio; User Interface Foundations; Object Pooling. These entries have no release version or installation source and do not represent published packages.
 
 Brick Manager distinguishes **Planned**, **Available** and **Installed** independently of update status. `released: false` marks a planned catalogue entry; `released: true` marks a published release. Installed is determined from the actual Unity project. Planned entries carry no installation actions or update checks. Their package identifiers reserve catalogue identities; release versions, sources and verified compatibility are selected when the packages are implemented and published.
 
@@ -166,6 +166,11 @@ Update the companion package to 0.7.0 before updating documentation to 0.13.0 (c
 - Adds a read-only Markdown reader that filters before loading AI context, with GameUse and ForgeDevelopment modes, explicit human-content access, and character counts.
 - Validates tag syntax, preserved shared rules, literal fenced payloads, file boundaries and both reading modes. Compatibility schemas and installation template versions remain unchanged.
 
+### v0.12.1 — Dependency readiness labels
+
+- Publish God 0.3.1 with required external dependency boxes on the Documentation card. Loaded tools are green when Unity reports no script compilation errors.
+- Preserve Documentation 0.7.0, the Codex guide installer, schema 2.0.0 and the current three-route documentation update contract.
+- Synchronize the package metadata and versioned tool checks without restoring obsolete documentation entry files.
 
 ### v0.12.0
 
