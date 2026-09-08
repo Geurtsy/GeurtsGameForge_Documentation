@@ -1,3 +1,4 @@
+<!-- GEURTS-AUDIENCE: AI-READ -->
 # Geurts Game Forge Brick Contract
 
 **Version:** 1.1.0
@@ -19,11 +20,14 @@ Before implementing game or software functionality in a Geurts Unity project, in
 
 ## Registration and lifecycle
 
+<!-- GEURTS-SECTION:BEGIN FORGE-DEVELOPMENT-ONLY -->
 Implement `IBrick` from God, apply `[Brick]` and Unity `[Preserve]`, and preserve the implementation in `link.xml` for stripped players. Supply a parameterless constructor, exact identity/version, required brick identities, and `Start(BrickContext)` / `Stop()`.
 
 God discovers implementations once per Editor/runtime context, rejects duplicate identities, starts in dependency order and stops consumers before providers. Bricks with unsatisfied dependencies stay registered with an explanation. Constructors must not start functionality. `Start` acquires resources; `Stop` releases them and must tolerate a partially failed start. Do not retain unmanaged subscriptions, tasks, scene objects or callbacks after stop. Do not mutate Unity project assets as an automatic side effect of registration.
 
 Use `BrickContext.Provide<T>`, `TryGet<T>`, `Subscribe<T>` and `Publish<T>` for optional cooperation. Contracts belong to God; provider implementations belong to their brick. God automatically withdraws owned capabilities and subscriptions on shutdown. Integrations requiring concrete APIs from two optional packages belong in a separate integration package.
+
+<!-- GEURTS-SECTION:END -->
 
 Install is explicit. Update retains settings. Disable keeps the package and settings but stops all owned functionality; mandatory consumers wait until their provider resumes. Enable restarts with retained settings. Removal explains that both the package and its own saved settings are deleted and requires confirmation. Cancellation leaves both unchanged. Delete settings only after Unity confirms removal. Reinstallation receives fresh defaults. Settings owned by a removed brick must not be exported into later builds.
 
@@ -37,7 +41,10 @@ God's package management and Odin dashboard belong in Editor-only assemblies. Ru
 
 ## Catalogue schema 1
 
+<!-- GEURTS-SECTION:BEGIN FORGE-DEVELOPMENT-ONLY -->
 The JSON contains data only: `schemaVersion`, `packageVersion`, optional `publishedUtc`, and `bricks`. Each entry has `id`, `name`, `description`, HTTPS `website`, `version`, `released`, `developmentOnly`, `sourceKind`, `source`, `minimumUnity`, `maximumUnity`, `requiredTools`, and `dependencies` (`id`, `minimumVersion`). Unity bounds are major/minor versions and describe the declared verified range.
+
+<!-- GEURTS-SECTION:END -->
 
 Only `released: true` entries with a real installable source receive installation actions. Production Git sources identify an immutable commit or released tag and may use Unity's `?path=/Packages/...` form. Registry sources use `id@version` and must exist in the project's configured registry. Controlled local tests may use absolute `file:...tgz` sources only with `sourceKind: tarball` and `developmentOnly: true`. Such archives are local fixtures, never public releases. Do not invent future brick URLs or publish fixtures as real versions.
 
@@ -49,6 +56,9 @@ Each card shows identity, description, website, installed/available and lifecycl
 
 Version conflicts or unverified compatibility produce a clear Continue/Cancel warning, not an automatic compatibility block. Missing required tools or an operation Unity cannot perform must be reported accurately. Never claim that package installation proves compilation succeeded.
 
+<!-- GEURTS-SECTION:BEGIN FORGE-DEVELOPMENT-ONLY -->
 Use Unity Package Manager APIs, serialize operations, prevent conflicting clicks, preserve intent and useful outcomes across script reloads, and verify the actual resolved identity/version/commit. Self-update uses the same real Unity operation. Self-removal holds assembly reload only until the confirmed result allows deleting God's exact settings file, then releases the reload. It removes no dependencies automatically. The operation record remains under `Library/GeurtsGameForge/operations.json` after the manager removes itself.
+
+<!-- GEURTS-SECTION:END -->
 
 Show current package, stage, clear success/cancellation/failure and Retry directly in the Odin manager. Use progress percentages only when measurable. `Client.Add` has no percentage, so use an activity indicator and explanatory stage text. Quantum Console output supplements the manager.

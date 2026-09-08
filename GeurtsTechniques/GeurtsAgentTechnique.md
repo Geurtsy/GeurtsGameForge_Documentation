@@ -1,3 +1,4 @@
+<!-- GEURTS-AUDIENCE: AI-READ -->
 # Geurts AGENTS.md Technique
 
 **Version:** 1.0.0

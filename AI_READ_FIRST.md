@@ -1,6 +1,7 @@
+<!-- GEURTS-AUDIENCE: AI-READ -->
 # Geurts Game Forge AI Entry Point
 
-**Version:** 0.12.1
+**Version:** 0.13.0
 **Purpose:** First documentation entry and session boundary, before manifest resolution.
 **Required package path:** `AI_READ_FIRST.md`
 
@@ -13,6 +14,8 @@ GeurtsTechniqueManifest.md
 ```
 
 The manifest alone selects and orders applicable techniques, owns package version resolution and subject ownership, and resolves cross-document conflicts. This file does not provide an alternate reading order or task-routing table.
+
+The manifest also owns `AI-READ`, `HUMAN-ONLY` and `FORGE-DEVELOPMENT-ONLY` audience tags and the read-only section reader. Read this entry and the manifest in full; apply their audience rules before loading the other selected documents.
 
 ## Mandatory Reading and Version Bumps
 

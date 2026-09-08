@@ -1,19 +1,24 @@
+<!-- GEURTS-AUDIENCE: HUMAN-ONLY -->
 # Geurts Game Forge Documentation
 
 ## Geurts Game Forge God brick contract
 
 Adds the manifest-selected [brick contract](GeurtsTechniques/GeurtsBrickContract.md) and [machine-readable catalogue](GeurtsTechniques/GeurtsBrickCatalogue.json). AI-assisted Unity development must use a suitable available Geurts brick before recreating its functionality. God owns package management, lifecycle, shared contracts and settings. The current user's mandatory Odin Inspector and Quantum Console requirement supersedes older Unity companion tool exemptions. Documentation-interface implementation remains in its separately maintained repository.
 
-God 0.3.1, the minimal Diagnostics test consumer 0.2.0 and Documentation Companion 0.7.0 are selected by the catalogue with exact Git revisions. Merge the God 0.3.1 package change before adopting this catalogue update. Six roadmap bricks are listed as **Planned**: Settings System; Scene Loading and Bootstrap; Save and Load; Audio; User Interface Foundations; Object Pooling. These entries have no release version or installation source and do not represent published packages.
+God 0.3.1, the minimal Diagnostics test consumer 0.2.0 and Documentation Companion 0.7.0 are available from their merged Git sources. The catalogue pins those exact verified revisions. Six roadmap bricks are listed as **Planned**: Settings System; Scene Loading and Bootstrap; Save and Load; Audio; User Interface Foundations; Object Pooling. These entries have no release version or installation source and do not represent published packages.
 
 Brick Manager distinguishes **Planned**, **Available** and **Installed** independently of update status. `released: false` marks a planned catalogue entry; `released: true` marks a published release. Installed is determined from the actual Unity project. Planned entries carry no installation actions or update checks. Their package identifiers reserve catalogue identities; release versions, sources and verified compatibility are selected when the packages are implemented and published.
 
-**Version:** 0.12.1
+**Version:** 0.13.0
 **Unity target:** Unity 6.3 LTS (6000.3)
 **Status:** Draft technique package
-**Primary audience:** AI coding agents and automated development systems
-**Secondary audience:** Human developers
+**Primary audience:** Human developers
+**Secondary audience:** AI maintaining the documentation source
 **Documentation source repository:** `Geurtsy/GeurtsGameForge_Documentation`
+
+## Audience tags
+
+Documentation now labels material as **AI-READ**, **HUMAN-ONLY**, or **FORGE-DEVELOPMENT-ONLY**. AI reads shared rules, skips human walkthroughs and history, and includes Forge implementation details only when developing Forge itself. Making a game with Forge stays in GameUse mode. The manifest defines the tags and the bundled read-only section reader; no AI tool is assumed to obey tags automatically. Humans can read every section normally.
 
 ## Start Here
 
@@ -27,7 +32,7 @@ New and modified Unity code and examples target **Unity 6.3 LTS (6000.3)**. The 
 
 Within its declared implementation scope, the Technical Technique requires licensed, Unity 6.3-compatible Odin Inspector and Quantum Console dependencies and requires meaningful use of their authoring, validation, inspection, command, logging, and diagnostics capabilities. Missing dependencies are implementation blockers. The manifest-selected Brick Contract extends that requirement to the independent Documentation Companion; this documentation source repository contains no commercial tool assets.
 
-This repository contains documentation, C# fragments, and host-side PowerShell utilities. It contains no Unity project or companion implementation. Its checks validate the documentation package and tools; actual Unity compilation and player compatibility must be verified in the consuming project. The package remains the v0.12.1 draft; the Technical Technique advances independently to v0.9.0.
+This repository contains documentation, C# fragments, and host-side PowerShell utilities. It contains no Unity project or companion implementation. Its checks validate the documentation package and tools; actual Unity compilation and player compatibility must be verified in the consuming project. The package remains the v0.13.0 draft; the Technical Technique advances independently to v0.9.0.
 
 ## Source and Ownership Boundary
 
@@ -128,6 +133,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "<ProjectRoot>/GeurtsGameFor
 
 Each manual tool's permissions and preservation boundary are owned by its manifest-selected subject technique. Generic tools must not invent project design facts, overwrite project-authored GDD, automatically delete project folders, or alter a differing project-root `.gitignore`. The separately authorized GDD maintainer may update only its bounded managed manifest index. These manual rules do not reduce the companion's separately confirmed authority to replace its three exact whole-file routes.
 
+<!-- GEURTS-SECTION:BEGIN FORGE-DEVELOPMENT-ONLY -->
 ## Source-Repository Validation
 
 From a source checkout, run the read-only package validator and isolated automation harness; neither command accepts or mutates a real Unity project:
@@ -139,6 +145,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File ".\Tools\Tests\RunAutomation
 
 PowerShell 7 may replace `powershell` with `pwsh`. The validator checks package, registry, authority, lifecycle, schema, template, and payload rules without writing repository content. The automation harness uses guarded temporary fixtures outside the checkout and includes negative lifecycle-boundary regressions. Both commands accept `-OutputFormat Json`; `-RepositoryRoot` is an optional explicit source-checkout override.
 
+<!-- GEURTS-SECTION:END -->
+
 ## Supporting Documents
 
 - `Migrations/v0.11.0.md` - non-normative transition guide for the independent companion and closed whole-file AI-route contract.
@@ -148,9 +156,15 @@ PowerShell 7 may replace `powershell` with `pwsh`. The validator checks package,
 
 ## Codex guide installation
 
-Update the companion package to 0.7.0 before updating documentation to 0.12.1 (contract schema 2.0.0). In Geurts Documentation, select **Install Codex guide**, choose a location and confirm the displayed entry point. The installer creates AGENTS.md for automatic Codex discovery. The template exists only in GeurtsAgentTechnique.md. Normal documentation updates no longer manage a root Codex guide; replace an old guide by selecting its location in the new installer.
+Update the companion package to 0.7.0 before updating documentation to 0.13.0 (contract schema 2.0.0). In Geurts Documentation, select **Install Codex guide**, choose a location and confirm the displayed entry point. The installer creates AGENTS.md for automatic Codex discovery. The template exists only in GeurtsAgentTechnique.md. Normal documentation updates no longer manage a root Codex guide; replace an old guide by selecting its location in the new installer.
 
 ## Changelog
+
+### v0.13.0
+
+- Adds manifest-owned file and section audience tags, separating game-use guidance, human material and Forge development details.
+- Adds a read-only Markdown reader that filters before loading AI context, with GameUse and ForgeDevelopment modes, explicit human-content access, and character counts.
+- Validates tag syntax, preserved shared rules, literal fenced payloads, file boundaries and both reading modes. Compatibility schemas and installation template versions remain unchanged.
 
 ### v0.12.1 — Dependency readiness labels
 
@@ -227,6 +241,8 @@ Update the companion package to 0.7.0 before updating documentation to 0.12.1 (c
 - Added the approved `.gitignore` payload, AI-first entry chain, strict technical priority model, machine-readable folders, lightweight GDD discovery, safe native-entry management, migrations, and automated validation.
 - Historical notes retain provenance without runnable alternate workflows.
 
+<!-- GEURTS-SECTION:BEGIN FORGE-DEVELOPMENT-ONLY -->
 ## Maintenance
 
 When a package file changes, update the manifest registry and affected migrations, schemas, tests, and validator expectations in the same change. Keep native AI entries concise and preserve semantic versions. Human-facing metadata uses `Required package path` or `Required project path`; the JSON `canonicalPath` key remains only as a legacy serialized compatibility field where schema consumers require it.
+<!-- GEURTS-SECTION:END -->
