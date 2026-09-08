@@ -1,7 +1,7 @@
 # Geurts AI Agent Setup Technique
 
-**Native AI Instruction Setup - Copilot, Codex, and Future Agents**
-**Version:** 1.0.0
+**Native AI Instruction Setup - Copilot and supported scoped routes**
+**Version:** 2.0.0
 **Status:** Draft normative technique
 **Primary audience:** AI coding agents and automated development systems
 **Secondary audience:** Human developers
@@ -9,7 +9,7 @@
 
 ## Purpose and Manifest Boundary
 
-This technique owns the four exact native AI routes used by the Documentation Companion, the companion's whole-file replacement exception, and the separate optional manual manager's managed regions, exact-fingerprint legacy migration, and create-if-missing GDD scaffolds. `GeurtsTechniqueManifest.md` selects this file and version, determines its place in the package read order, and resolves cross-document applicability and conflicts.
+This technique owns the three exact native AI routes used by the Documentation Companion, the companion's whole-file replacement exception, and the separate optional manual manager's managed regions, exact-fingerprint legacy migration, and create-if-missing GDD scaffolds. `GeurtsTechniqueManifest.md` selects this file and version, determines its place in the package read order, and resolves cross-document applicability and conflicts.
 
 Native entries remain concise. They route an agent into the project-local fetched copy and do not duplicate package policy, integration lifecycle, technical priorities, game-design rules, or product behaviour.
 
@@ -18,43 +18,42 @@ Native entries remain concise. They route an agent into the project-local fetche
 Every Geurts-managed native AI entry routes first to:
 
 ```text
-GeurtsGameForgeDocumentation/AGENTS.md
+GeurtsGameForgeDocumentation/AI_READ_FIRST.md
 ```
 
-The copied source `AGENTS.md` routes to its sibling `AI_READ_FIRST.md`, which routes to the package manifest. No managed entry may bypass copied `AGENTS.md` by linking directly to `AI_READ_FIRST.md` or a technique.
+AI_READ_FIRST.md is the first documentation entry and routes to the package manifest. Routes must use that entry directly and must not bypass manifest selection by pointing to a technique.
 
 The Documentation Companion's closed whole-file mappings are:
 
 | Documentation-owned source template | Project-relative target |
 |---|---|
-| `Tools/AIAgentInstructionTemplates/AGENTS.md` | `AGENTS.md` |
 | `Tools/AIAgentInstructionTemplates/copilot-instructions.md` | `.github/copilot-instructions.md` |
 | `Tools/AIAgentInstructionTemplates/instructions/geurts-unity.instructions.md` | `.github/instructions/geurts-unity.instructions.md` |
 | `Tools/AIAgentInstructionTemplates/instructions/geurts-game-design.instructions.md` | `.github/instructions/geurts-game-design.instructions.md` |
 
 `GeurtsTechniques/GeurtsDocumentationCompanionContract.json` owns the machine-readable copy of this exact mapping. The companion must not infer or discover any additional route.
 
-The project-root `AGENTS.md` route is only an external-tool discovery shim to the copied `AGENTS.md`. It contains no substantive Geurts or product policy. An integration that reads the copied package directly does not use this shim as its startup entry.
+The AGENT.md Technique owns the separately installed Codex guide. The legacy manual manager handles only the three Copilot routes and must leave Codex guide files untouched.
 
-These routes can guide only AI tools that support the applicable native instruction surface or have been explicitly instructed to read and follow `AGENTS.md`. Creating the files does not make every AI product discover or obey the Geurts documentation automatically.
+These routes can guide only AI tools that support the applicable native instruction surface or have been explicitly instructed to read and follow `AI_READ_FIRST.md`. Creating the files does not make every AI product discover or obey the Geurts documentation automatically.
 
-Every v1.0.0 route template gives brick work the same concise rule: before planning or modifying any Geurts Game Forge brick code, read and follow `GeurtsGameForgeDocumentation/AGENTS.md`, then treat the installed documentation selected through its manifest chain as the source of truth for that work.
+Every v1.1.0 route template gives brick work the same concise rule: before planning or modifying any Geurts Game Forge brick code, read and follow `GeurtsGameForgeDocumentation/AI_READ_FIRST.md`, then treat the installed documentation selected through its manifest chain as the source of truth for that work.
 
 ## Documentation Companion Whole-File Replacement
 
 The independent Windows-only, Editor-only companion is installed from Git through Unity Package Manager. It has no Geurts Game Forge God, Game Forge Intelligence, Odin Inspector, or Quantum Console dependency. It has no external installer or bootstrap and must not execute a batch, PowerShell, or project script for setup or Update.
 
-When the user selects `Update Geurts Game Forge Documentation`, the companion immediately shows one confirmation that identifies the complete `GeurtsGameForgeDocumentation/` folder and all four exact route targets above as overwrite targets. Cancel is the initially focused default. There is no earlier preview or dry run and no second confirmation. After affirmative confirmation, the companion directly replaces each route as a complete file with the bytes of its mapped template from the same validated authoritative archive used for the documentation copy.
+When the user selects `Update Geurts Game Forge Documentation`, the companion immediately shows one confirmation that identifies the complete `GeurtsGameForgeDocumentation/` folder and all three exact route targets above as overwrite targets. Cancel is the initially focused default. There is no earlier preview or dry run and no second confirmation. After affirmative confirmation, the companion directly replaces each route as a complete file with the bytes of its mapped template from the same validated authoritative archive used for the documentation copy.
 
-Confirmation intentionally authorizes discarding every existing byte in those four files. Companion replacement does not merge managed regions, preserve surrounding content, honor `GEURTS-MANAGED-OPT-OUT`, migrate legacy payloads, create per-file backups, or inspect files other than the four declared targets. It may create only missing `.github/` and `.github/instructions/` parent directories required for those targets and must leave every unlisted file and directory under those parents untouched.
+Confirmation intentionally authorizes discarding every existing byte in those three files. Companion replacement does not merge managed regions, preserve surrounding content, honor `GEURTS-MANAGED-OPT-OUT`, migrate legacy payloads, create per-file backups, or inspect files other than the three declared targets. It may create only missing `.github/` and `.github/instructions/` parent directories required for those targets and must leave every unlisted file and directory under those parents untouched.
 
-The companion reports Update success only after the complete documentation destination and all four route files are present and complete. A failure after mutation begins may leave a partial result; it must be reported as failure, and the only retry is another explicit confirmed Update. The companion must not inspect or change `Docs/GameDesign/`, run the manual manager, create GDD scaffolds, update the GDD manifest, create the full folder structure, or provision `.gitignore`.
+The companion reports Update success only after the complete documentation destination and all three route files are present and complete. A failure after mutation begins may leave a partial result; it must be reported as failure, and the only retry is another explicit confirmed Update. The companion must not inspect or change `Docs/GameDesign/`, run the manual manager, create GDD scaffolds, update the GDD manifest, create the full folder structure, or provision `.gitignore`.
 
 This deliberately bounded whole-file authority is the only exception to the preservation-based manual rules below.
 
 ## Legacy Manual Manager Preservation
 
-This section applies only to legacy or separately authorized generic maintenance outside the companion lifecycle. The manual manager is not a supported alternative for provisioning or updating the four companion-managed routes in a companion project. When a user deliberately invokes `Tools/ManageGeurtsAgentInstructions.ps1` in another context, it may change only a missing file, a valid supported Geurts-managed region, or an exact supported legacy payload. It must:
+This section applies only to legacy or separately authorized generic maintenance outside the companion lifecycle. The manual manager is not a supported alternative for provisioning or updating the three companion-managed routes in a companion project. When a user deliberately invokes `Tools/ManageGeurtsAgentInstructions.ps1` in another context, it may change only a missing file, a valid supported Geurts-managed region, or an exact supported legacy payload. It must:
 
 - preserve bytes outside the managed region;
 - preserve supported UTF-8, UTF-8-BOM, UTF-16LE-BOM, or UTF-16BE-BOM encoding and the target managed region's newline convention;
@@ -80,7 +79,7 @@ The narrow backup made before a supported per-file managed edit protects that na
 
 ## Product-Owned or Unrecognized Legacy Entries
 
-The generic manager and its four-entry Geurts catalog own only Geurts-managed markers and templates. A product-owned or otherwise unrecognized block is outside their mutation authority: preserve it unchanged and report a conflict. Any product-specific migration belongs to that product's integration and must preserve surrounding and user-authored content. Preserved legacy material must not be loaded as a competing Geurts package authority.
+The generic manager and its three-entry Geurts catalog own only Geurts-managed markers and templates. A product-owned or otherwise unrecognized block is outside their mutation authority: preserve it unchanged and report a conflict. Any product-specific migration belongs to that product's integration and must preserve surrounding and user-authored content. Preserved legacy material must not be loaded as a competing Geurts package authority.
 
 ## Legacy Manual Tool Invocation
 
@@ -141,3 +140,7 @@ These independent opt-ins describe optional manual manager use. The companion's 
 ## Maintenance
 
 When a managed template changes, update its version, normalized payload hash, migration catalog, companion contract mapping and validation entries, manifest registry row, manual-manager behaviour, regression tests, and validator expectations together. Never update a template without preserving the manual manager's safe migration and opt-out contract. Companion Update still replaces each mapped target as a complete file after confirmation.
+
+## Separate Codex guide installation
+
+The AGENTS.md Technique owns the separate **Install Codex guide** action. Documentation Update excludes Codex guides. The user chooses a folder and confirms replacement of only its AGENTS.md; that guide points directly to the installed AI_READ_FIRST.md. No guide is automatically created at the project root or shipped as a standalone file inside this documentation package. Update the companion to 0.7.0 before installing this schema-2.0.0 documentation release.

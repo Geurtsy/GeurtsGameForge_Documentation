@@ -1,12 +1,12 @@
 # Geurts Game Forge AI Entry Point
 
-**Version:** 0.11.5
-**Purpose:** Second-stage package and session boundary after `AGENTS.md`, before manifest resolution.
+**Version:** 0.12.0
+**Purpose:** First documentation entry and session boundary, before manifest resolution.
 **Required package path:** `AI_READ_FIRST.md`
 
 ## Entry Sequence
 
-Read the applicable source or copied `AGENTS.md` first. Then read this file and immediately continue to:
+Read this file first and immediately continue to:
 
 ```text
 GeurtsTechniqueManifest.md
@@ -46,7 +46,7 @@ The Windows-only companion is installed from Git through Unity Package Manager, 
 <ProjectRoot>/Docs/GameDesign/
 ```
 
-Package membership and any integration lifecycle are outside this router's subject. The manifest selects the applicable owner. Do not substitute files from outside the active package's single validated commit. A confirmed companion Update may replace the complete project-local documentation folder above and the contract's exact closed set of four project AI-routing files. Every non-listed path remains outside that authority; in particular, the companion must not inspect or change `Docs/GameDesign/`.
+Package membership and any integration lifecycle are outside this router's subject. The manifest selects the applicable owner. Do not substitute files from outside the active package's single validated commit. A confirmed companion Update may replace the complete project-local documentation folder above and the contract's exact closed set of three project AI-routing files. Every non-listed path remains outside that authority; in particular, the companion must not inspect or change `Docs/GameDesign/`.
 
 ## Session Boundary
 
@@ -57,7 +57,7 @@ Before implementation, use one current source checkout or project-local fetched 
 Do not create, modify, move, rename, or delete target-project files until:
 
 1. the package entry files are available;
-2. `AGENTS.md`, this file, and `GeurtsTechniqueManifest.md` have been read from the same active package; and
+2. this file and `GeurtsTechniqueManifest.md` have been read from the same active package; and
 3. every technique selected by the manifest for the task has been read.
 
 After those conditions are satisfied, follow the manifest-selected subject authorities.

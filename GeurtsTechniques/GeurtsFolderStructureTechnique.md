@@ -1,7 +1,7 @@
 # Geurts Folder Structure Technique
 
 **Unity Project Structure - AI-First Automation and Human Developer Reference**
-**Version:** 0.10.0
+**Version:** 0.11.0
 **Status:** Draft normative technique
 **Primary audience:** AI coding agents and automated development systems
 **Secondary audience:** Human developers
@@ -134,7 +134,7 @@ ProjectRoot/
 - `.github/` and `.github/instructions/` may be created by the optional manual native-entry manager or by the Documentation Companion only as missing parents for its exact contract-listed AI routes. They also may hold unrelated GitHub-native repository configuration. The folder-structure tool must not create them as part of the 67-path project profile.
 - `GeurtsGameForgeDocumentation/` is the placement boundary for a detached project-local snapshot managed as logically read-only content, not a machine-readable managed folder. The folder-structure tool has no creation, replacement, or lifecycle authority for it. The manifest-selected Documentation Companion Technique and Contract own their explicit confirmed Update boundary.
 - Directories below `GeurtsGameForgeDocumentation/` are deliberately absent from the folder definition, so a new tracked source directory does not require a folder-schema change.
-- The native-entry manager may create its assigned `.github` paths but may never delete existing directories or user content through the folder-definition contract. A confirmed companion Update separately authorizes whole-file replacement of only its four contract-listed AI routes; every unlisted path inside `.github/` remains uninspected and untouched.
+- The native-entry manager may create its assigned `.github` paths but may never delete existing directories or user content through the folder-definition contract. A confirmed companion Update separately authorizes whole-file replacement of only its three contract-listed AI routes; every unlisted path inside `.github/` remains uninspected and untouched.
 - `Docs/` and `Docs/GameDesign/` remain members of the full project profile and additionally delegate the closed `gdd-scaffolding` profile to the native-entry manager, so missing GDD scaffolding can be created without granting that manager access to unrelated folders.
 
 ---
@@ -613,3 +613,7 @@ A folder-definition change is complete only when:
 - the full project profile contains exactly the intended project-structure paths;
 - folder creation is executed twice in a temporary project and the second run creates nothing;
 - the manifest and affected integration references are updated in the same change.
+
+## User-selected Codex guide placement
+
+The separately invoked Install Codex guide action may create or replace AGENTS.md in an existing folder explicitly selected by the user, including a folder outside the Unity project. This does not authorize folder-tree generation. The AGENTS.md Technique owns its payload, confirmation and exact documentation entry point. The managed documentation tree and Docs/GameDesign remain excluded.

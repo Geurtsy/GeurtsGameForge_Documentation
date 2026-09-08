@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "1.0.0",
-  "packageVersion": "0.11.5",
+  "schemaVersion": "2.0.0",
+  "packageVersion": "0.12.0",
   "source": {
     "repository": "https://github.com/Geurtsy/GeurtsGameForge_Documentation.git",
     "branch": "main",
@@ -12,15 +12,14 @@
     "access": "logically-read-only"
   },
   "validationEntries": [
-    "AGENTS.md",
     "AI_READ_FIRST.md",
     "GeurtsTechniqueManifest.md",
     "GeurtsTechniques/GeurtsDocumentationCompanionTechnique.md",
     "GeurtsTechniques/GeurtsDocumentationCompanionContract.json",
-    "Tools/AIAgentInstructionTemplates/AGENTS.md",
     "Tools/AIAgentInstructionTemplates/copilot-instructions.md",
     "Tools/AIAgentInstructionTemplates/instructions/geurts-unity.instructions.md",
-    "Tools/AIAgentInstructionTemplates/instructions/geurts-game-design.instructions.md"
+    "Tools/AIAgentInstructionTemplates/instructions/geurts-game-design.instructions.md",
+    "GeurtsTechniques/GeurtsAgentTechnique.md"
   ],
   "updateUi": {
     "actionLabel": "Update Geurts Game Forge Documentation",
@@ -30,10 +29,6 @@
       {
         "path": "GeurtsGameForgeDocumentation",
         "effect": "replace-complete-directory"
-      },
-      {
-        "path": "AGENTS.md",
-        "effect": "replace-complete-file"
       },
       {
         "path": ".github/copilot-instructions.md",
@@ -50,10 +45,6 @@
     ]
   },
   "routeMappings": [
-    {
-      "template": "Tools/AIAgentInstructionTemplates/AGENTS.md",
-      "target": "AGENTS.md"
-    },
     {
       "template": "Tools/AIAgentInstructionTemplates/copilot-instructions.md",
       "target": ".github/copilot-instructions.md"
