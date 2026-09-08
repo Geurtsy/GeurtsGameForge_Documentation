@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "packageVersion": "0.11.0",
+  "publishedUtc": "",
+  "bricks": [
+    {
+      "id": "com.geurts.gameforge.documentation",
+      "name": "Geurts Game Forge Documentation",
+      "description": "Documentation dashboard and explicit updates of the authoritative AI development guidance.",
+      "website": "https://github.com/Geurtsy/com.geurts.gameforge.documentation",
+      "version": "0.5.0",
+      "released": true,
+      "developmentOnly": false,
+      "sourceKind": "git",
+      "source": "https://github.com/Geurtsy/com.geurts.gameforge.documentation.git#c97fe9c15205119f2c56ac98280b7e68faa6fa4b",
+      "minimumUnity": "6000.3",
+      "maximumUnity": "6000.3",
+      "requiredTools": ["Odin Inspector", "Quantum Console"],
+      "dependencies": []
+    },
+    {
+      "id": "com.geurts.gameforge.god",
+      "name": "Geurts Game Forge God",
+      "description": "Brick Manager and shared foundation for package operations, lifecycle, settings and optional brick cooperation.",
+      "website": "https://github.com/Geurtsy/GeurtsGameForge",
+      "version": "0.1.0",
+      "released": false,
+      "developmentOnly": false,
+      "sourceKind": "",
+      "source": "",
+      "minimumUnity": "6000.3",
+      "maximumUnity": "6000.3",
+      "requiredTools": ["Odin Inspector", "Quantum Console"],
+      "dependencies": [{"id": "com.geurts.gameforge.documentation", "minimumVersion": "0.5.0"}]
+    },
+    {
+      "id": "com.geurts.gameforge.diagnostics",
+      "name": "Geurts Game Forge Diagnostics",
+      "description": "Minimal God test consumer demonstrating startup, shutdown, a test log and retained settings. Full diagnostics remains future work.",
+      "website": "https://github.com/Geurtsy/GeurtsGameForge",
+      "version": "0.2.0",
+      "released": false,
+      "developmentOnly": false,
+      "sourceKind": "",
+      "source": "",
+      "minimumUnity": "6000.3",
+      "maximumUnity": "6000.3",
+      "requiredTools": ["Odin Inspector", "Quantum Console"],
+      "dependencies": [{"id": "com.geurts.gameforge.god", "minimumVersion": "0.1.0"}]
+    }
+  ]
+}

@@ -1,5 +1,11 @@
 # Geurts Game Forge Documentation
 
+## Unreleased: Geurts Game Forge God brick contract
+
+Adds the manifest-selected [brick contract](GeurtsTechniques/GeurtsBrickContract.md) and [machine-readable catalogue](GeurtsTechniques/GeurtsBrickCatalogue.json). AI-assisted Unity development must use a suitable available Geurts brick before recreating its functionality. God owns package management, lifecycle, shared contracts and settings. The current user's mandatory Odin Inspector and Quantum Console requirement supersedes older Unity companion tool exemptions. Documentation-interface implementation remains in its separately maintained repository.
+
+God and the minimal Diagnostics test consumer are under review and have no published installation sources in the catalogue. The later six bricks remain future work and are not listed as available releases.
+
 **Version:** 0.11.0
 **Unity target:** Unity 6.3 LTS (6000.3)
 **Status:** Draft technique package
