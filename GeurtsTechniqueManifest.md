@@ -18,7 +18,7 @@ Use this normative file read sequence:
 3. Read this manifest.
 4. Read the selected Documentation Companion Technique and then its machine-readable Contract when that independent companion boundary is involved.
 5. Read the frozen Game Forge Intelligence 2.0 compatibility technique only when maintaining or assessing that legacy integration; its documentation update lifecycle is superseded in this package version.
-6. Read other selected generic subject techniques in this order when applicable: Technical; Game Forge Automation; Folder Structure and then its Definition; AI Agent Setup; Game Design Documentation; Git Ignore; chat-only Response Control.
+6. Read other selected generic subject techniques in this order when applicable: Technical; Brick Contract and then its Catalogue; Game Forge Automation; Folder Structure and then its Definition; AI Agent Setup; Game Design Documentation; Git Ignore; chat-only Response Control.
 7. Read applicable project-specific game-design facts selected through the Game Design Documentation Technique before player-facing implementation.
 8. Apply relevant product- or plugin-owned conditional policy last. Such policy remains subordinate within the Geurts package's subjects.
 
@@ -39,6 +39,7 @@ Under a confirmed Documentation Companion Update, the separate `<ProjectRoot>/AG
 | Subject | Manifest-selected owner | When selected |
 |---|---|---|
 | Technical implementation and technical trade-offs | `GeurtsTechniques/GeurtsTechnicalTechnique.md` | Before implementation or technical planning. This technique is the sole package owner of the five technical priorities and multiplayer override. |
+| Existing-brick reuse, shared lifecycle/settings contracts and machine-readable catalogue | `GeurtsTechniques/GeurtsBrickContract.md` and `GeurtsTechniques/GeurtsBrickCatalogue.json` | Before implementing Geurts Unity functionality or installing, updating or maintaining a brick. Read after Technical and before Automation. The current user's mandatory-tool rule supersedes older companion tool exemptions for the Unity implementation. |
 | Generic AI-assisted automation and project-aware operational behaviour | `GeurtsTechniques/GeurtsGameForgeAutomationTechnique.md` | When an agent or automation plans, changes, validates, or reports project work. |
 | Folder meaning, placement, and ownership | `GeurtsTechniques/GeurtsFolderStructureTechnique.md` | When creating, moving, renaming, or placing any file, script, asset, scene, document, or folder, and when inspecting or validating project structure. |
 | Exact folder-creation registry | `GeurtsTechniques/GeurtsFolderStructureDefinition.json` | When a tool creates or validates managed folders. |
@@ -76,6 +77,8 @@ Every path between the markers is part of the v0.11.0 repository package and mus
 | `GeurtsTechniqueManifest.md` | 0.11.0 | Package index and single resolver for selection, versions, applicability, subject ownership, order, and conflicts. |
 | `README.md` | 0.11.0 | Repository overview and package changelog. |
 | `GeurtsTechniques/GeurtsTechnicalTechnique.md` | 0.9.0 | Normative technical implementation, Unity 6.3 LTS and required Odin Inspector/Quantum Console baseline, and strict-priority owner. |
+| `GeurtsTechniques/GeurtsBrickContract.md` | 1.0.0 | Shared brick reuse, lifecycle, settings, catalogue and package-operation contract. Unreleased addition. |
+| `GeurtsTechniques/GeurtsBrickCatalogue.json` | 0.11.0 | Authoritative data-only catalogue; unpublished God/Diagnostics versions have no release install actions. |
 | `GeurtsTechniques/GeurtsGameForgeAutomationTechnique.md` | 0.9.0 | Normative generic AI-assisted automation technique. |
 | `GeurtsTechniques/GeurtsFolderStructureTechnique.md` | 0.10.0 | Normative explanatory folder authority, including companion-managed placement and strict non-managed boundaries. |
 | `GeurtsTechniques/GeurtsFolderStructureDefinition.json` | 0.11.0 | Machine-readable folder-creation authority; definition v0.10.0. |

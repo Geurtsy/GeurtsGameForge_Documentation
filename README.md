@@ -1,5 +1,11 @@
 # Geurts Game Forge Documentation
 
+## Geurts Game Forge God brick contract
+
+Adds the manifest-selected [brick contract](GeurtsTechniques/GeurtsBrickContract.md) and [machine-readable catalogue](GeurtsTechniques/GeurtsBrickCatalogue.json). AI-assisted Unity development must use a suitable available Geurts brick before recreating its functionality. God owns package management, lifecycle, shared contracts and settings. The current user's mandatory Odin Inspector and Quantum Console requirement supersedes older Unity companion tool exemptions. Documentation-interface implementation remains in its separately maintained repository.
+
+God 0.1.0, the minimal Diagnostics test consumer 0.2.0 and Documentation Companion 0.5.1 are available from their merged Git sources. The catalogue pins those exact verified revisions. The later six bricks remain future work and are not listed as available releases.
+
 **Version:** 0.11.0
 **Unity target:** Unity 6.3 LTS (6000.3)
 **Status:** Draft technique package
@@ -17,7 +23,7 @@ The manifest is the single resolver for package-file selection, versions, subjec
 
 New and modified Unity code and examples target **Unity 6.3 LTS (6000.3)**. The manifest-selected [Technical Technique](GeurtsTechniques/GeurtsTechnicalTechnique.md#unity-63-lts-compatibility-baseline) owns Editor patch selection, compatible stable dependencies, C#/.NET limits, current APIs, migration checks, and validation requirements. Follow that baseline when updating consuming projects; newer Unity release lines do not silently change this target.
 
-Within its declared implementation scope, the Technical Technique requires licensed, Unity 6.3-compatible Odin Inspector and Quantum Console dependencies and requires meaningful use of their authoring, validation, inspection, command, logging, and diagnostics capabilities. Missing dependencies are implementation blockers. The documentation repository and independent zero-dependency Documentation Companion are outside that requirement.
+Within its declared implementation scope, the Technical Technique requires licensed, Unity 6.3-compatible Odin Inspector and Quantum Console dependencies and requires meaningful use of their authoring, validation, inspection, command, logging, and diagnostics capabilities. Missing dependencies are implementation blockers. The manifest-selected Brick Contract extends that requirement to the independent Documentation Companion; this documentation source repository contains no commercial tool assets.
 
 This repository contains documentation, C# fragments, and host-side PowerShell utilities. It contains no Unity project or companion implementation. Its checks validate the documentation package and tools; actual Unity compilation and player compatibility must be verified in the consuming project. The package remains the v0.11.0 draft; the Technical Technique advances independently to v0.9.0.
 
@@ -54,12 +60,12 @@ Those are the current tracked top-level entries, not an installation allowlist. 
 
 ## Independent Unity Editor Companion
 
-The Windows-only, Editor-only companion is installed into an existing Unity project from its separate Git repository through Unity Package Manager. That is the only companion installation mechanism. There is no external installer, Windows bootstrap, batch-driven setup, separate setup action, or dependency on Geurts Game Forge God, Odin Inspector, Quantum Console, or Game Forge Intelligence.
+The Windows-only, Editor-only companion is installed into an existing Unity project from its separate Git repository through Unity Package Manager. That is the only companion installation mechanism. It requires licensed Odin Inspector and Quantum Console installations. There is no external installer, Windows bootstrap, batch-driven setup, separate setup action, or dependency on Geurts Game Forge God or Game Forge Intelligence.
 
-In Unity Package Manager, choose **Add package from Git URL** and use the companion repository's currently supported Windows package source. While package pull request #2 remains unmerged, keep the complete revision selector shown here; the unqualified repository URL still selects the earlier package:
+After importing the licensed tools, in Unity Package Manager choose **Add package from Git URL** and use the companion repository's merged Windows package source:
 
 ```text
-https://github.com/Geurtsy/com.geurts.gameforge.documentation.git#codex/fix-bounded-metadata-check
+https://github.com/Geurtsy/com.geurts.gameforge.documentation.git#main
 ```
 
 On each normal Unity project launch or open, the companion may perform at most one remote metadata-only request for the authoritative repository's current `main` head commit and compare it with a companion-owned last-successful commit value scoped to that Unity project and stored outside the project and installed package. One project's value must never suppress another project's update signal. The check must not download an archive, inspect the managed documentation folder or AI routes, mutate the project, execute setup work, or synchronize content. A skipped or failed check is non-blocking. Ordinary AI/session initialization performs no additional remote check.
