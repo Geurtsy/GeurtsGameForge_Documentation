@@ -4,7 +4,7 @@
 
 Adds the manifest-selected [brick contract](GeurtsTechniques/GeurtsBrickContract.md) and [machine-readable catalogue](GeurtsTechniques/GeurtsBrickCatalogue.json). AI-assisted Unity development must use a suitable available Geurts brick before recreating its functionality. God owns package management, lifecycle, shared contracts and settings. The current user's mandatory Odin Inspector and Quantum Console requirement supersedes older Unity companion tool exemptions. Documentation-interface implementation remains in its separately maintained repository.
 
-God 0.1.0, the minimal Diagnostics test consumer 0.2.0 and Documentation Companion 0.5.1 are available from their merged Git sources. The catalogue pins those exact verified revisions. The later six bricks remain future work and are not listed as available releases.
+God 0.1.1, the minimal Diagnostics test consumer 0.2.0 and Documentation Companion 0.5.2 are available from their merged Git sources. The catalogue pins those exact verified revisions. The later six bricks remain future work and are not listed as available releases.
 
 **Version:** 0.11.0
 **Unity target:** Unity 6.3 LTS (6000.3)
