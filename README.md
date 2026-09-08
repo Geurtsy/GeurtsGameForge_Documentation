@@ -4,11 +4,11 @@
 
 Adds the manifest-selected [brick contract](GeurtsTechniques/GeurtsBrickContract.md) and [machine-readable catalogue](GeurtsTechniques/GeurtsBrickCatalogue.json). AI-assisted Unity development must use a suitable available Geurts brick before recreating its functionality. God owns package management, lifecycle, shared contracts and settings. The current user's mandatory Odin Inspector and Quantum Console requirement supersedes older Unity companion tool exemptions. Documentation-interface implementation remains in its separately maintained repository.
 
-God 0.3.0, the minimal Diagnostics test consumer 0.2.0 and Documentation Companion 0.7.0 are available from their merged Git sources. The catalogue pins those exact verified revisions. Six roadmap bricks are listed as **Planned**: Settings System; Scene Loading and Bootstrap; Save and Load; Audio; User Interface Foundations; Object Pooling. These entries have no release version or installation source and do not represent published packages.
+God 0.3.1, the minimal Diagnostics test consumer 0.2.0 and Documentation Companion 0.7.0 are selected by the catalogue with exact Git revisions. Merge the God 0.3.1 package change before adopting this catalogue update. Six roadmap bricks are listed as **Planned**: Settings System; Scene Loading and Bootstrap; Save and Load; Audio; User Interface Foundations; Object Pooling. These entries have no release version or installation source and do not represent published packages.
 
 Brick Manager distinguishes **Planned**, **Available** and **Installed** independently of update status. `released: false` marks a planned catalogue entry; `released: true` marks a published release. Installed is determined from the actual Unity project. Planned entries carry no installation actions or update checks. Their package identifiers reserve catalogue identities; release versions, sources and verified compatibility are selected when the packages are implemented and published.
 
-**Version:** 0.12.0
+**Version:** 0.12.1
 **Unity target:** Unity 6.3 LTS (6000.3)
 **Status:** Draft technique package
 **Primary audience:** AI coding agents and automated development systems
@@ -27,7 +27,7 @@ New and modified Unity code and examples target **Unity 6.3 LTS (6000.3)**. The 
 
 Within its declared implementation scope, the Technical Technique requires licensed, Unity 6.3-compatible Odin Inspector and Quantum Console dependencies and requires meaningful use of their authoring, validation, inspection, command, logging, and diagnostics capabilities. Missing dependencies are implementation blockers. The manifest-selected Brick Contract extends that requirement to the independent Documentation Companion; this documentation source repository contains no commercial tool assets.
 
-This repository contains documentation, C# fragments, and host-side PowerShell utilities. It contains no Unity project or companion implementation. Its checks validate the documentation package and tools; actual Unity compilation and player compatibility must be verified in the consuming project. The package remains the v0.12.0 draft; the Technical Technique advances independently to v0.9.0.
+This repository contains documentation, C# fragments, and host-side PowerShell utilities. It contains no Unity project or companion implementation. Its checks validate the documentation package and tools; actual Unity compilation and player compatibility must be verified in the consuming project. The package remains the v0.12.1 draft; the Technical Technique advances independently to v0.9.0.
 
 ## Source and Ownership Boundary
 
@@ -148,9 +148,15 @@ PowerShell 7 may replace `powershell` with `pwsh`. The validator checks package,
 
 ## Codex guide installation
 
-Update the companion package to 0.7.0 before updating documentation to 0.12.0 (contract schema 2.0.0). In Geurts Documentation, select **Install Codex guide**, choose a location and confirm the displayed entry point. The installer creates AGENTS.md for automatic Codex discovery. The template exists only in GeurtsAgentTechnique.md. Normal documentation updates no longer manage a root Codex guide; replace an old guide by selecting its location in the new installer.
+Update the companion package to 0.7.0 before updating documentation to 0.12.1 (contract schema 2.0.0). In Geurts Documentation, select **Install Codex guide**, choose a location and confirm the displayed entry point. The installer creates AGENTS.md for automatic Codex discovery. The template exists only in GeurtsAgentTechnique.md. Normal documentation updates no longer manage a root Codex guide; replace an old guide by selecting its location in the new installer.
 
 ## Changelog
+
+### v0.12.1 — Dependency readiness labels
+
+- Publish God 0.3.1 with required external dependency boxes on the Documentation card. Loaded tools are green when Unity reports no script compilation errors.
+- Preserve Documentation 0.7.0, the Codex guide installer, schema 2.0.0 and the current three-route documentation update contract.
+- Synchronize the package metadata and versioned tool checks without restoring obsolete documentation entry files.
 
 ### v0.12.0
 
