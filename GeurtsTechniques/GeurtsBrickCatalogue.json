@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "packageVersion": "0.11.2",
-  "publishedUtc": "2026-09-08T05:30:06Z",
+  "publishedUtc": "2026-09-08T05:51:33Z",
   "bricks": [
     {
       "id": "com.geurts.gameforge.documentation",
@@ -12,7 +12,7 @@
       "released": true,
       "developmentOnly": false,
       "sourceKind": "git",
-      "source": "https://github.com/Geurtsy/com.geurts.gameforge.documentation.git#7e7d65a2cfa5e04f3c3e808e78e787d08fb087e7",
+      "source": "https://github.com/Geurtsy/com.geurts.gameforge.documentation.git#1be9cf1032a146ffc134be8abe6a7c9ba32c812c",
       "minimumUnity": "6000.3",
       "maximumUnity": "6000.3",
       "requiredTools": [
@@ -30,7 +30,7 @@
       "released": true,
       "developmentOnly": false,
       "sourceKind": "git",
-      "source": "https://github.com/Geurtsy/GeurtsGameForge.git?path=/Packages/com.geurts.gameforge.god#2f5e20b628d9cb24ba65ca1a6393f7364330ae28",
+      "source": "https://github.com/Geurtsy/GeurtsGameForge.git?path=/Packages/com.geurts.gameforge.god#4f324967e85c795f0736125f94bcd00704259adf",
       "minimumUnity": "6000.3",
       "maximumUnity": "6000.3",
       "requiredTools": [

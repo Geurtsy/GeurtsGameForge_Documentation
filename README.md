@@ -154,6 +154,7 @@ PowerShell 7 may replace `powershell` with `pwsh`. The validator checks package,
 ### v0.11.2 — Dependency labels
 
 - Synchronizes the Documentation and God dependency-label releases with their catalogue entries. Both interfaces label Odin Inspector and Quantum Console as required external dependencies installed separately.
+- Dependency boxes turn green and show Installed and ready when the tool types are loaded and Unity has no script compilation errors; compilation/import and unavailable states remain visible.
 - Advances package release metadata and matching validator/tool version checks together; the companion schema and its five replacement targets are unchanged.
 
 ### v0.11.1
