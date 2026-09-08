@@ -1,8 +1,8 @@
 # Geurts Documentation Companion Technique
 
-**Version:** 1.0.1
+**Version:** 1.0.2
 **Contract schema:** 1.0.0
-**Package version:** 0.11.1
+**Package version:** 0.11.2
 **Status:** Draft normative technique
 **Primary audience:** Geurts Documentation Companion implementers and package maintainers
 **Secondary audience:** AI coding agents and human developers
