@@ -1,6 +1,6 @@
 # Geurts Technique Package Manifest
 
-**Version:** 0.11.3
+**Version:** 0.11.4
 **Unity target:** Unity 6.3 LTS (6000.3)
 **Status:** Draft normative package manifest
 **Primary audience:** AI coding agents and automated development systems
@@ -30,7 +30,7 @@ For an installed Unity-project package, steps 1 through 3 use:
 <ProjectRoot>/GeurtsGameForgeDocumentation/GeurtsTechniqueManifest.md
 ```
 
-Every selected package file must come from the same validated package commit. The Documentation Companion Contract selects an archive of the exact resolved authoritative `main` head commit; a version found elsewhere is not permission to mix files from different commits. The frozen Game Forge Intelligence 2.0 compatibility technique may describe its released integration, but it no longer owns or authorizes documentation setup, checking, acquisition, or replacement under package v0.11.3. The numbered sequence above is the normative post-entry read order. Applicability comes only from the table below. When two selected documents discuss the same action, the table's assigned subject owner controls that subject; if the assignment does not determine a material conflict, surface it to the current user instead of inventing precedence.
+Every selected package file must come from the same validated package commit. The Documentation Companion Contract selects an archive of the exact resolved authoritative `main` head commit; a version found elsewhere is not permission to mix files from different commits. The frozen Game Forge Intelligence 2.0 compatibility technique may describe its released integration, but it no longer owns or authorizes documentation setup, checking, acquisition, or replacement under package v0.11.4. The numbered sequence above is the normative post-entry read order. Applicability comes only from the table below. When two selected documents discuss the same action, the table's assigned subject owner controls that subject; if the assignment does not determine a material conflict, surface it to the current user instead of inventing precedence.
 
 Under a confirmed Documentation Companion Update, the separate `<ProjectRoot>/AGENTS.md` is one of four closed, whole-file managed AI routes and is replaced from its exact documentation-owned template. Outside that companion lifecycle, the optional manual native-entry manager retains its region-preserving rules. In either case, the route is only a concise external-tool discovery shim to `GeurtsGameForgeDocumentation/AGENTS.md`; it is not a competing authority or a companion startup entry.
 
@@ -47,7 +47,7 @@ Under a confirmed Documentation Companion Update, the separate `<ProjectRoot>/AG
 | Project-specific design-document discovery and maintenance boundary | `GeurtsTechniques/GeurtsGameDesignDocumentationTechnique.md` | Before player-facing work, when design facts are needed, or when GDD discovery/manifest maintenance is requested. Relevant project GDD files selected by `Docs/GameDesign/GameDesignManifest.md` are mandatory design facts. |
 | Independent Windows Unity Editor companion source, metadata check, confirmed replacement, project-boundary, and AI-routing lifecycle | `GeurtsTechniques/GeurtsDocumentationCompanionTechnique.md` | When the Geurts Documentation Companion checks metadata, offers or performs Update, validates a candidate, replaces managed content, or reports conformance. |
 | Exact companion source, documentation destination, validation entries, confirmation targets, and template-to-route mappings | `GeurtsTechniques/GeurtsDocumentationCompanionContract.json` | Whenever the Documentation Companion Technique is selected or its schema is implemented or validated. |
-| Frozen Game Forge Intelligence 2.0 integration compatibility | `GeurtsTechniques/GeurtsGameForgeIntelligenceTechnique.md` | Only when maintaining or assessing a released v2 consumer. Its historical updater is non-applicable under package v0.11.3; current setup, checking, and Update belong exclusively to the Documentation Companion. |
+| Frozen Game Forge Intelligence 2.0 integration compatibility | `GeurtsTechniques/GeurtsGameForgeIntelligenceTechnique.md` | Only when maintaining or assessing a released v2 consumer. Its historical updater is non-applicable under package v0.11.4; current setup, checking, and Update belong exclusively to the Documentation Companion. |
 | Approved project-root `.gitignore` payload | `GeurtsTechniques/GeurtsGitIgnoreTechnique.md` | When validating or provisioning that exact payload. |
 | Chat-only response style and scope | `GeurtsTechniques/GeurtsAIResponseControlTechnique_V1.1.md` | Only when a compatible chat interface explicitly selects it. It is never a coding or architecture standard. |
 
@@ -66,27 +66,27 @@ Under a confirmed Documentation Companion Update, the separate `<ProjectRoot>/AG
 
 ## 3. Package File Registry
 
-Every path between the markers is part of the v0.11.3 repository package and must exist. The Role column describes package use only; current setup and replacement belong exclusively to the Documentation Companion Technique and its closed contract. The frozen Game Forge Intelligence 2.0 technique remains only for released-consumer compatibility and does not authorize a second updater.
+Every path between the markers is part of the v0.11.4 repository package and must exist. The Role column describes package use only; current setup and replacement belong exclusively to the Documentation Companion Technique and its closed contract. The frozen Game Forge Intelligence 2.0 technique remains only for released-consumer compatibility and does not authorize a second updater.
 
 <!-- GEURTS-PACKAGE-FILES:BEGIN -->
 
 | Path | Version | Role |
 |---|---:|---|
-| `AGENTS.md` | 0.11.3 | First repository entry; routes to `AI_READ_FIRST.md`. |
-| `AI_READ_FIRST.md` | 0.11.3 | Second-stage local-package and session router from `AGENTS.md` to this manifest. |
-| `GeurtsTechniqueManifest.md` | 0.11.3 | Package index and single resolver for selection, versions, applicability, subject ownership, order, and conflicts. |
-| `README.md` | 0.11.3 | Repository overview and package changelog. |
+| `AGENTS.md` | 0.11.4 | First repository entry; routes to `AI_READ_FIRST.md`. |
+| `AI_READ_FIRST.md` | 0.11.4 | Second-stage local-package and session router from `AGENTS.md` to this manifest. |
+| `GeurtsTechniqueManifest.md` | 0.11.4 | Package index and single resolver for selection, versions, applicability, subject ownership, order, and conflicts. |
+| `README.md` | 0.11.4 | Repository overview and package changelog. |
 | `GeurtsTechniques/GeurtsTechnicalTechnique.md` | 0.9.0 | Normative technical implementation, Unity 6.3 LTS and required Odin Inspector/Quantum Console baseline, and strict-priority owner. |
 | `GeurtsTechniques/GeurtsBrickContract.md` | 1.1.0 | Shared brick reuse, lifecycle, settings, catalogue and package-operation contract. Unreleased addition. |
-| `GeurtsTechniques/GeurtsBrickCatalogue.json` | 0.11.3 | Authoritative data-only catalogue; unpublished God/Diagnostics versions have no release install actions. |
+| `GeurtsTechniques/GeurtsBrickCatalogue.json` | 0.11.4 | Authoritative data-only catalogue; unpublished God/Diagnostics versions have no release install actions. |
 | `GeurtsTechniques/GeurtsGameForgeAutomationTechnique.md` | 0.9.0 | Normative generic AI-assisted automation technique. |
 | `GeurtsTechniques/GeurtsFolderStructureTechnique.md` | 0.10.0 | Normative explanatory folder authority, including companion-managed placement and strict non-managed boundaries. |
-| `GeurtsTechniques/GeurtsFolderStructureDefinition.json` | 0.11.3 | Machine-readable folder-creation authority; definition v0.10.0. |
+| `GeurtsTechniques/GeurtsFolderStructureDefinition.json` | 0.11.4 | Machine-readable folder-creation authority; definition v0.10.0. |
 | `GeurtsTechniques/GeurtsAIAgentSetupTechnique.md` | 1.0.0 | Normative four-route companion replacement exception and separate preservation-based manual setup technique. |
 | `GeurtsTechniques/GeurtsGameDesignDocumentationTechnique.md` | 0.10.0 | Normative GDD discovery, byte-preservation, and companion no-access boundary technique. |
 | `GeurtsTechniques/GeurtsDocumentationCompanionTechnique.md` | 1.0.1 | Normative lifecycle for the independent Windows Editor-only UPM documentation companion; contract schema 1.0.0. |
-| `GeurtsTechniques/GeurtsDocumentationCompanionContract.json` | 0.11.3 | Machine-readable companion contract; declares package version 0.11.3 and schema 1.0.0. |
-| `GeurtsTechniques/GeurtsGameForgeIntelligenceTechnique.md` | 2.0.0 | Frozen released-consumer compatibility technique; its schema-2.0.0 updater is superseded and non-applicable under package v0.11.3. |
+| `GeurtsTechniques/GeurtsDocumentationCompanionContract.json` | 0.11.4 | Machine-readable companion contract; declares package version 0.11.4 and schema 1.0.0. |
+| `GeurtsTechniques/GeurtsGameForgeIntelligenceTechnique.md` | 2.0.0 | Frozen released-consumer compatibility technique; its schema-2.0.0 updater is superseded and non-applicable under package v0.11.4. |
 | `GeurtsTechniques/GeurtsGameForgeIntelligenceIntegrationContract.md` | 2.0.0 | Non-normative compatibility redirect from the released legacy path; never selected as a second authority. |
 | `GeurtsTechniques/GeurtsGitIgnoreTechnique.md` | 1.0.0 | Normative approved project-root `.gitignore` payload. |
 | `GeurtsTechniques/GeurtsAIResponseControlTechnique_V1.1.md` | 1.1 | Chat-only response technique; not an implementation standard. |
@@ -97,24 +97,24 @@ Every path between the markers is part of the v0.11.3 repository package and mus
 | `Migrations/v0.8.0.md` | 0.8.0 | Non-normative historical note for public access and custom `.gitignore` provisioning. |
 | `Migrations/v0.7.0.md` | 0.7.0 | Non-normative historical note for v0.4-v0.6 integrations. |
 | `Tools/CreateAIAgentInstructionFiles.bat` | 0.9.0 | Compatibility launcher for managed AI setup. |
-| `Tools/ManageGeurtsAgentInstructions.ps1` | 0.11.3 | Optional manual native-entry migration and GDD scaffolding manager; never invoked by the companion. |
+| `Tools/ManageGeurtsAgentInstructions.ps1` | 0.11.4 | Optional manual native-entry migration and GDD scaffolding manager; never invoked by the companion. |
 | `Tools/CreateGeurtsFolderStructure.bat` | 0.9.0 | Compatibility launcher for definition-driven folder creation. |
-| `Tools/CreateGeurtsFolderStructure.ps1` | 0.11.3 | Definition-driven, create-only folder tool; never invoked by the companion. |
+| `Tools/CreateGeurtsFolderStructure.ps1` | 0.11.4 | Definition-driven, create-only folder tool; never invoked by the companion. |
 | `Tools/UpdateGameDesignManifest.ps1` | 0.10.0 | Deterministic GDD manifest maintainer. |
 | `Tools/NativeEntryMigrationCatalog.json` | 1.0.0 | Native-entry exact-fingerprint migration catalog for the four v1.0.0 brick-aware route templates. |
-| `Tools/ValidateGeurtsDocumentation.ps1` | 0.11.4 | Package, Unity-target/example, path, version, authority, companion-contract, lifecycle-boundary, and payload validator. |
+| `Tools/ValidateGeurtsDocumentation.ps1` | 0.11.5 | Package, Unity-target/example, path, version, authority, companion-contract, lifecycle-boundary, and payload validator. |
 | `Tools/AIAgentInstructionTemplates/AGENTS.md` | 1.0.0 | Managed Codex route requiring brick agents to read the installed documentation before planning or modifying code. |
 | `Tools/AIAgentInstructionTemplates/copilot-instructions.md` | 1.0.0 | Managed Copilot route requiring brick agents to read the installed documentation before planning or modifying code. |
 | `Tools/AIAgentInstructionTemplates/instructions/geurts-unity.instructions.md` | 1.0.0 | Managed scoped Unity route requiring brick agents to use the installed documentation as source of truth. |
 | `Tools/AIAgentInstructionTemplates/instructions/geurts-game-design.instructions.md` | 1.0.0 | Managed scoped game-design route requiring brick agents to use the installed documentation as source of truth. |
 | `Tools/AIAgentInstructionTemplates/GameDesign/README.md` | 0.10.0 | Create-if-missing project GDD routing scaffold. |
 | `Tools/AIAgentInstructionTemplates/GameDesign/GameDesignManifest.md` | 0.7.0 | Create-if-missing deterministic GDD manifest scaffold. |
-| `Tools/Tests/RunAutomationTests.ps1` | 0.11.4 | Temporary-project automation, Unity-target/example, and lifecycle-regression suite. |
+| `Tools/Tests/RunAutomationTests.ps1` | 0.11.5 | Temporary-project automation, Unity-target/example, and lifecycle-regression suite. |
 
 <!-- GEURTS-PACKAGE-FILES:END -->
 
 ## 4. Owner Pointers
 
 - The selected Documentation Companion Technique owns the independent Windows-only, Editor-only UPM lifecycle; its JSON Contract owns the exact source, managed destinations, validation entries, confirmation targets, and four route mappings. The manifest does not restate that lifecycle.
-- The frozen Game Forge Intelligence 2.0 Technique may be selected only for released-consumer compatibility. It is not a Documentation Companion dependency and cannot own or authorize a second documentation check, setup, or Update lifecycle under package v0.11.3.
+- The frozen Game Forge Intelligence 2.0 Technique may be selected only for released-consumer compatibility. It is not a Documentation Companion dependency and cannot own or authorize a second documentation check, setup, or Update lifecycle under package v0.11.4.
 - The selected Folder, AI Agent Setup, GDD, Git Ignore, Technical, and Automation authorities own their respective generic tool and project-work rules.

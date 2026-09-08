@@ -1,6 +1,6 @@
 # Geurts Game Forge Documentation Repository Instructions
 
-**Version:** 0.11.3
+**Version:** 0.11.4
 
 This tracked file is the first repository entry for the Geurts Game Forge documentation package.
 
