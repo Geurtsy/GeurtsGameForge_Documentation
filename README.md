@@ -4,7 +4,7 @@
 
 Adds the manifest-selected [brick contract](GeurtsTechniques/GeurtsBrickContract.md) and [machine-readable catalogue](GeurtsTechniques/GeurtsBrickCatalogue.json). AI-assisted Unity development must use a suitable available Geurts brick before recreating its functionality. God owns package management, lifecycle, shared contracts and settings. The current user's mandatory Odin Inspector and Quantum Console requirement supersedes older Unity companion tool exemptions. Documentation-interface implementation remains in its separately maintained repository.
 
-God 0.2.1, the minimal Diagnostics test consumer 0.2.0 and Documentation Companion 0.6.1 are available from their merged Git sources. The catalogue pins those exact verified revisions. Six roadmap bricks are listed as **Planned**: Settings System; Scene Loading and Bootstrap; Save and Load; Audio; User Interface Foundations; Object Pooling. These entries have no release version or installation source and do not represent published packages.
+God 0.3.0, the minimal Diagnostics test consumer 0.2.0 and Documentation Companion 0.6.1 are available from their merged Git sources. The catalogue pins those exact verified revisions. Six roadmap bricks are listed as **Planned**: Settings System; Scene Loading and Bootstrap; Save and Load; Audio; User Interface Foundations; Object Pooling. These entries have no release version or installation source and do not represent published packages.
 
 Brick Manager distinguishes **Planned**, **Available** and **Installed** independently of update status. `released: false` marks a planned catalogue entry; `released: true` marks a published release. Installed is determined from the actual Unity project. Planned entries carry no installation actions or update checks. Their package identifiers reserve catalogue identities; release versions, sources and verified compatibility are selected when the packages are implemented and published.
 
@@ -48,13 +48,13 @@ The project-local fetched copy contains the complete supported Git-tracked sourc
 
 ```text
 <ProjectRoot>/GeurtsGameForgeDocumentation/
-├── AI_READ_FIRST.md
-├── GeurtsTechniqueManifest.md
-├── GeurtsTechniques/
-├── Ideas/
-├── Migrations/
-├── README.md
-└── Tools/
+â”œâ”€â”€ AI_READ_FIRST.md
+â”œâ”€â”€ GeurtsTechniqueManifest.md
+â”œâ”€â”€ GeurtsTechniques/
+â”œâ”€â”€ Ideas/
+â”œâ”€â”€ Migrations/
+â”œâ”€â”€ README.md
+â””â”€â”€ Tools/
 ```
 
 Those are the current tracked top-level entries, not an installation allowlist. The selected Git tree defines the complete content set. The managed copy contains no `.git` metadata or continuing repository, worktree, branch, remote, or synchronization connection. Logical read-only status is an ownership rule rather than a Windows file-attribute requirement: local edits are unsupported and the next confirmed Update discards them without drift inspection or preservation.
@@ -158,6 +158,11 @@ Update the companion package to 0.7.0 before updating documentation to 0.12.0 (c
 - Add one technique-owned Codex guide template and user-selected installation.
 - Remove both deprecated AGENTS.md files and exclude Codex guides from documentation Update and the manual native-entry manager.
 - Move the three Copilot routes to the direct entry point and adopt companion contract schema 2.0.0.
+
+### v0.11.5
+
+- Publishes God 0.3.0 with a Dependencies section for Odin Inspector, Quantum Console and project-defined Asset Store tools. Tracks installation and downloaded versions separately from current Unity-account ownership, including hidden purchases; installation uses Unity My Assets and native import choices.
+- Synchronizes the exact God catalogue pin, package metadata and validator expectations while retaining Documentation Companion 0.6.1.
 
 ### v0.11.4
 
