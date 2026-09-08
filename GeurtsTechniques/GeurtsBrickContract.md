@@ -3,7 +3,7 @@
 **Version:** 1.0.0
 **Required package path:** `GeurtsTechniques/GeurtsBrickContract.md`
 
-This document owns the shared brick contract and catalogue schema. The manifest continues to own document selection and precedence. This is an unreleased contract addition for the God implementation; catalogue entries do not become releases merely by appearing here.
+This document owns the shared brick contract and catalogue schema. The manifest continues to own document selection and precedence. Catalogue entries become actionable only when their real installation sources are verified; appearance in this document alone does not publish a release.
 
 ## Use existing bricks
 

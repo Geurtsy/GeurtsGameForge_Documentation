@@ -1,21 +1,24 @@
 {
   "schemaVersion": 1,
   "packageVersion": "0.11.0",
-  "publishedUtc": "",
+  "publishedUtc": "2026-09-08T02:35:00Z",
   "bricks": [
     {
       "id": "com.geurts.gameforge.documentation",
       "name": "Geurts Game Forge Documentation",
       "description": "Documentation dashboard and explicit updates of the authoritative AI development guidance.",
       "website": "https://github.com/Geurtsy/com.geurts.gameforge.documentation",
-      "version": "0.5.0",
+      "version": "0.5.1",
       "released": true,
       "developmentOnly": false,
       "sourceKind": "git",
-      "source": "https://github.com/Geurtsy/com.geurts.gameforge.documentation.git#c97fe9c15205119f2c56ac98280b7e68faa6fa4b",
+      "source": "https://github.com/Geurtsy/com.geurts.gameforge.documentation.git#53de09b3b5d7565e059f969c50bc45e808d9f116",
       "minimumUnity": "6000.3",
       "maximumUnity": "6000.3",
-      "requiredTools": ["Odin Inspector", "Quantum Console"],
+      "requiredTools": [
+        "Odin Inspector",
+        "Quantum Console"
+      ],
       "dependencies": []
     },
     {
@@ -24,14 +27,22 @@
       "description": "Brick Manager and shared foundation for package operations, lifecycle, settings and optional brick cooperation.",
       "website": "https://github.com/Geurtsy/GeurtsGameForge",
       "version": "0.1.0",
-      "released": false,
+      "released": true,
       "developmentOnly": false,
-      "sourceKind": "",
-      "source": "",
+      "sourceKind": "git",
+      "source": "https://github.com/Geurtsy/GeurtsGameForge.git?path=/Packages/com.geurts.gameforge.god#d36eb99f5c89c696d36bccb89e9eddaec64d3026",
       "minimumUnity": "6000.3",
       "maximumUnity": "6000.3",
-      "requiredTools": ["Odin Inspector", "Quantum Console"],
-      "dependencies": [{"id": "com.geurts.gameforge.documentation", "minimumVersion": "0.5.0"}]
+      "requiredTools": [
+        "Odin Inspector",
+        "Quantum Console"
+      ],
+      "dependencies": [
+        {
+          "id": "com.geurts.gameforge.documentation",
+          "minimumVersion": "0.5.1"
+        }
+      ]
     },
     {
       "id": "com.geurts.gameforge.diagnostics",
@@ -39,14 +50,22 @@
       "description": "Minimal God test consumer demonstrating startup, shutdown, a test log and retained settings. Full diagnostics remains future work.",
       "website": "https://github.com/Geurtsy/GeurtsGameForge",
       "version": "0.2.0",
-      "released": false,
+      "released": true,
       "developmentOnly": false,
-      "sourceKind": "",
-      "source": "",
+      "sourceKind": "git",
+      "source": "https://github.com/Geurtsy/GeurtsGameForge.git?path=/Packages/com.geurts.gameforge.diagnostics#d36eb99f5c89c696d36bccb89e9eddaec64d3026",
       "minimumUnity": "6000.3",
       "maximumUnity": "6000.3",
-      "requiredTools": ["Odin Inspector", "Quantum Console"],
-      "dependencies": [{"id": "com.geurts.gameforge.god", "minimumVersion": "0.1.0"}]
+      "requiredTools": [
+        "Odin Inspector",
+        "Quantum Console"
+      ],
+      "dependencies": [
+        {
+          "id": "com.geurts.gameforge.god",
+          "minimumVersion": "0.1.0"
+        }
+      ]
     }
   ]
 }
