@@ -1,6 +1,6 @@
 # Geurts Game Forge AI Entry Point
 
-**Version:** 0.11.2
+**Version:** 0.11.3
 **Purpose:** Second-stage package and session boundary after `AGENTS.md`, before manifest resolution.
 **Required package path:** `AI_READ_FIRST.md`
 
