@@ -2,7 +2,7 @@
 # Geurts Technical Technique
 
 **Unity Game Development - AI Instruction Manual**  
-**Version:** 0.9.0
+**Version:** 0.9.1
 **Unity target:** Unity 6.3 LTS (6000.3)
 **Status:** Draft normative technique
 **Primary audience:** AI coding agents and automated development systems
@@ -321,7 +321,7 @@ Quantum Console is the required runtime developer console within the implementat
 
 Every gameplay project must include a validated developer-console setup reachable in Play Mode and development builds. Provide the required EventSystem, use Quantum Console's SRP-compatible prefab/theme when the selected render pipeline requires it, and integrate its activate/deactivate events with the Input System so gameplay input does not continue unintentionally while the console has focus. Keep the console UI and command execution unavailable to players by default; a project GDD or explicit current-user decision is required before any player-facing access.
 
-Expose useful Geurts-owned inspection, validation, tuning, recovery, performance, AI, and multiplayer diagnostics as Quantum Console commands when they can be invoked safely. Route routine runtime diagnostics through one project logging facade that preserves Unity Console output and is captured or forwarded by Quantum Console. Avoid per-frame log spam, duplicate command surfaces, secrets, personal data, production-only internals, and state-changing commands without appropriate authorization and guards.
+Expose useful Geurts-owned inspection, validation, tuning, recovery, performance, AI, and multiplayer diagnostics as Quantum Console commands when they can be invoked safely. Route all project logging through Geurts Game Forge Diagnostics whenever its logging service is available, using the central logging facade and capture integrations defined under Logging Standards. Preserve Unity Console output and integrate with Quantum Console. Avoid per-frame log spam, duplicate command surfaces, secrets, personal data, production-only internals, and state-changing commands without appropriate authorization and guards.
 
 ### Accessibility
 
@@ -443,7 +443,17 @@ Commands that alter the game state must be flagged as `Cheat`.
 
 ## Logging Standards
 
-Route Geurts-owned runtime logs through the project's central logging facade and integrate that facade with Quantum Console. Preserve Unity Console output for Editor diagnostics and use Quantum Console categories, severity filters, storage limits, and thread-safe logging APIs consistently. Do not call multiple log sinks independently from gameplay code.
+**All logging throughout the entire project must route through Geurts Game Forge Diagnostics** (`GeurtsDiagnostics`, package `com.geurts.gameforge.diagnostics`) whenever its logging service is available. This technical rule applies project-wide, regardless of code ownership or log origin: game scripts, all bricks, Editor tools, Unity-generated messages, third-party packages, plugins, generated code and custom logging systems. It includes every severity and logging API, including `Debug.Log`, `Debug.LogWarning`, `Debug.LogError`, `Debug.LogException`, formatted variants, assertions, exception reports and other logger output; it is not limited to Geurts-owned code or `Debug.Log` calls.
+
+Code under project control must emit through the central logging facade backed by Diagnostics. Existing logging systems must feed that same route. For Unity, third-party, vendor or generated sources that do not call the facade, integrate their logger or capture their output through supported callbacks or adapters and forward it into Diagnostics. That capture is required whenever the source and Diagnostics are available, not an optional exemption for external code. Do not require edits to vendor or generated source when a supported integration can perform the routing. If a source cannot be captured, report the specific integration gap; do not claim that project-wide routing is complete.
+
+Available means the Diagnostics brick is installed, enabled, running and exposes a compatible logging service. A catalogue entry or installed package alone is insufficient. The minimal Diagnostics 0.2.0 test consumer does not provide that service; this rule specifies required integration behaviour, not an existing API or a completed implementation.
+
+When Diagnostics is absent, disabled, stopped, not yet initialized or lacks a compatible logging service, the same facade must fall back to Unity logging so messages remain visible. Resume routing through Diagnostics when its service becomes available. Follow the Brick Contract's optional-capability boundary; do not introduce a mandatory dependency from God to Diagnostics or a circular package dependency.
+
+Preserve message severity, exception details and Unity object context where supplied. Diagnostics must preserve Unity Console output and integrate with Quantum Console through one coordinated output path, respecting configured categories, severity filters and storage limits. Use thread-safe logging APIs consistently. Direct Unity logging is permitted inside the final output sink and unavailable-service fallback; capture of externally emitted Unity logs must not emit those messages to Unity a second time. Prevent recursive forwarding and duplicate messages when Quantum Console or Diagnostics captures Unity logs, including Diagnostics' own output. Project-controlled callers must not bypass available Diagnostics or independently write the same message to multiple sinks.
+
+Apply this rule to the entire project's existing and future logging integration. Logging before the service is available, including during compilation or startup, follows the unavailable-service fallback above. Runtime logging must retain the existing player-access restrictions.
 
 Severity colours:
 
@@ -540,6 +550,7 @@ A generated or modified Unity C# script is complete only when it:
 - Avoids unnecessary per-frame allocations.
 - Avoids expensive logic inside `Update()` unless justified.
 - Uses Odin Inspector meaningfully for applicable serialized configuration, validation, diagnostics, and safe Editor actions, with its installed compatible version recorded.
-- Routes Geurts-owned runtime diagnostics and applicable developer operations through Quantum Console, with its installed compatible version and developer-console validation recorded.
+- Integrates project-wide Diagnostics output and applicable developer operations with Quantum Console, with its installed compatible version and developer-console validation recorded.
+- Routes all project logging through Diagnostics whenever its logging service is available, including captured Unity and third-party output, and verifies unavailable-service fallback without duplicate messages or recursive forwarding. Reports any source that cannot be captured as an integration gap.
 - Preserves multiplayer network efficiency where relevant.
 - Satisfies every applicable GDD requirement selected by the manifest before changing player-facing behaviour.
