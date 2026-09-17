@@ -2,7 +2,7 @@
 # Geurts Folder Structure Technique
 
 **Unity Project Structure - AI-First Automation and Human Developer Reference**
-**Version:** 0.11.0
+**Version:** 0.12.0
 **Status:** Draft normative technique
 **Primary audience:** AI coding agents and automated development systems
 **Secondary audience:** Human developers
@@ -74,7 +74,7 @@ An automation tool may create a registry entry only when all of these conditions
 3. The calling tool is the declared `automation.owner`, or the entry's `automation.delegatedOwners` object explicitly authorizes that profile's owner.
 4. Every declared parent is already present or is created first from the same authorized profile.
 
-Every definition v0.10.0 entry has `automation.mayRemove` set to `false`. No folder may be automatically deleted merely because it is absent from a later definition. Missing folders may be created; existing folders and their contents must be preserved.
+Every definition v0.11.0 entry has `automation.mayRemove` set to `false`. No folder may be automatically deleted merely because it is absent from a later definition. Missing folders may be created; existing folders and their contents must be preserved.
 
 `required` means the folder is part of the applicable Geurts project or integration baseline. `optional` means content may not need the folder, although the full creation profile may still create the empty organizational path. Requirement status never grants deletion authority.
 
@@ -343,14 +343,16 @@ Prefabs/
 
 ### Scenes/
 
-Scene files only.
+Scene files only. All five subfolders below are required in every project, including a minimal project.
 
 ```text
 Scenes/
 ├── Boot/
+│   └── SCN_BigBang.unity
 ├── Frontend/
 ├── Gameplay/
 ├── Test/
+│   └── SCN_DevPlayground.unity
 └── Sandbox/
 ```
 
@@ -402,9 +404,20 @@ Test scenes, test data, mocks, and QA helpers.
 
 ---
 
-## Scene Structure Recommendation
+## Required Scene Structure
 
-Use scene folders by function, not by chronology.
+Use scene folders by function, not by chronology. `Boot/`, `Frontend/`, `Gameplay/`, `Test/` and `Sandbox/` under `Assets/_Project/Scenes/` are required folders. The project must also contain these two scene assets:
+
+| Required scene | Required project-relative path | Purpose |
+|---|---|---|
+| `SCN_BigBang` | `Assets/_Project/Scenes/Boot/SCN_BigBang.unity` | Project boot and initialisation. |
+| `SCN_DevPlayground` | `Assets/_Project/Scenes/Test/SCN_DevPlayground.unity` | Initial development and testing. |
+
+The [Technical Technique's Required Project Scenes](GeurtsTechnicalTechnique.md#required-project-scenes) owns their required build indices and Build Profile scene-list rules. Requiring `Frontend/`, `Gameplay/` and `Sandbox/` does not require additional scene assets in those folders.
+
+The JSON registry describes directories only. The existing folder tool creates missing folders and preserves existing content; it does not create `.unity` assets or configure scene lists. Scene setup must use supported Unity Editor APIs, preserve existing scene contents and references, and report missing or conflicting scenes and index assignments.
+
+Folder purposes:
 
 - `Boot/` - Initialisation scenes.
 - `Frontend/` - Menus, shell, and meta systems.
@@ -475,7 +488,7 @@ Before creating folders, any compatible folder-creation consumer must:
 
 1. Load `GeurtsGameForgeDocumentation/GeurtsTechniques/GeurtsFolderStructureDefinition.json` from the active validated package.
 2. Confirm supported `schemaVersion`, `definitionVersion`, and `packageVersion` values.
-3. Confirm `managedFolderCount` is 69 and `projectStructureFolderCount` is 67 for definition v0.10.0.
+3. Confirm `managedFolderCount` is 69 and `projectStructureFolderCount` is 67 for definition v0.11.0.
 4. Reject duplicate paths, absolute paths, traversal segments, backslashes, unknown content categories, missing parents, unknown profiles, or malformed automation objects.
 5. Confirm every registry path appears in the literal Markdown registry below.
 6. Select only the creation profile owned by the calling operation.
@@ -571,7 +584,7 @@ Assets/_Project/Testing
 
 1. Keep `_Project` as the single source of truth for studio-owned assets.
 2. When maintaining this source repository, run the read-only source validator at `Tools/ValidateGeurtsDocumentation.ps1` whenever the Markdown technique or JSON definition changes; this is distinct from copied project-mutating tools that require explicit `-ProjectRoot`.
-3. Create new folders only when a category has multiple assets or a stable workflow need.
+3. Keep every required baseline folder; add other folders when a category has multiple assets or a stable workflow need.
 4. Use `Test` and `Sandbox` intentionally so experimental work does not pollute production content.
 5. Treat `External` and `_ThirdParty` as quarantine zones for anything not authored by the studio.
 
@@ -579,7 +592,7 @@ Assets/_Project/Testing
 
 ## Minimal Version
 
-If the project is very small, start with this:
+If the project is very small, start with this structure while retaining every required scene folder and both required scene assets:
 
 ```text
 Assets/_Project/
@@ -588,6 +601,13 @@ Assets/_Project/
 ├── Data/
 ├── Prefabs/
 ├── Scenes/
+│   ├── Boot/
+│   │   └── SCN_BigBang.unity
+│   ├── Frontend/
+│   ├── Gameplay/
+│   ├── Test/
+│   │   └── SCN_DevPlayground.unity
+│   └── Sandbox/
 ├── Scripts/
 └── UI/
 ```
@@ -596,9 +616,9 @@ Assets/_Project/
 
 ## Expansion Rule
 
-Only expand the structure when search time, onboarding friction, or asset collisions become noticeable.
+Keep the required baseline in every project. Expand beyond it when search time, onboarding friction, or asset collisions become noticeable.
 
-The `full-project-structure` automation profile creates the complete 67-path structure. Teams may choose the minimal subset manually at the beginning of a small project; definition v0.10.0 does not define an automated minimal profile. A future profile must be versioned in both authorities and must preserve the no-deletion rule. The Documentation Companion does not select any profile.
+The `full-project-structure` automation profile creates the complete 67-path structure. Teams may choose the minimal subset manually at the beginning of a small project; definition v0.11.0 does not define an automated minimal profile. A future profile must be versioned in both authorities and must preserve the no-deletion rule. The Documentation Companion does not select any profile.
 
 ---
 

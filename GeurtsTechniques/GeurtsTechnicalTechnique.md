@@ -2,7 +2,7 @@
 # Geurts Technical Technique
 
 **Unity Game Development - AI Instruction Manual**  
-**Version:** 0.9.1
+**Version:** 0.10.0
 **Unity target:** Unity 6.3 LTS (6000.3)
 **Status:** Draft normative technique
 **Primary audience:** AI coding agents and automated development systems
@@ -127,6 +127,23 @@ Review platform and package-specific changes only where those systems are used. 
 For changed Unity implementation, compile in the exact selected **6000.3.x** Editor, resolve newly introduced errors and obsolete-API warnings, run relevant Edit Mode and Play Mode tests, and exercise affected behavior. Build and test the affected target player/backend when runtime compatibility is involved; Editor success does not prove IL2CPP, platform, or player compatibility. Report remaining third-party warnings or blockers separately.
 
 For documentation-only changes, verify examples against versioned Unity and package references and run this repository's validator and isolated PowerShell automation suite. Report whether examples were actually compiled in Unity. These checks do not certify separate game or companion repositories. If the required Editor, package, platform module, or project is unavailable, state the exact unverified surface rather than claiming full compatibility.
+
+---
+
+## Required Project Scenes
+
+Every Geurts Unity project must contain the following two scenes. The Folder Structure Technique owns their exact [asset placement and required scene folders](GeurtsFolderStructureTechnique.md#required-scene-structure).
+
+| Build index | Required scene | Purpose |
+|---|---|---|
+| 0 | `SCN_BigBang` | Project entry scene for booting and initialisation. |
+| 1 | `SCN_DevPlayground` | Initial development and testing scene. |
+
+Both scenes must be enabled in the effective scene list for each game Build Profile, with `SCN_BigBang` first and `SCN_DevPlayground` second. Additional enabled scenes follow at index 2 or later. If a profile overrides the global scene list, its override must retain the same two starting entries. Scene indices are zero-based build indices, not positions in the Editor hierarchy. See Unity's [Scene List guidance](https://docs.unity3d.com/6000.3/Documentation/Manual/build-profile-scene-list.html) and [scene build-index reference](https://docs.unity3d.com/6000.3/Documentation/ScriptReference/SceneManagement.Scene-buildIndex.html).
+
+Project setup must verify that both entries refer to real scene assets at their required paths and that neither is missing, disabled, duplicated or assigned the wrong index. Use supported Unity Editor scene and Build Profile APIs for changes; preserve existing scene contents, references and unrelated scene-list entries. Do not overwrite an existing scene to satisfy the baseline. The folder-creation script alone does not establish scene compliance.
+
+This baseline defines scene identity, purpose and build order. Scene contents and runtime transitions follow the project's separately selected design requirements.
 
 ---
 

@@ -9,7 +9,7 @@ God 0.3.2, the minimal Diagnostics test consumer 0.2.0 and Documentation Compani
 
 Brick Manager distinguishes **Planned**, **Available** and **Installed** independently of update status. `released: false` marks a planned catalogue entry; `released: true` marks a published release. Installed is determined from the actual Unity project. Planned entries carry no installation actions or update checks. Their package identifiers reserve catalogue identities; release versions, sources and verified compatibility are selected when the packages are implemented and published.
 
-**Version:** 0.13.2
+**Version:** 0.14.0
 **Unity target:** Unity 6.3 LTS (6000.3)
 **Status:** Draft technique package
 **Primary audience:** Human developers
@@ -32,7 +32,7 @@ New and modified Unity code and examples target **Unity 6.3 LTS (6000.3)**. The 
 
 Within its declared implementation scope, the Technical Technique requires licensed, Unity 6.3-compatible Odin Inspector and Quantum Console dependencies and requires meaningful use of their authoring, validation, inspection, command, logging, and diagnostics capabilities. Missing dependencies are implementation blockers. The manifest-selected Brick Contract extends that requirement to the independent Documentation Companion; this documentation source repository contains no commercial tool assets.
 
-This repository contains documentation, C# fragments, and host-side PowerShell utilities. It contains no Unity project or companion implementation. Its checks validate the documentation package and tools; actual Unity compilation and player compatibility must be verified in the consuming project. The package remains the v0.13.2 draft; the Technical Technique advances independently to v0.9.1.
+This repository contains documentation, C# fragments, and host-side PowerShell utilities. It contains no Unity project or companion implementation. Its checks validate the documentation package and tools; actual Unity compilation and player compatibility must be verified in the consuming project. The package remains the v0.14.0 draft; the Technical Technique advances independently to v0.10.0.
 
 ## Source and Ownership Boundary
 
@@ -159,6 +159,13 @@ PowerShell 7 may replace `powershell` with `pwsh`. The validator checks package,
 Update the companion package to 0.7.0 before updating documentation to 0.13.1 (contract schema 2.0.0). In Geurts Documentation, select **Install Codex guide**, choose a location and confirm the displayed entry point. The installer creates AGENTS.md for automatic Codex discovery. The template exists only in GeurtsAgentTechnique.md. Normal documentation updates no longer manage a root Codex guide; replace an old guide by selecting its location in the new installer.
 
 ## Changelog
+
+### v0.14.0
+
+- Requires all five scene folders: Boot, Frontend, Gameplay, Test and Sandbox, including in minimal projects.
+- Requires SCN_BigBang.unity in Assets/_Project/Scenes/Boot for booting at build index 0, followed by SCN_DevPlayground.unity in Assets/_Project/Scenes/Test for initial testing at build index 1. Both must be enabled in each game Build Profile's effective scene list.
+- Keeps the existing folder tool limited to creating folders; Unity scene creation and build-list configuration remain separate project-setup work that preserves existing content.
+- Advances the Folder Structure Technique to 0.12.0, its definition to 0.11.0 and the Technical Technique to 0.10.0. Synchronizes package metadata and definition consumers without changing schema versions or published brick releases.
 
 ### v0.13.2
 

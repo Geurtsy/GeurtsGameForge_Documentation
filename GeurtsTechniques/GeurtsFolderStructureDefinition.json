@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0.0",
-  "definitionVersion": "0.10.0",
-  "packageVersion": "0.13.2",
+  "definitionVersion": "0.11.0",
+  "packageVersion": "0.14.0",
   "canonicalPath": "GeurtsTechniques/GeurtsFolderStructureDefinition.json",
   "pathBase": "<ProjectRoot>",
   "pathSeparator": "/",
@@ -372,7 +372,7 @@
     },
     {
       "path": "Assets/_Project/Scenes/Boot",
-      "requirement": "optional",
+      "requirement": "required",
       "purpose": "Initialization and bootstrap scenes.",
       "contentCategory": "unity-project",
       "parent": "Assets/_Project/Scenes",
@@ -380,7 +380,7 @@
     },
     {
       "path": "Assets/_Project/Scenes/Frontend",
-      "requirement": "optional",
+      "requirement": "required",
       "purpose": "Menus, shell, and meta-system scenes.",
       "contentCategory": "unity-project",
       "parent": "Assets/_Project/Scenes",
@@ -388,7 +388,7 @@
     },
     {
       "path": "Assets/_Project/Scenes/Gameplay",
-      "requirement": "optional",
+      "requirement": "required",
       "purpose": "Shipping gameplay scenes.",
       "contentCategory": "unity-project",
       "parent": "Assets/_Project/Scenes",
@@ -396,7 +396,7 @@
     },
     {
       "path": "Assets/_Project/Scenes/Test",
-      "requirement": "optional",
+      "requirement": "required",
       "purpose": "Feature validation scenes.",
       "contentCategory": "unity-project",
       "parent": "Assets/_Project/Scenes",
@@ -404,7 +404,7 @@
     },
     {
       "path": "Assets/_Project/Scenes/Sandbox",
-      "requirement": "optional",
+      "requirement": "required",
       "purpose": "Experimental scenes isolated from shipping content.",
       "contentCategory": "unity-project",
       "parent": "Assets/_Project/Scenes",
