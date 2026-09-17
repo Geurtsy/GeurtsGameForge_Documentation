@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "packageVersion": "0.14.0",
-  "publishedUtc": "2026-09-17T09:50:13Z",
+  "packageVersion": "0.14.1",
+  "publishedUtc": "2026-09-17T10:42:02Z",
   "bricks": [
     {
       "id": "com.geurts.gameforge.documentation",
@@ -24,13 +24,13 @@
     {
       "id": "com.geurts.gameforge.god",
       "name": "Geurts Game Forge God",
-      "description": "Brick Manager and shared foundation for package operations, lifecycle, settings and optional brick cooperation.",
+      "description": "Build Forge project setup, Brick Manager, lifecycle, settings and optional brick cooperation.",
       "website": "https://github.com/Geurtsy/GeurtsGameForge",
-      "version": "0.3.2",
+      "version": "0.4.0",
       "released": true,
       "developmentOnly": false,
       "sourceKind": "git",
-      "source": "https://github.com/Geurtsy/GeurtsGameForge.git?path=/Packages/com.geurts.gameforge.god#fc2dc97830b947c87b590a2a1c5bd7d82032ab2b",
+      "source": "https://github.com/Geurtsy/GeurtsGameForge.git?path=/Packages/com.geurts.gameforge.god#6f62c43728f3482b6114c895c3f08b6e015c0e5c",
       "minimumUnity": "6000.3",
       "maximumUnity": "6000.3",
       "requiredTools": [
