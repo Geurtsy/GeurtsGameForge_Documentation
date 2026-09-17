@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "packageVersion": "0.13.2",
-  "publishedUtc": "2026-09-17T09:01:32Z",
+  "packageVersion": "0.14.0",
+  "publishedUtc": "2026-09-17T09:50:13Z",
   "bricks": [
     {
       "id": "com.geurts.gameforge.documentation",
