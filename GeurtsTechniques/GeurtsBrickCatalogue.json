@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "packageVersion": "0.16.0",
-  "publishedUtc": "2026-09-22T12:01:55Z",
+  "packageVersion": "0.16.1",
+  "publishedUtc": "2026-09-22T13:51:14Z",
   "bricks": [
     {
       "id": "com.geurts.gameforge.documentation",
@@ -49,11 +49,11 @@
       "name": "Geurts Game Forge Diagnostics",
       "description": "God-owned runtime logging, Quantum Console channels and commands, session history, health checks, read-only inspection, Windows performance metrics and Odin Editor tooling.",
       "website": "https://github.com/Geurtsy/com.geurts.gameforge.diagnostics",
-      "version": "0.3.0",
+      "version": "0.4.0",
       "released": true,
       "developmentOnly": false,
       "sourceKind": "git",
-      "source": "https://github.com/Geurtsy/com.geurts.gameforge.diagnostics.git#5adf5d22d5102f9c8c178b1f13fe54a6394e4283",
+      "source": "https://github.com/Geurtsy/com.geurts.gameforge.diagnostics.git#cfb3e9a8957c6fc8c66835e5a3d92caa010e0a83",
       "minimumUnity": "6000.3",
       "maximumUnity": "6000.3",
       "requiredTools": [
