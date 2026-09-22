@@ -3,7 +3,7 @@
 
 **Version:** 2.0.0
 **Contract schema:** 2.0.0
-**Package version:** 0.15.0
+**Package version:** 0.16.0
 **Status:** Draft normative technique
 **Primary audience:** Geurts Documentation Companion implementers and package maintainers
 **Secondary audience:** AI coding agents and human developers
