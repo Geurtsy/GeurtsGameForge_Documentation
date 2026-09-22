@@ -1,9 +1,9 @@
 <!-- GEURTS-AUDIENCE: AI-READ -->
 # Geurts Diagnostics Technique
 
-**Version:** 0.2.0
+**Version:** 0.2.1
 **Required package path:** `GeurtsTechniques/GeurtsDiagnosticsTechnique.md`
-**Implementation contract:** God 0.5.0 and Diagnostics 0.4.0 review candidate; verify release availability through the catalogue and actual installed package.
+**Implementation baseline:** God 0.5.0 and Diagnostics 0.4.2; verify release availability through the catalogue and actual installed package.
 
 The manifest selects this technique for Diagnostics integration, logging, console policy, runtime metrics, health checks, inspection and gameplay cheat-session hooks. Technical trade-offs remain owned by the Technical Technique; the Brick Contract owns general lifecycle/settings and the catalogue. This file does not authorize installing packages or replacing project design facts.
 
@@ -65,6 +65,8 @@ Sparse audience/topic/severity block indices must avoid repeatedly deserializing
 Define actual QC commands with full names and descriptions and add God's `[ForgeCommand(FORGE_AUDIENCE.PLAYER)]` or `[ForgeCommand(FORGE_AUDIENCE.DEVELOPER)]`. `Cheat = true` is an independent flag. It denotes bypass/tuning/test mutations that require an enabled gameplay cheat session; ordinary explicitly designed player actions are not automatically cheats.
 
 The classification must govern real QC help, autocomplete and execution. A manually typed Developer command in Player is denied with an instruction to switch tabs. Unclassified commands are denied until their owner supplies an explicit adapter/classification. Do not rely on hiding suggestions alone. Help must explain permitted signatures, parameters and cheat requirements.
+
+`Help` must render each command as a separate block. The command name is the only content on its first line. Put its permitted signatures, audience classification, cheat requirement and description on subsequent indented lines. Never place two command names on one line or append metadata or descriptive text to the command-name line.
 
 The current adapter uses QC preprocessors, a one-use invocation ticket and the real QC processor. This retains the original audience through parsing/permission failures and output. It emits an explicit response and does not expose the internal dispatcher as a callable user command. Direct `QuantumConsoleProcessor.InvokeCommand` is a console presentation route while Diagnostics runs; integrations needing a programmatic return value use `DiagnosticsCommandRouter.InvokeForResult` within the optional Diagnostics integration boundary.
 
