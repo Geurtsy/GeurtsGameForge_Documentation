@@ -1,7 +1,7 @@
 <!-- GEURTS-AUDIENCE: AI-READ -->
 # Geurts Game Forge Brick Contract
 
-**Version:** 1.1.0
+**Version:** 1.2.0
 **Required package path:** `GeurtsTechniques/GeurtsBrickContract.md`
 
 This document owns the shared brick contract and catalogue schema. The manifest continues to own document selection and precedence. Catalogue entries become actionable only when their real installation sources are verified; appearance in this document alone does not publish a release.
@@ -27,6 +27,8 @@ God discovers implementations once per Editor/runtime context, rejects duplicate
 
 Use `BrickContext.Provide<T>`, `TryGet<T>`, `Subscribe<T>` and `Publish<T>` for optional cooperation. Contracts belong to God; provider implementations belong to their brick. God automatically withdraws owned capabilities and subscriptions on shutdown. Integrations requiring concrete APIs from two optional packages belong in a separate integration package.
 
+Use `BrickContext.Own(IDisposable)` for scoped check, inspection, network and other registration tokens. Cleanup continues through individual disposal failures. God owns the logging/session contracts; Diagnostics is an optional provider with only God as its brick dependency. Do not add a reverse God-to-Diagnostics dependency. Follow the manifest-selected Diagnostics Technique for that service's application-history and gameplay-session lifetimes.
+
 <!-- GEURTS-SECTION:END -->
 
 Install is explicit. Update retains settings. Disable keeps the package and settings but stops all owned functionality; mandatory consumers wait until their provider resumes. Enable restarts with retained settings. Removal explains that both the package and its own saved settings are deleted and requires confirmation. Cancellation leaves both unchanged. Delete settings only after Unity confirms removal. Reinstallation receives fresh defaults. Settings owned by a removed brick must not be exported into later builds.
@@ -37,7 +39,7 @@ Migration, settings conversion, backup, rollback and recovery frameworks are exc
 
 Use God's per-brick JSON settings store. Editor data lives at `ProjectSettings/GeurtsGameForge/<package-id>.json`. Only that identity's file may be deleted by its removal operation. Bricks must not store unrelated game data in this directory. Project defaults are exported into a generated Resources asset during a build; player overrides live below `Application.persistentDataPath/GeurtsGameForge`. Editor package removal does not erase files from previously distributed player installations.
 
-God's package management and Odin dashboard belong in Editor-only assemblies. Runtime contracts, lifecycle and settings cannot reference UnityEditor. God's own Quantum Console logging and developer command work with Diagnostics absent. Developer Console setup is explicit and uses the installed commercial prefab, developer-only support, Unity-log interception, an EventSystem and Input System focus coordination. Player-facing console access remains off.
+God's package management and Odin dashboard belong in Editor-only assemblies. Runtime contracts, lifecycle and settings cannot reference UnityEditor. God's own Quantum Console logging and developer command work with Diagnostics absent. Console setup is explicit and uses the installed commercial prefab, all-build support, coordinated Unity-log capture/fallback, one persistent EventSystem and Input System focus coordination. With Diagnostics, Player and Developer tabs are freely available in release builds; neither is an authentication boundary. The separate testing override is restricted to Editor/designated internal builds and never bypasses host/server authority. The Diagnostics Technique owns detailed classification, filter and command policy.
 
 ## Catalogue schema 1
 

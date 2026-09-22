@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "packageVersion": "0.14.2",
-  "publishedUtc": "2026-09-17T11:11:44Z",
+  "packageVersion": "0.15.0",
+  "publishedUtc": "2026-09-22T12:01:55Z",
   "bricks": [
     {
       "id": "com.geurts.gameforge.documentation",
@@ -26,11 +26,11 @@
       "name": "Geurts Game Forge God",
       "description": "Build Forge project setup, Brick Manager, lifecycle, settings and optional brick cooperation.",
       "website": "https://github.com/Geurtsy/GeurtsGameForge",
-      "version": "0.4.1",
+      "version": "0.5.0",
       "released": true,
       "developmentOnly": false,
       "sourceKind": "git",
-      "source": "https://github.com/Geurtsy/GeurtsGameForge.git?path=/Packages/com.geurts.gameforge.god#8a8023bc8b04b4925d2abcde7b2fc4814733a391",
+      "source": "https://github.com/Geurtsy/GeurtsGameForge.git?path=/Packages/com.geurts.gameforge.god#9b54e5864528744302ad0a5d7ef3a9b7f91e9161",
       "minimumUnity": "6000.3",
       "maximumUnity": "6000.3",
       "requiredTools": [
@@ -47,13 +47,13 @@
     {
       "id": "com.geurts.gameforge.diagnostics",
       "name": "Geurts Game Forge Diagnostics",
-      "description": "Minimal God test consumer demonstrating startup, shutdown, a test log and retained settings. Full diagnostics remains future work.",
-      "website": "https://github.com/Geurtsy/GeurtsGameForge",
-      "version": "0.2.0",
+      "description": "God-owned runtime logging, Quantum Console channels and commands, session history, health checks, read-only inspection, Windows performance metrics and Odin Editor tooling.",
+      "website": "https://github.com/Geurtsy/com.geurts.gameforge.diagnostics",
+      "version": "0.3.0",
       "released": true,
       "developmentOnly": false,
       "sourceKind": "git",
-      "source": "https://github.com/Geurtsy/GeurtsGameForge.git?path=/Packages/com.geurts.gameforge.diagnostics#d36eb99f5c89c696d36bccb89e9eddaec64d3026",
+      "source": "https://github.com/Geurtsy/com.geurts.gameforge.diagnostics.git#5adf5d22d5102f9c8c178b1f13fe54a6394e4283",
       "minimumUnity": "6000.3",
       "maximumUnity": "6000.3",
       "requiredTools": [
@@ -63,7 +63,7 @@
       "dependencies": [
         {
           "id": "com.geurts.gameforge.god",
-          "minimumVersion": "0.1.0"
+          "minimumVersion": "0.5.0"
         }
       ]
     },

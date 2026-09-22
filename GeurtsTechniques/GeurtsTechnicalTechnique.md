@@ -2,7 +2,7 @@
 # Geurts Technical Technique
 
 **Unity Game Development - AI Instruction Manual**  
-**Version:** 0.10.0
+**Version:** 0.11.0
 **Unity target:** Unity 6.3 LTS (6000.3)
 **Status:** Draft normative technique
 **Primary audience:** AI coding agents and automated development systems
@@ -326,7 +326,7 @@ Editor buttons must support Undo and dirty/prefab recording when they change Uni
 
 ### Objective
 
-Runtime debugging and logging should be comprehensive, filterable, and accessible to developers. Player-facing console, log, command, or overlay access is disabled unless current project GDD or the current user explicitly selects it.
+Runtime debugging and logging are comprehensive and filterable. The selected Diagnostics console is reachable in all supported builds through freely switchable Player/Developer tabs. Detailed audience, command, overlay and restricted testing policy belongs to the manifest-selected Diagnostics Technique; project privacy and authoritative gameplay rules still apply.
 
 ---
 
@@ -336,37 +336,19 @@ Runtime debugging and logging should be comprehensive, filterable, and accessibl
 
 Quantum Console is the required runtime developer console within the implementation scope defined by the Unity 6.3 dependency baseline. Confirm a current stable compatible release is installed and referenced by applicable assembly definitions. Use its `QFSW.QC` APIs, `[Command]`, `[CommandDescription]`, supported-platform controls, command processor, logging integration, and console lifecycle events instead of building a parallel runtime command or console system. Follow the [official getting-started guide](https://www.qfsw.co.uk/docs/QC/articles/quickstart/quickstart.html) and [command documentation](https://www.qfsw.co.uk/docs/QC/articles/docs/commands.html).
 
-Every gameplay project must include a validated developer-console setup reachable in Play Mode and development builds. Provide the required EventSystem, use Quantum Console's SRP-compatible prefab/theme when the selected render pipeline requires it, and integrate its activate/deactivate events with the Input System so gameplay input does not continue unintentionally while the console has focus. Keep the console UI and command execution unavailable to players by default; a project GDD or explicit current-user decision is required before any player-facing access.
+Every gameplay project must include a validated developer-console setup reachable in Play Mode and development builds, and the selected full Diagnostics console remains available in release builds. Provide the required EventSystem, use Quantum Console's SRP-compatible prefab/theme when the selected render pipeline requires it, and integrate its activate/deactivate events with the Input System so gameplay input does not continue unintentionally while the console has focus. Opening the console does not pause simulation. Follow the manifest-selected Diagnostics Technique for all-build access, classification and gameplay-session guards.
 
 Expose useful Geurts-owned inspection, validation, tuning, recovery, performance, AI, and multiplayer diagnostics as Quantum Console commands when they can be invoked safely. Route all project logging through Geurts Game Forge Diagnostics whenever its logging service is available, using the central logging facade and capture integrations defined under Logging Standards. Preserve Unity Console output and integrate with Quantum Console. Avoid per-frame log spam, duplicate command surfaces, secrets, personal data, production-only internals, and state-changing commands without appropriate authorization and guards.
 
 ### Accessibility
 
-- Quantum Console must be available to developers at runtime in Play Mode and development builds.
-- Player access is off by default and requires explicit project GDD or current-user selection.
+- Quantum Console must be available at runtime in all supported builds, including release.
+- Player and Developer tabs are freely switchable and are not an authentication boundary.
+- The separate testing override is limited to Editor/designated internal builds and never bypasses host/server authority.
 
 ### Modes
 
-#### Developer Mode
-
-Default filters show all categories:
-
-- AI
-- Performance
-- Multiplayer
-- Errors
-- Warnings
-- Info
-
-#### Player Mode, When Explicitly Selected
-
-Default filters show essential categories:
-
-- Performance
-- Errors
-- Bug Reports
-
-When a player-facing console is explicitly selected, its permitted filters and active-filter indicator must follow project GDD and privacy requirements.
+The Diagnostics Technique owns Player/Developer classification and independent topic/severity filters. Player includes only explicitly Player-classified records and commands; Developer includes both. First-launch defaults select Player, no topics, Info override off and Warning/Error overrides on. Command responses remain visible when log display is paused or topics are unselected. These tabs do not select God's package-development mode or the restricted testing override. Never place secrets or personal data in either tab merely because filtering exists.
 
 ---
 
@@ -436,25 +418,13 @@ AI.GetState
 AI.SetState
 ```
 
-### Sensitive Commands
+### Command Classification
 
-Commands that expose private data must be flagged as `Sensitive`.
-
-Do not expose any command to players by default. When player command access is explicitly selected, project policy decides which non-sensitive commands are visible; sensitive commands remain developer-only.
-
-Sensitive commands appear in help listings only in Developer Mode.
-
-`Sensitive` and `Cheat` are Geurts policy classifications, not assumed Quantum Console attributes. Record them in the project's command wrapper or registry and include the classification in the command description/help output. Enforce access in code before executing the command.
-
-Example:
-
-```text
-AI.SetState (Sensitive)
-```
+Use God's `[ForgeCommand]` to explicitly classify Player or Developer commands and the independent `Cheat` flag alongside the real QC declaration. The Diagnostics Technique owns enforcement in help, suggestions and actual execution, including direct typing and nested expression rejection. Do not expose private data through a freely switchable Developer tab. Unclassified vendor commands need an explicit supported adapter; display filtering alone does not authorize execution.
 
 ### Cheat Commands
 
-Commands that alter the game state must be flagged as `Cheat`.
+Commands that bypass rules or tune/test gameplay state must be flagged as `Cheat` and recheck gameplay-session and host/server permission immediately before mutation. Ordinary designed player actions are not automatically cheats. The game owns session boundaries, zone transitions and saved cheat provenance; the Diagnostics Technique owns their shared integration contract.
 
 ---
 
@@ -464,13 +434,13 @@ Commands that alter the game state must be flagged as `Cheat`.
 
 Code under project control must emit through the central logging facade backed by Diagnostics. Existing logging systems must feed that same route. For Unity, third-party, vendor or generated sources that do not call the facade, integrate their logger or capture their output through supported callbacks or adapters and forward it into Diagnostics. That capture is required whenever the source and Diagnostics are available, not an optional exemption for external code. Do not require edits to vendor or generated source when a supported integration can perform the routing. If a source cannot be captured, report the specific integration gap; do not claim that project-wide routing is complete.
 
-Available means the Diagnostics brick is installed, enabled, running and exposes a compatible logging service. A catalogue entry or installed package alone is insufficient. The minimal Diagnostics 0.2.0 test consumer does not provide that service; this rule specifies required integration behaviour, not an existing API or a completed implementation.
+Available means the Diagnostics brick is installed, enabled, running and exposes a compatible logging service. A catalogue entry or installed package alone is insufficient. God 0.5.0 supplies the shared `ForgeLog` facade and capture-only `IForgeLogCapture` contract; Diagnostics 0.3.0 implements it. These are review candidates until their actual release status is verified. The historical minimal Diagnostics 0.2.0 consumer is not that service.
 
 When Diagnostics is absent, disabled, stopped, not yet initialized or lacks a compatible logging service, the same facade must fall back to Unity logging so messages remain visible. Resume routing through Diagnostics when its service becomes available. Follow the Brick Contract's optional-capability boundary; do not introduce a mandatory dependency from God to Diagnostics or a circular package dependency.
 
 Preserve message severity, exception details and Unity object context where supplied. Diagnostics must preserve Unity Console output and integrate with Quantum Console through one coordinated output path, respecting configured categories, severity filters and storage limits. Use thread-safe logging APIs consistently. Direct Unity logging is permitted inside the final output sink and unavailable-service fallback; capture of externally emitted Unity logs must not emit those messages to Unity a second time. Prevent recursive forwarding and duplicate messages when Quantum Console or Diagnostics captures Unity logs, including Diagnostics' own output. Project-controlled callers must not bypass available Diagnostics or independently write the same message to multiple sinks.
 
-Apply this rule to the entire project's existing and future logging integration. Logging before the service is available, including during compilation or startup, follows the unavailable-service fallback above. Runtime logging must retain the existing player-access restrictions.
+Apply this rule to the entire project's existing and future logging integration. Logging before the service is available, including during compilation or startup, follows the unavailable-service fallback above. Runtime logging must retain explicit audience classification and privacy boundaries.
 
 Severity colours:
 
@@ -495,38 +465,22 @@ Logs should use clear categories such as:
 
 ### Objective
 
-Provide a runtime performance overlay only when current project GDD or the current user explicitly selects one. It is off by default for players.
+Provide the selected Diagnostics runtime performance overlay inside the existing console canvas, with independent persisted toggles. All six metrics start off until selected.
 
 ### Requirements
 
-When monitoring is selected and supported, track the relevant available metrics:
-
-- FPS
-- RAM usage
-- Network ping
-- Packet loss
-- Upload rate
-- Download rate
-
-Each setting should have a display toggle.
-
-The overlay must be disabled for players by default. If explicitly selected, expose it through the project-selected runtime console or equivalent control.
+The initial six metrics are FPS, game process RAM, PC physical RAM used/total, actual Windows GPU utilization, actual dedicated/shared graphics memory usage, and current registered server ping (0 ms disconnected). The Diagnostics Technique defines their exact meaning, Windows-native sampling, truthful unavailable labels and validation. Frame-time and error-count overlays are excluded; do not substitute estimates for actual GPU data or fabricate network measurements.
 
 ### Overlay Design
 
 - Minimalistic.
 - Semi-transparent background.
-- Position options:
-  - TopLeft
-  - TopRight
-  - BottomLeft
-  - BottomRight
+- Readable without covering command input or runtime controls.
 
 ### Example Quantum Console Commands
 
 ```text
-Performance.ToggleStats
-Performance.SetPosition [TopLeft|TopRight|BottomLeft|BottomRight]
+GeurtsGameForge.Diagnostics.Overlay FramesPerSecond true
 ```
 
 ---
