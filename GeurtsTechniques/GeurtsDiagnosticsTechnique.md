@@ -1,9 +1,9 @@
 <!-- GEURTS-AUDIENCE: AI-READ -->
 # Geurts Diagnostics Technique
 
-**Version:** 0.1.0
+**Version:** 0.2.0
 **Required package path:** `GeurtsTechniques/GeurtsDiagnosticsTechnique.md`
-**Implementation contract:** God 0.5.0 and Diagnostics 0.3.0 review candidates; verify release availability through the catalogue and actual installed package.
+**Implementation contract:** God 0.5.0 and Diagnostics 0.4.0 review candidate; verify release availability through the catalogue and actual installed package.
 
 The manifest selects this technique for Diagnostics integration, logging, console policy, runtime metrics, health checks, inspection and gameplay cheat-session hooks. Technical trade-offs remain owned by the Technical Technique; the Brick Contract owns general lifecycle/settings and the catalogue. This file does not authorize installing packages or replacing project design facts.
 
@@ -106,6 +106,8 @@ Expose exactly these initial toggles, independently and persistently, in runtime
 | Ping | Current registered server's measured latency; **0 ms when disconnected**. |
 
 Do not add frame-time or error-count overlays. Sample native Windows metrics away from Unity's main thread, bound shutdown waiting, keep independent healthy metrics available when another counter fails, and label unavailable/stale data truthfully. Never substitute made-up utilization or a simulated ping for a missing provider. The sample network provider used by tests is evidence of adapter behavior, not a real network connection.
+
+The performance overlay automatically fits its current enabled metric content and refits when that content or its canvas dimensions change. It exposes a visible drag strip for runtime positioning and a resize grip for manual sizing. Beginning a manual resize disables automatic sizing; manual size and top-right-relative position persist through the shared brick settings. Clamp both dimensions and position so the controls remain reachable inside the current canvas. Runtime controls and Odin preferences expose the auto-fit setting, and runtime controls provide one reset action that restores automatic sizing and the default top-right position.
 
 ## Validation and migration
 
