@@ -5,9 +5,9 @@
 
 Adds the manifest-selected [brick contract](GeurtsTechniques/GeurtsBrickContract.md) and [machine-readable catalogue](GeurtsTechniques/GeurtsBrickCatalogue.json). AI-assisted Unity development must use a suitable available Geurts brick before recreating its functionality. God owns package management, lifecycle, shared contracts and settings. The current user's mandatory Odin Inspector and Quantum Console requirement supersedes older Unity companion tool exemptions. Documentation-interface implementation remains in its separately maintained repository.
 
-God 0.4.1, the minimal Diagnostics test consumer 0.2.0 and Documentation Companion 0.7.0 are available from their merged Git sources. The catalogue pins those exact verified revisions. Six roadmap bricks are listed as **Planned**: Settings System; Scene Loading and Bootstrap; Save and Load; Audio; User Interface Foundations; Object Pooling. These entries have no release version or installation source and do not represent published packages.
+God 0.5.0, the complete standalone Diagnostics 0.3.0 and Documentation Companion 0.7.0 are available from their merged Git sources. The catalogue pins those exact verified revisions. Six roadmap bricks are listed as **Planned**: Settings System; Scene Loading and Bootstrap; Save and Load; Audio; User Interface Foundations; Object Pooling. These entries have no release version or installation source and do not represent published packages.
 
-God 0.5.0 and the complete standalone Diagnostics 0.3.0 are review candidates governed by the new [Diagnostics Technique](GeurtsTechniques/GeurtsDiagnosticsTechnique.md). Their draft PRs are not catalogue release actions. Update immutable release pins only after the corresponding package versions are approved and published.
+God 0.5.0 and standalone Diagnostics 0.3.0 are governed by the new [Diagnostics Technique](GeurtsTechniques/GeurtsDiagnosticsTechnique.md). Diagnostics requires God 0.5.0; install or update God before Diagnostics. Catalogue publication follows approval and merge of the exact implementation revisions, never an unmerged draft.
 
 Brick Manager distinguishes **Planned**, **Available** and **Installed** independently of update status. `released: false` marks a planned catalogue entry; `released: true` marks a published release. Installed is determined from the actual Unity project. Planned entries carry no installation actions or update checks. Their package identifiers reserve catalogue identities; release versions, sources and verified compatibility are selected when the packages are implemented and published.
 
@@ -162,11 +162,11 @@ Update the companion package to 0.7.0 before updating documentation to 0.13.1 (c
 
 ## Changelog
 
-### v0.15.0 — Diagnostics integration (review candidate)
+### v0.15.0 — Diagnostics integration
 
 - Adds Diagnostics Technique 0.1.0 and registers its logging, full all-build QC console, history, health/inspection, sticky gameplay cheat sessions and six Windows metrics contract.
 - Advances Technical to 0.11.0 and Brick Contract to 1.2.0; replaces earlier console-access assumptions with explicit Player/Developer classification and a separately restricted testing override.
-- Documents God 0.5.0 and standalone Diagnostics 0.3.0 review candidates. Existing merged catalogue releases remain installable; draft PRs do not become release install actions.
+- Publishes immutable catalogue sources for God 0.5.0 and standalone Diagnostics 0.3.0 after their approved merges, including the God 0.5.0 minimum dependency and the standalone Diagnostics repository.
 - Synchronizes package metadata and validates the host/server testing boundary. Companion schema, managed routes, folder definition and historical releases are unchanged.
 
 ### v0.14.2
