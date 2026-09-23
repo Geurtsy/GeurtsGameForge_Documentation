@@ -111,8 +111,8 @@ Every path between the markers is part of the v0.19.0 repository package and mus
 | `GeurtsTechniques/GeurtsTechnicalTechnique.md` | 0.12.0 | Normative technical implementation, Unity 6.3 LTS and required Odin Inspector/Quantum Console baseline, strict-priority owner, and mandatory Editor theme integration. |
 | `GeurtsTechniques/GeurtsBrickContract.md` | 1.4.0 | Shared brick reuse, mandatory Editor theme adoption, God-first optional Documentation installation, lifecycle, settings, catalogue and package-operation contract. |
 | `GeurtsTechniques/GeurtsEditorUIThemeTechnique.md` | 1.0.0 | Mandatory dark sci-fi and green-accent Editor presentation, shared theme implementation, accessibility, truthful status and visual review for all existing and future bricks. |
-| `GeurtsTechniques/GeurtsDiagnosticsTechnique.md` | 0.2.1 | Normative optional Diagnostics integration, all-build console classification and Help presentation, history, health/inspection, cheat sessions and adjustable actual Windows metrics overlay. |
-| `GeurtsTechniques/GeurtsBrickCatalogue.json` | 0.19.0 | Authoritative data-only catalogue; unpublished versions have no release install actions. |
+| `GeurtsTechniques/GeurtsDiagnosticsTechnique.md` | 0.2.2 | Normative optional Diagnostics integration, all-build console classification and Help presentation, history, health/inspection, cheat sessions and adjustable actual Windows metrics overlay. |
+| `GeurtsTechniques/GeurtsBrickCatalogue.json` | 0.19.0 | Authoritative data-only catalogue with verified God 0.9.1, Documentation Companion 0.9.1 and Diagnostics 0.5.0 immutable release sources; planned bricks have no install actions. |
 | `GeurtsTechniques/GeurtsGameForgeAutomationTechnique.md` | 0.9.0 | Normative generic AI-assisted automation technique. |
 | `GeurtsTechniques/GeurtsFolderStructureTechnique.md` | 0.13.1 | Normative explanatory folder authority, including narrow explicit GDD-import placement, companion-managed placement and strict non-managed boundaries. |
 | `GeurtsTechniques/GeurtsFolderStructureDefinition.json` | 0.19.0 | Machine-readable folder-creation authority; definition v0.11.0. |
