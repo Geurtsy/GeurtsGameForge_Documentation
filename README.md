@@ -3,15 +3,15 @@
 
 ## Geurts Game Forge God brick contract
 
-Adds the manifest-selected [brick contract](GeurtsTechniques/GeurtsBrickContract.md) and [machine-readable catalogue](GeurtsTechniques/GeurtsBrickCatalogue.json). AI-assisted Unity development must use a suitable available Geurts brick before recreating its functionality. God owns package management, lifecycle, shared contracts and settings. The current user's mandatory Odin Inspector and Quantum Console requirement supersedes older Unity companion tool exemptions. Documentation-interface implementation remains in its separately maintained repository.
+Adds the manifest-selected [brick contract](GeurtsTechniques/GeurtsBrickContract.md) and [machine-readable catalogue](GeurtsTechniques/GeurtsBrickCatalogue.json). AI-assisted Unity development must use a suitable available Geurts brick before recreating its functionality. God owns package management, lifecycle, shared contracts and settings. God and dependent bricks require licensed Odin Inspector and Quantum Console; the optional Documentation Companion remains independent and has no package dependencies. Documentation-interface implementation remains in its separately maintained repository.
 
-God is maintained in its own [com.geurts.gameforge.god repository](https://github.com/Geurtsy/com.geurts.gameforge.god). God 0.8.0 is an unreleased update that removes the Documentation prerequisite and names its package-management interface **Game Forge God**. Its catalogue entry has no installation source until the release is verified. Documentation Companion 0.9.0 is the unreleased update that adds the public Editor API for the optional integration. The catalogue retains the verified Diagnostics 0.4.2 and Documentation Companion 0.8.1 release pins; the earlier companion remains separately usable. Six roadmap bricks are listed as **Planned**: Settings System; Scene Loading and Bootstrap; Save and Load; Audio; User Interface Foundations; Object Pooling. These entries have no release version or installation source and do not represent published packages.
+God is maintained in its own [com.geurts.gameforge.god repository](https://github.com/Geurtsy/com.geurts.gameforge.god). God 0.9.0 is an unreleased update that adds the shared Editor theme to the God-first installation, optional Documentation integration and **Game Forge God** interface. Its catalogue entry has no installation source until the release is verified. Documentation Companion 0.9.1 and Diagnostics 0.5.0 are the matching unreleased theme updates; Diagnostics 0.5.0 requires God 0.9.0. The catalogue retains the verified Diagnostics 0.4.2 and Documentation Companion 0.8.1 release pins until their new releases are verified. Six roadmap bricks are listed as **Planned**: Settings System; Scene Loading and Bootstrap; Save and Load; Audio; User Interface Foundations; Object Pooling. These entries have no release version or installation source and do not represent published packages.
 
 God 0.5.0 and standalone Diagnostics are governed by the [Diagnostics Technique](GeurtsTechniques/GeurtsDiagnosticsTechnique.md). Diagnostics 0.4.2 provides the resizable performance overlay with a font-safe ASCII resize grip and formats Help so every command name has its own line with indented details. Diagnostics requires God 0.5.0; install or update God before Diagnostics.
 
 Game Forge God distinguishes **Planned**, **Available** and **Installed** independently of update status. `released: false` marks an unreleased catalogue entry; `released: true` marks a published release. Installed is determined from the actual Unity project. Unreleased entries carry no installation actions or update checks. Their package identifiers reserve catalogue identities; release versions, sources and verified compatibility are selected when the packages are implemented and published.
 
-**Version:** 0.18.0
+**Version:** 0.19.0
 **Unity target:** Unity 6.3 LTS (6000.3)
 **Status:** Draft technique package
 **Primary audience:** Human developers
@@ -42,9 +42,15 @@ The manifest is the single resolver for package-file selection, versions, subjec
 
 New and modified Unity code and examples target **Unity 6.3 LTS (6000.3)**. The manifest-selected [Technical Technique](GeurtsTechniques/GeurtsTechnicalTechnique.md#unity-63-lts-compatibility-baseline) owns Editor patch selection, compatible stable dependencies, C#/.NET limits, current APIs, migration checks, and validation requirements. Follow that baseline when updating consuming projects; newer Unity release lines do not silently change this target.
 
-Within its declared implementation scope, the Technical Technique requires licensed, Unity 6.3-compatible Odin Inspector and Quantum Console dependencies and requires meaningful use of their authoring, validation, inspection, command, logging, and diagnostics capabilities. Missing dependencies are implementation blockers. The manifest-selected Brick Contract extends that requirement to the independent Documentation Companion; this documentation source repository contains no commercial tool assets.
+Within its declared implementation scope, the Technical Technique requires licensed, Unity 6.3-compatible Odin Inspector and Quantum Console dependencies and requires meaningful use of their authoring, validation, inspection, command, logging, and diagnostics capabilities. Missing dependencies are implementation blockers. The independent Documentation Companion retains its zero-dependency contract; this documentation source repository contains no commercial tool assets.
 
-This repository contains documentation, C# fragments, and host-side PowerShell utilities. It contains no Unity project or companion implementation. Its checks validate the documentation package and tools; actual Unity compilation and player compatibility must be verified in the consuming project. The package remains the v0.18.0 draft; the Technical Technique remains v0.11.0.
+This repository contains documentation, C# fragments, and host-side PowerShell utilities. It contains no Unity project or companion implementation. Its checks validate the documentation package and tools; actual Unity compilation and player compatibility must be verified in the consuming project. The package remains the v0.19.0 draft; the Technical Technique is v0.12.0.
+
+## Mandatory Forge Editor theme
+
+The [Editor UI Theme Technique](GeurtsTechniques/GeurtsEditorUIThemeTechnique.md) makes the dark sci-fi theme with green accents mandatory for every existing and future Forge brick's Editor UI. It covers Game Forge God, Build Forge, Diagnostics, Documentation, settings and custom inspector presentation. Shared surfaces, typography, spacing, focus states and readable status messages keep the interface consistent; warnings stay yellow, errors and Developer Mode warnings stay red, and disabled actions explain the reason and next step.
+
+God owns the shared `ForgeEditorTheme` API and USS. Dependent bricks reuse them; the independent Documentation Companion uses a generated copy checked for parity without depending on God. New custom Editor UI retains the UI Toolkit standard and existing Odin configuration remains supported. Runtime and project-authored game UI are outside this Editor-only theme. Source validators check the documented standard and its routes; actual visual review and behavior checks remain required before publication.
 
 ## Source and Ownership Boundary
 
@@ -113,6 +119,7 @@ The manifest-selected `GeurtsTechniques/GeurtsDocumentationCompanionTechnique.md
 - `AI_READ_FIRST.md` - first-entry local-copy and session boundary; routes to the manifest.
 - `GeurtsTechniqueManifest.md` - package registry and sole resolver.
 - `GeurtsTechniques/GeurtsTechnicalTechnique.md` - technical implementation and the package's sole technical-priority owner.
+- `GeurtsTechniques/GeurtsEditorUIThemeTechnique.md` - mandatory dark sci-fi and green-accent presentation for every existing and future Forge Editor UI, shared implementation and visual conformance.
 - `GeurtsTechniques/GeurtsGameForgeAutomationTechnique.md` - generic AI-assisted automation behaviour.
 - `GeurtsTechniques/GeurtsFolderStructureTechnique.md` and `GeurtsTechniques/GeurtsFolderStructureDefinition.json` - folder meaning and exact creation registry.
 - `GeurtsTechniques/GeurtsAIAgentSetupTechnique.md` - exact companion AI routes and whole-file replacement exception, plus separate preservation-based manual tooling.
@@ -171,6 +178,14 @@ PowerShell 7 may replace `powershell` with `pwsh`. The validator checks package,
 Update the companion package to 0.7.0 before updating documentation to 0.13.1 (contract schema 2.0.0). In Geurts Documentation, select **Install Codex guide**, choose a location and confirm the displayed entry point. The installer creates AGENTS.md for automatic Codex discovery. The template exists only in GeurtsAgentTechnique.md. Normal documentation updates no longer manage a root Codex guide; replace an old guide by selecting its location in the new installer.
 
 ## Changelog
+
+### v0.19.0 — Make the Forge Editor theme mandatory
+
+- Adds Editor UI Theme Technique 1.0.0 and selects it through the manifest for all existing and future Forge brick and Editor-tool presentation.
+- Advances Technical to 0.12.0 and Brick Contract to 1.4.0, requiring shared God theme reuse, readable interactive states, actionable disabled explanations, semantic severity and truthful progress. Preserves Odin configuration, UI Toolkit for new custom UI and the red Developer Mode warning.
+- Requires a generated, parity-checked theme copy for the independent Documentation Companion, preserving its zero-dependency and closed content-update contracts. Corrects stale dependency prose; runtime/player and game-authored UI remain outside the Editor theme.
+- Adds source routing/palette/shared-implementation validation and regression fixtures that reject missing or weakened theme guidance. Adds the theme to the companion's source-completeness entries without changing schema 2.0.0 or any managed target.
+- Layers on the 0.18.0 God-first installation, optional Documentation integration, interface rename and furnace animation. New package sources remain unpublished until their actual release commits are verified.
 
 ### v0.18.0 — Install God first and manage Documentation through Game Forge God
 

@@ -1,7 +1,7 @@
 <!-- GEURTS-AUDIENCE: AI-READ -->
 # Geurts Game Forge Brick Contract
 
-**Version:** 1.3.0
+**Version:** 1.4.0
 **Required package path:** `GeurtsTechniques/GeurtsBrickContract.md`
 
 This document owns the shared brick contract and catalogue schema. The manifest continues to own document selection and precedence. Catalogue entries become actionable only when their real installation sources are verified; appearance in this document alone does not publish a release.
@@ -14,7 +14,7 @@ Before implementing game or software functionality in a Geurts Unity project, in
 
 - Full display names start with **Geurts Game Forge**. The foundation is **Geurts Game Forge God**, package `com.geurts.gameforge.god`.
 - God installs and opens without `com.geurts.gameforge.documentation`; Documentation is an optional companion, not a required package or assembly dependency. Other bricks directly declare God. The documentation companion stays independent of God to avoid a dependency cycle.
-- The current user requirement for all Geurts Unity packages is Odin Inspector and Quantum Console. These commercially distributed assets must be imported separately through their licensed distribution. Do not invent registry package identifiers, bundle their assets, or represent them as optional compile dependencies. Reference actual assemblies (`QFSW.QC` and installed Sirenix assemblies) and document setup. This supersedes older optional-tool and zero-tool assumptions for the Unity companion; it does not add these dependencies to this documentation-only repository or its PowerShell tools.
+- Odin Inspector and Quantum Console are required for God and its dependent Unity bricks. These commercially distributed assets must be imported separately through their licensed distribution. Do not invent registry package identifiers, bundle their assets, or represent them as optional compile dependencies. Reference actual assemblies (`QFSW.QC` and installed Sirenix assemblies) and document setup. The independent Documentation Companion retains its zero-dependency contract; this documentation-only repository and its PowerShell tools are also excluded.
 - Unity package manifests use semantic versions for required package dependencies. Git URLs belong in the consuming project's manifest. Install God first from its real Git source, then install the optional Documentation package through Game Forge God's catalogue interface when needed. Never place a Git URL into `package.json.dependencies`.
 - God has no Disable action. Removal uses Unity's dependency graph: remove dependent bricks first. God does not recursively delete shared dependencies or embedded source folders.
 
@@ -55,6 +55,8 @@ God loads cached data immediately, combines it with Unity's installed package st
 ## Operations and visibility
 
 The user-facing package-management window and menu are named **Game Forge God**. This replaces the former Brick Manager name without changing package identities, stored settings, assembly names or asset GUIDs.
+
+All existing and future brick Editor UI must follow the manifest-selected [Editor UI Theme Technique](GeurtsEditorUIThemeTechnique.md), including Game Forge God, Build Forge, Diagnostics, Documentation, settings and custom inspector presentation. The mandatory dark sci-fi palette, green accents, shared `ForgeEditorTheme` implementation, visible disabled explanations, semantic severity and visual review apply from a new brick's first Editor screen. The independent companion uses a generated, parity-checked theme copy and remains free of a God dependency. The theme does not change runtime/player UI, lifecycle, permission or settings contracts.
 
 Each card shows identity, description, website, installed/available and lifecycle status, installed/available versions, dependencies, source and compatibility information. Show appropriate Install, Check for Updates, Update, Enable/Disable, Remove, Open Website and Retry actions. Shared actions include Refresh Catalogue, Install All, Check All for Updates and confirmed Update All, including God.
 

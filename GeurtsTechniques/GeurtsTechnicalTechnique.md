@@ -2,7 +2,7 @@
 # Geurts Technical Technique
 
 **Unity Game Development - AI Instruction Manual**  
-**Version:** 0.11.0
+**Version:** 0.12.0
 **Unity target:** Unity 6.3 LTS (6000.3)
 **Status:** Draft normative technique
 **Primary audience:** AI coding agents and automated development systems
@@ -257,6 +257,8 @@ public enum AI_STATE
 ### UI
 
 Use UI Toolkit for new Geurts UI work. Inspect the existing UI before changing it, and never silently replace or overwrite working user content. When a project already uses another UI system, follow explicit user/project requirements for a scoped integration or migration; do not perform a destructive automatic conversion.
+
+All existing and future Forge-owned Editor UI must comply with the manifest-selected [Editor UI Theme Technique](GeurtsEditorUIThemeTechnique.md). Reuse God's shared `ForgeEditorTheme` API and `ForgeEditorTheme.uss` for dark sci-fi surfaces and green accents; the independent Documentation Companion uses the technique's generated, parity-checked copy without acquiring a God dependency. Preserve meaningful Odin configuration and use UI Toolkit for new custom Editor UI. This Editor-only standard does not change runtime or player-facing game UI.
 
 For new custom UXML controls, use `[UxmlElement]` on a partial class and `[UxmlAttribute]` for exposed attributes, following the [Unity 6.3 UxmlElement reference](https://docs.unity3d.com/6000.3/Documentation/ScriptReference/UIElements.UxmlElementAttribute.html). Avoid new `UxmlFactory`/`UxmlTraits` implementations. Use supported UXML/USS and verify data binding and lifecycle cleanup in the actual runtime or Editor context.
 
@@ -521,6 +523,7 @@ A generated or modified Unity C# script is complete only when it:
 - Avoids unnecessary per-frame allocations.
 - Avoids expensive logic inside `Update()` unless justified.
 - Uses Odin Inspector meaningfully for applicable serialized configuration, validation, diagnostics, and safe Editor actions, with its installed compatible version recorded.
+- Makes every affected Forge-owned Editor surface conform to the manifest-selected Editor UI Theme Technique, with shared implementation reuse, readable states and the required visual evidence.
 - Integrates project-wide Diagnostics output and applicable developer operations with Quantum Console, with its installed compatible version and developer-console validation recorded.
 - Routes all project logging through Diagnostics whenever its logging service is available, including captured Unity and third-party output, and verifies unavailable-service fallback without duplicate messages or recursive forwarding. Reports any source that cannot be captured as an integration gap.
 - Preserves multiplayer network efficiency where relevant.
