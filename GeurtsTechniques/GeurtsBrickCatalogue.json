@@ -1,18 +1,18 @@
 {
   "schemaVersion": 1,
-  "packageVersion": "0.16.4",
-  "publishedUtc": "2026-09-23T06:46:57Z",
+  "packageVersion": "0.16.5",
+  "publishedUtc": "2026-09-23T07:14:18Z",
   "bricks": [
     {
       "id": "com.geurts.gameforge.documentation",
       "name": "Geurts Game Forge Documentation",
       "description": "Documentation dashboard and explicit updates of the authoritative AI development guidance.",
       "website": "https://github.com/Geurtsy/com.geurts.gameforge.documentation",
-      "version": "0.8.0",
+      "version": "0.8.1",
       "released": true,
       "developmentOnly": false,
       "sourceKind": "git",
-      "source": "https://github.com/Geurtsy/com.geurts.gameforge.documentation.git#23337e36549e73044a7260af4cca8dd0c349f2fe",
+      "source": "https://github.com/Geurtsy/com.geurts.gameforge.documentation.git#6fea33a350f41dfd86b53fad7bf1682d06f4c26c",
       "minimumUnity": "6000.3",
       "maximumUnity": "6000.3",
       "requiredTools": [
@@ -26,11 +26,11 @@
       "name": "Geurts Game Forge God",
       "description": "Build Forge project setup, Brick Manager, lifecycle, settings and optional brick cooperation.",
       "website": "https://github.com/Geurtsy/GeurtsGameForge",
-      "version": "0.6.2",
+      "version": "0.6.3",
       "released": true,
       "developmentOnly": false,
       "sourceKind": "git",
-      "source": "https://github.com/Geurtsy/GeurtsGameForge.git?path=/Packages/com.geurts.gameforge.god#64511b3076ff9d55b9b6b92c3b3b152c10c375ef",
+      "source": "https://github.com/Geurtsy/GeurtsGameForge.git?path=/Packages/com.geurts.gameforge.god#3d0a2d2fa38c8de74b436144ec711c3002f85081",
       "minimumUnity": "6000.3",
       "maximumUnity": "6000.3",
       "requiredTools": [
@@ -40,7 +40,7 @@
       "dependencies": [
         {
           "id": "com.geurts.gameforge.documentation",
-          "minimumVersion": "0.8.0"
+          "minimumVersion": "0.8.1"
         }
       ]
     },
