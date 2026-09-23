@@ -2,7 +2,7 @@
 # Geurts Folder Structure Technique
 
 **Unity Project Structure - AI-First Automation and Human Developer Reference**
-**Version:** 0.13.0
+**Version:** 0.13.1
 **Status:** Draft normative technique
 **Primary audience:** AI coding agents and automated development systems
 **Secondary audience:** Human developers
@@ -168,7 +168,7 @@ Rules:
 - Treat this directory as logically read-only managed reference content. This is an ownership rule, not a requirement to set Windows read-only attributes. A confirmed companion Update discards and replaces its complete contents without inspecting or preserving local drift.
 - The folder-definition tool must not create, populate, update, replace, or remove it.
 - The manifest-selected Documentation Companion Technique and Contract own the companion's explicit fetch-and-replace operation. Normal Unity launch/open may perform only its permitted remote metadata check; AI/session initialization receives no lifecycle authority from this folder technique.
-- This path is outside the companion's UPM package. The package's own `Documentation~` may contain only companion-specific documentation and is not a Geurts source. The companion is independent of Geurts Game Forge God and Game Forge Intelligence and has no Odin Inspector or Quantum Console dependency.
+- This path is outside the companion's UPM package. The package's own `Documentation~` may contain only companion-specific documentation and is not a Geurts source. The companion is independent of Geurts Game Forge God and Game Forge Intelligence, with no God or other Unity Package Manager package dependency. Its separately installed licensed Odin Inspector and Quantum Console assemblies remain required.
 - Do not store project-specific GDD files here.
 - Keep project-specific game design documentation under `Docs/GameDesign/`.
 - Do not substitute a hidden, nested, or `Assets/` path for this required top-level placement.

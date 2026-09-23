@@ -940,7 +940,7 @@ Technical design and implementation guidance remains authoritative in `GeurtsGam
     $folderDefinitionContract = Get-Content -LiteralPath $definitionPath -Raw | ConvertFrom-Json
     $folderToolContractText = [System.IO.File]::ReadAllText($folderScript)
     $managerToolContractText = [System.IO.File]::ReadAllText($manageScript)
-    Assert-True ($folderTechniqueContractText -match '(?im)^\*\*Version:\*\*\s*0\.13\.0\s*$' -and [string]$folderDefinitionContract.definitionVersion -ceq "0.11.0" -and [string]$folderDefinitionContract.packageVersion -ceq "0.19.0" -and $folderToolContractText.Contains('[string]$definition.definitionVersion -ne "0.11.0"') -and $managerToolContractText.Contains('[string]$definition.definitionVersion -ne "0.11.0"')) "Folder technique, definition, creator, and native manager agree on definition v0.11.0 in package v0.19.0"
+    Assert-True ($folderTechniqueContractText -match '(?im)^\*\*Version:\*\*\s*0\.13\.1\s*$' -and [string]$folderDefinitionContract.definitionVersion -ceq "0.11.0" -and [string]$folderDefinitionContract.packageVersion -ceq "0.19.0" -and $folderToolContractText.Contains('[string]$definition.definitionVersion -ne "0.11.0"') -and $managerToolContractText.Contains('[string]$definition.definitionVersion -ne "0.11.0"')) "Folder technique, definition, creator, and native manager agree on definition v0.11.0 in package v0.19.0"
 
     $versionMismatchAuthority = Join-Path $testRoot "folder-version-mismatch-authority"
     New-Item -ItemType Directory -Path $versionMismatchAuthority | Out-Null
@@ -1074,6 +1074,23 @@ Technical design and implementation guidance remains authoritative in `GeurtsGam
     Assert-True ($staticJsonValidation.Code -eq 0 -and $staticJsonObject -and $staticJsonObject.status -eq "VALID" -and @($staticJsonObject.checks | Where-Object { -not $_.passed }).Count -eq 0 -and $missingLifecycleChecks.Count -eq 0) "Repository validation JSON output is parseable and contains every passing companion and frozen-GFI boundary check"
 
     # Mutated package fixtures must fail without changing the source checkout or any Unity project.
+    foreach ($toolCase in @('companion-exemption', 'catalogue-tools-removed')) {
+        $toolFixture = New-StaticValidationFixture -Parent $testRoot -Name ("static-companion-tools-" + $toolCase)
+        if ($toolCase -eq 'companion-exemption') {
+            $toolTechniquePath = Join-Path $toolFixture 'GeurtsTechniques/GeurtsDocumentationCompanionTechnique.md'
+            $toolTechniqueText = [System.IO.File]::ReadAllText($toolTechniquePath).Replace('It requires separately installed licensed Odin Inspector and Quantum Console assemblies', 'It must not acquire Odin Inspector or Quantum Console')
+            Write-Utf8 -Path $toolTechniquePath -Text $toolTechniqueText
+        }
+        else {
+            $toolCataloguePath = Join-Path $toolFixture 'GeurtsTechniques/GeurtsBrickCatalogue.json'
+            $toolCatalogue = [System.IO.File]::ReadAllText($toolCataloguePath) | ConvertFrom-Json
+            @($toolCatalogue.bricks | Where-Object { $_.id -ceq 'com.geurts.gameforge.documentation' })[0].requiredTools = @()
+            Write-Utf8 -Path $toolCataloguePath -Text ($toolCatalogue | ConvertTo-Json -Depth 10)
+        }
+        $toolRun = Invoke-TestScript -Path $validatorScript -Arguments @('-RepositoryRoot', $toolFixture)
+        Assert-True ($toolRun.Code -ne 0 -and $toolRun.Output.Contains('[FAIL] Companion licensed tooling boundary')) "Validator rejects $toolCase without confusing God independence with licensed-tool requirements"
+    }
+
     foreach ($themeCase in @('missing-technique', 'missing-applicability', 'palette-drift', 'private-theme-fork', 'companion-dependency', 'unexplained-disabled-action')) {
         $themeFixture = New-StaticValidationFixture -Parent $testRoot -Name ("static-editor-theme-" + $themeCase)
         $themeFixturePath = Join-Path $themeFixture 'GeurtsTechniques/GeurtsEditorUIThemeTechnique.md'
@@ -1092,7 +1109,7 @@ Technical design and implementation guidance remains authoritative in `GeurtsGam
         else {
             if ($themeCase -eq 'palette-drift') { $themeFixtureText = $themeFixtureText.Replace('#6EF29D', '#00FFFF') }
             elseif ($themeCase -eq 'private-theme-fork') { $themeFixtureText = $themeFixtureText.Replace('All bricks that depend on God must reuse', 'Each brick can replace') }
-            elseif ($themeCase -eq 'companion-dependency') { $themeFixtureText = $themeFixtureText.Replace('must remain usable without God and must not gain a God, Odin Inspector or Quantum Console dependency for styling', 'must depend on God for styling') }
+            elseif ($themeCase -eq 'companion-dependency') { $themeFixtureText = $themeFixtureText.Replace('must remain usable without God and must not gain a God dependency for styling', 'must depend on God for styling') }
             else { $themeFixtureText = $themeFixtureText.Replace('Explain unavailable actions visibly with the actual reason and an actionable next step', 'Hide unavailable actions without explanation') }
             Write-Utf8 -Path $themeFixturePath -Text $themeFixtureText
         }

@@ -1,7 +1,7 @@
 <!-- GEURTS-AUDIENCE: AI-READ -->
 # Geurts Documentation Companion Technique
 
-**Version:** 2.1.0
+**Version:** 2.1.1
 **Contract schema:** 2.0.0
 **Package version:** 0.19.0
 **Status:** Draft normative technique
@@ -15,7 +15,7 @@ This technique defines the project-facing documentation lifecycle implemented by
 
 The Update boundary below is separate from Install Codex guide, which the manifest-selected AGENTS.md Technique owns. That independent, user-confirmed action writes only the selected guide and does not acquire or replace documentation.
 
-The companion is a small, Windows-only, Editor-only Unity package installed into an existing Unity project through Unity Package Manager from its separate `Geurtsy/com.geurts.gameforge.documentation` Git repository. It has no dependency on any other Unity package, including Geurts Game Forge God, Odin Inspector, Quantum Console, or Game Forge Intelligence. Its package repository owns its Unity code, package metadata, Editor UI, and implementation-specific documentation.
+The companion is a small, Windows-only, Editor-only Unity package installed into an existing Unity project through Unity Package Manager from its separate `Geurtsy/com.geurts.gameforge.documentation` Git repository. It has no God or other Unity Package Manager package dependency. It requires separately installed licensed Odin Inspector and Quantum Console assemblies (`QFSW.QC` and the applicable Sirenix assemblies); these commercially distributed tools are not bundled or declared through invented registry identifiers. It does not depend on Game Forge Intelligence. Its package repository owns its Unity code, package metadata, Editor UI, and implementation-specific documentation.
 
 `Geurtsy/GeurtsGameForge_Documentation` remains the sole source and authority for generic Geurts Game Forge documentation. This repository owns this technique and the closed machine-readable contract at:
 
@@ -161,7 +161,7 @@ An AI tool must support the applicable native instruction file or be explicitly 
 
 A conforming companion:
 
-- is an independent Windows-only, Editor-only UPM package implemented outside this repository, with no dependency on God, Odin Inspector, Quantum Console, Game Forge Intelligence, or any other Unity package;
+- is an independent Windows-only, Editor-only UPM package implemented outside this repository, with no God or other Unity Package Manager package dependency or Game Forge Intelligence dependency, while retaining its separately installed licensed Odin Inspector and Quantum Console assemblies;
 - performs at most one metadata-only official-`main` check per Unity open and never mutates during that check;
 - reports an Update available when its comparison-only last-successful-installed commit value is missing or differs from the remote head, and attempts to write that value only after all four managed targets verify successfully;
 - exposes the one exact in-Editor Update action and one cancel-default confirmation listing the documentation folder and three AI files;
