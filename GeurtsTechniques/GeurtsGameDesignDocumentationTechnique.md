@@ -2,7 +2,7 @@
 # Geurts Game Design Documentation Technique
 
 **Game Design Documentation Discovery - AI and Human Developer Reference**  
-**Version:** 0.11.0
+**Version:** 0.11.1
 **Status:** Draft normative technique
 **Primary audience:** AI coding agents and automated development systems
 **Secondary audience:** Human developers
@@ -36,7 +36,7 @@ Project-specific game design documentation belongs at:
 <ProjectRoot>/Docs/GameDesign/
 ```
 
-The managed copy is outside the independent Documentation Companion's Unity Package Manager package. Companion-only `Documentation~` is not a source or duplicate of Geurts documentation. The companion is independent of Geurts Game Forge God and Game Forge Intelligence and has no Odin Inspector or Quantum Console dependency. Never use a template or example inside `GeurtsGameForgeDocumentation/` as the target game's design authority.
+The managed copy is outside the independent Documentation Companion's Unity Package Manager package. Companion-only `Documentation~` is not a source or duplicate of Geurts documentation. The companion is independent of Geurts Game Forge God and Game Forge Intelligence, with no God or other Unity Package Manager package dependency. Its separately installed licensed Odin Inspector and Quantum Console assemblies remain required. Never use a template or example inside `GeurtsGameForgeDocumentation/` as the target game's design authority.
 
 Never put Geurts source-package files in `Docs/GameDesign/` or project-specific GDD files in `GeurtsGameForgeDocumentation/`.
 

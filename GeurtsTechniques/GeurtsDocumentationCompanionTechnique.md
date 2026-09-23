@@ -1,9 +1,9 @@
 <!-- GEURTS-AUDIENCE: AI-READ -->
 # Geurts Documentation Companion Technique
 
-**Version:** 2.0.0
+**Version:** 2.1.1
 **Contract schema:** 2.0.0
-**Package version:** 0.17.1
+**Package version:** 0.19.0
 **Status:** Draft normative technique
 **Primary audience:** Geurts Documentation Companion implementers and package maintainers
 **Secondary audience:** AI coding agents and human developers
@@ -15,7 +15,7 @@ This technique defines the project-facing documentation lifecycle implemented by
 
 The Update boundary below is separate from Install Codex guide, which the manifest-selected AGENTS.md Technique owns. That independent, user-confirmed action writes only the selected guide and does not acquire or replace documentation.
 
-The companion is a small, Windows-only, Editor-only Unity package installed into an existing Unity project through Unity Package Manager from its separate `Geurtsy/com.geurts.gameforge.documentation` Git repository. It has no dependency on any other Unity package, including Geurts Game Forge God, Odin Inspector, Quantum Console, or Game Forge Intelligence. Its package repository owns its Unity code, package metadata, Editor UI, and implementation-specific documentation.
+The companion is a small, Windows-only, Editor-only Unity package installed into an existing Unity project through Unity Package Manager from its separate `Geurtsy/com.geurts.gameforge.documentation` Git repository. It has no God or other Unity Package Manager package dependency. It requires separately installed licensed Odin Inspector and Quantum Console assemblies (`QFSW.QC` and the applicable Sirenix assemblies); these commercially distributed tools are not bundled or declared through invented registry identifiers. It does not depend on Game Forge Intelligence. Its package repository owns its Unity code, package metadata, Editor UI, and implementation-specific documentation.
 
 `Geurtsy/GeurtsGameForge_Documentation` remains the sole source and authority for generic Geurts Game Forge documentation. This repository owns this technique and the closed machine-readable contract at:
 
@@ -26,6 +26,14 @@ GeurtsTechniques/GeurtsDocumentationCompanionContract.json
 This repository contains no Documentation Companion plugin code. A Geurts documentation release does not require a companion-package release unless the companion must add support for a changed contract schema.
 
 There is no external installer, Windows bootstrap, batch-driven setup, or separate companion setup action. Installing the Editor package through Unity Package Manager is the only companion installation route defined here.
+
+### Optional Game Forge God integration
+
+God may be installed before this companion. Its **Game Forge God** interface may install or update the optional companion through Unity Package Manager and separately expose **Update Geurts Game Forge Documentation** through the companion's public Editor integration. God must remain usable when the companion is absent or its integration API is incompatible. The companion remains independent of God; no reverse dependency, duplicate updater, or bundled generic documentation is introduced.
+
+The package and documentation content have independent versions and update actions. A companion package update does not replace the project-local documentation content. A content Update invoked from Game Forge God uses this technique's same exact action, confirmation, source, validation and closed mutation boundary. It must show the one cancel-default confirmation before archive acquisition, including on the first content installation. God does not add an earlier preview, another confirmation, additional automatic checks, or an automatic content Update after package installation or Update All.
+
+The companion may expose its current busy state and explanatory operation status to Game Forge God so both interfaces report the same work and prevent conflicting package/content operations. A missing integration API must produce an actionable companion-update message, not a second implementation of this lifecycle. Neither the integration nor busy-state presentation grants access to any additional project path or script.
 
 ## 2. Closed Data Contract
 
@@ -153,7 +161,7 @@ An AI tool must support the applicable native instruction file or be explicitly 
 
 A conforming companion:
 
-- is an independent Windows-only, Editor-only UPM package implemented outside this repository, with no dependency on God, Odin Inspector, Quantum Console, Game Forge Intelligence, or any other Unity package;
+- is an independent Windows-only, Editor-only UPM package implemented outside this repository, with no God or other Unity Package Manager package dependency or Game Forge Intelligence dependency, while retaining its separately installed licensed Odin Inspector and Quantum Console assemblies;
 - performs at most one metadata-only official-`main` check per Unity open and never mutates during that check;
 - reports an Update available when its comparison-only last-successful-installed commit value is missing or differs from the remote head, and attempts to write that value only after all four managed targets verify successfully;
 - exposes the one exact in-Editor Update action and one cancel-default confirmation listing the documentation folder and three AI files;
@@ -166,4 +174,4 @@ A conforming companion:
 
 ## Separate Codex guide installation
 
-The AGENTS.md Technique owns the separate **Install Codex guide** action. Documentation Update excludes Codex guides. The user chooses a folder and confirms replacement of only its AGENTS.md; that guide points directly to the installed AI_READ_FIRST.md. No guide is automatically created at the project root or shipped as a standalone file inside this documentation package. Update the companion to 0.7.0 before installing this schema-2.0.0 documentation release.
+The AGENTS.md Technique owns the separate **Install Codex guide** action. Documentation Update excludes Codex guides. The user chooses a folder and confirms replacement of only its AGENTS.md; that guide points directly to the installed AI_READ_FIRST.md. No guide is automatically created at the project root or shipped as a standalone file inside this documentation package. The current verified companion is 0.9.1 in the catalogue; schema-2.0.0 support was introduced in 0.7.0 and the schema compatibility boundary is unchanged.

@@ -2,7 +2,7 @@
 # Geurts Technical Technique
 
 **Unity Game Development - AI Instruction Manual**  
-**Version:** 0.11.0
+**Version:** 0.12.0
 **Unity target:** Unity 6.3 LTS (6000.3)
 **Status:** Draft normative technique
 **Primary audience:** AI coding agents and automated development systems
@@ -75,7 +75,7 @@ Use the newest stable package release verified compatible with **6000.3** and th
 
 Use both dependencies wherever their supported features improve configuration, validation, inspection, diagnostics, tuning, or developer operation. "Use as much as possible" means meaningful adoption across applicable Geurts-owned code, not decorating every member, serializing unsupported data unnecessarily, exposing unsafe commands, or adding runtime work without a benefit. Preserve established project data and behavior while migrating duplicate custom tooling onto these required systems.
 
-The dependency requirement excludes this documentation-only repository, its host-side PowerShell utilities, project-authored design documents, third-party or generated code, and the independent Geurts Documentation Companion. The companion retains its manifest-selected zero-dependency contract and must not acquire Odin Inspector or Quantum Console. A separately selected legacy compatibility contract remains frozen unless its owning document explicitly permits a change.
+The dependency requirement excludes this documentation-only repository, its host-side PowerShell utilities, project-authored design documents, and third-party or generated code. The independent Documentation Companion also requires separately installed licensed Odin Inspector and Quantum Console assemblies. Its independence means no God or other Unity Package Manager package dependency; it is not an exemption from the licensed external assembly requirements. A separately selected legacy compatibility contract remains frozen unless its owning document explicitly permits a change.
 
 For a separately maintained UPM package that requires this baseline, declare `"unity": "6000.3"` in its `package.json`; add `unityRelease` only when a specific patch is the verified minimum. This field declares a minimum, not a promise of support for every later Editor. Consult the [package manifest reference](https://docs.unity3d.com/6000.3/Documentation/Manual/upm-manifestPkg.html). Do not add a Unity package manifest to this documentation repository or change the companion's closed JSON schema to carry Editor requirements.
 
@@ -258,6 +258,8 @@ public enum AI_STATE
 
 Use UI Toolkit for new Geurts UI work. Inspect the existing UI before changing it, and never silently replace or overwrite working user content. When a project already uses another UI system, follow explicit user/project requirements for a scoped integration or migration; do not perform a destructive automatic conversion.
 
+All existing and future Forge-owned Editor UI must comply with the manifest-selected [Editor UI Theme Technique](GeurtsEditorUIThemeTechnique.md). Reuse God's shared `ForgeEditorTheme` API and `ForgeEditorTheme.uss` for dark sci-fi surfaces and green accents; the independent Documentation Companion uses the technique's generated, parity-checked copy without acquiring a God dependency. Preserve meaningful Odin configuration and use UI Toolkit for new custom Editor UI. This Editor-only standard does not change runtime or player-facing game UI.
+
 For new custom UXML controls, use `[UxmlElement]` on a partial class and `[UxmlAttribute]` for exposed attributes, following the [Unity 6.3 UxmlElement reference](https://docs.unity3d.com/6000.3/Documentation/ScriptReference/UIElements.UxmlElementAttribute.html). Avoid new `UxmlFactory`/`UxmlTraits` implementations. Use supported UXML/USS and verify data binding and lifecycle cleanup in the actual runtime or Editor context.
 
 ---
@@ -434,7 +436,7 @@ Commands that bypass rules or tune/test gameplay state must be flagged as `Cheat
 
 Code under project control must emit through the central logging facade backed by Diagnostics. Existing logging systems must feed that same route. For Unity, third-party, vendor or generated sources that do not call the facade, integrate their logger or capture their output through supported callbacks or adapters and forward it into Diagnostics. That capture is required whenever the source and Diagnostics are available, not an optional exemption for external code. Do not require edits to vendor or generated source when a supported integration can perform the routing. If a source cannot be captured, report the specific integration gap; do not claim that project-wide routing is complete.
 
-Available means the Diagnostics brick is installed, enabled, running and exposes a compatible logging service. A catalogue entry or installed package alone is insufficient. God 0.5.0 supplies the shared `ForgeLog` facade and capture-only `IForgeLogCapture` contract; Diagnostics 0.3.0 implements it. These are review candidates until their actual release status is verified. The historical minimal Diagnostics 0.2.0 consumer is not that service.
+Available means the Diagnostics brick is installed, enabled, running and exposes a compatible logging service. A catalogue entry or installed package alone is insufficient. The shared `ForgeLog` facade and capture-only `IForgeLogCapture` contract were introduced in God 0.5.0, with an implementation in Diagnostics 0.3.0. The current verified releases are God 0.9.1 and Diagnostics 0.5.0, using the immutable sources in the catalogue. The historical minimal Diagnostics 0.2.0 consumer is not that service.
 
 When Diagnostics is absent, disabled, stopped, not yet initialized or lacks a compatible logging service, the same facade must fall back to Unity logging so messages remain visible. Resume routing through Diagnostics when its service becomes available. Follow the Brick Contract's optional-capability boundary; do not introduce a mandatory dependency from God to Diagnostics or a circular package dependency.
 
@@ -521,6 +523,7 @@ A generated or modified Unity C# script is complete only when it:
 - Avoids unnecessary per-frame allocations.
 - Avoids expensive logic inside `Update()` unless justified.
 - Uses Odin Inspector meaningfully for applicable serialized configuration, validation, diagnostics, and safe Editor actions, with its installed compatible version recorded.
+- Makes every affected Forge-owned Editor surface conform to the manifest-selected Editor UI Theme Technique, with shared implementation reuse, readable states and the required visual evidence.
 - Integrates project-wide Diagnostics output and applicable developer operations with Quantum Console, with its installed compatible version and developer-console validation recorded.
 - Routes all project logging through Diagnostics whenever its logging service is available, including captured Unity and third-party output, and verifies unavailable-service fallback without duplicate messages or recursive forwarding. Reports any source that cannot be captured as an integration gap.
 - Preserves multiplayer network efficiency where relevant.

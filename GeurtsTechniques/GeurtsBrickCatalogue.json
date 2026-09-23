@@ -1,18 +1,18 @@
 {
   "schemaVersion": 1,
-  "packageVersion": "0.17.1",
-  "publishedUtc": "2026-09-23T10:41:06Z",
+  "packageVersion": "0.19.0",
+  "publishedUtc": "2026-09-23T12:40:30Z",
   "bricks": [
     {
       "id": "com.geurts.gameforge.documentation",
       "name": "Geurts Game Forge Documentation",
       "description": "Documentation dashboard and explicit updates of the authoritative AI development guidance.",
       "website": "https://github.com/Geurtsy/com.geurts.gameforge.documentation",
-      "version": "0.8.1",
+      "version": "0.9.1",
       "released": true,
       "developmentOnly": false,
       "sourceKind": "git",
-      "source": "https://github.com/Geurtsy/com.geurts.gameforge.documentation.git#6fea33a350f41dfd86b53fad7bf1682d06f4c26c",
+      "source": "https://github.com/Geurtsy/com.geurts.gameforge.documentation.git#066d5e8755394ddfa480acd2f53674d14207ec4f",
       "minimumUnity": "6000.3",
       "maximumUnity": "6000.3",
       "requiredTools": [
@@ -24,36 +24,31 @@
     {
       "id": "com.geurts.gameforge.god",
       "name": "Geurts Game Forge God",
-      "description": "Build Forge project setup, Brick Manager, lifecycle, settings and optional brick cooperation.",
+      "description": "Game Forge God package management, Build Forge setup, optional Documentation integration, lifecycle and settings.",
       "website": "https://github.com/Geurtsy/com.geurts.gameforge.god",
-      "version": "0.7.1",
+      "version": "0.9.1",
       "released": true,
       "developmentOnly": false,
       "sourceKind": "git",
-      "source": "https://github.com/Geurtsy/com.geurts.gameforge.god.git#9569fba55886e6de51c408b2ba90df5ba6610d9c",
+      "source": "https://github.com/Geurtsy/com.geurts.gameforge.god.git#c623219020c425a38d7a082714354fa9e14d2f35",
       "minimumUnity": "6000.3",
       "maximumUnity": "6000.3",
       "requiredTools": [
         "Odin Inspector",
         "Quantum Console"
       ],
-      "dependencies": [
-        {
-          "id": "com.geurts.gameforge.documentation",
-          "minimumVersion": "0.8.1"
-        }
-      ]
+      "dependencies": []
     },
     {
       "id": "com.geurts.gameforge.diagnostics",
       "name": "Geurts Game Forge Diagnostics",
       "description": "God-owned runtime logging, Quantum Console channels and commands, session history, health checks, read-only inspection, Windows performance metrics and Odin Editor tooling.",
       "website": "https://github.com/Geurtsy/com.geurts.gameforge.diagnostics",
-      "version": "0.4.2",
+      "version": "0.5.0",
       "released": true,
       "developmentOnly": false,
       "sourceKind": "git",
-      "source": "https://github.com/Geurtsy/com.geurts.gameforge.diagnostics.git#e11fed0995dd23508cbb7c5510a634f329eb0a78",
+      "source": "https://github.com/Geurtsy/com.geurts.gameforge.diagnostics.git#a8c78e96acd8330b4beb30b543b935c9228d39ec",
       "minimumUnity": "6000.3",
       "maximumUnity": "6000.3",
       "requiredTools": [
@@ -63,7 +58,7 @@
       "dependencies": [
         {
           "id": "com.geurts.gameforge.god",
-          "minimumVersion": "0.5.0"
+          "minimumVersion": "0.9.0"
         }
       ]
     },

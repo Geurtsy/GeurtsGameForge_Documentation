@@ -1,7 +1,7 @@
 <!-- GEURTS-AUDIENCE: AI-READ -->
 # Geurts Game Forge AI Entry Point
 
-**Version:** 0.17.1
+**Version:** 0.19.0
 **Purpose:** First documentation entry and session boundary, before manifest resolution.
 **Required package path:** `AI_READ_FIRST.md`
 
@@ -43,7 +43,7 @@ Bump each affected independently released package and the documentation package 
 <ProjectRoot>/GeurtsGameForgeDocumentation/
 ```
 
-The Windows-only companion is installed from Git through Unity Package Manager, has no Geurts Game Forge God, Game Forge Intelligence, Odin Inspector, or Quantum Console dependency, and lives in a separate repository. No companion implementation belongs in this documentation repository. Any `<PluginPackageRoot>/Documentation~/` contains companion-specific documentation only; it is not a source or duplicate of this package. Project-specific design documents remain separate under:
+The Windows-only companion is installed from Git through Unity Package Manager and lives in a separate repository. It has no God or other Unity Package Manager package dependency, while requiring separately installed licensed Odin Inspector and Quantum Console assemblies. It does not depend on Game Forge Intelligence. No companion implementation belongs in this documentation repository. Any `<PluginPackageRoot>/Documentation~/` contains companion-specific documentation only; it is not a source or duplicate of this package. Project-specific design documents remain separate under:
 
 ```text
 <ProjectRoot>/Docs/GameDesign/
