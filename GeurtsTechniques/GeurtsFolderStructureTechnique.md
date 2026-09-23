@@ -2,7 +2,7 @@
 # Geurts Folder Structure Technique
 
 **Unity Project Structure - AI-First Automation and Human Developer Reference**
-**Version:** 0.12.0
+**Version:** 0.13.0
 **Status:** Draft normative technique
 **Primary audience:** AI coding agents and automated development systems
 **Secondary audience:** Human developers
@@ -137,6 +137,10 @@ ProjectRoot/
 - Directories below `GeurtsGameForgeDocumentation/` are deliberately absent from the folder definition, so a new tracked source directory does not require a folder-schema change.
 - The native-entry manager may create its assigned `.github` paths but may never delete existing directories or user content through the folder-definition contract. A confirmed companion Update separately authorizes whole-file replacement of only its three contract-listed AI routes; every unlisted path inside `.github/` remains uninspected and untouched.
 - `Docs/` and `Docs/GameDesign/` remain members of the full project profile and additionally delegate the closed `gdd-scaffolding` profile to the native-entry manager, so missing GDD scaffolding can be created without granting that manager access to unrelated folders.
+
+### Explicit Game Design Document import
+
+As a separate narrow operation, a user-selected Build Forge **Import primary Game Design Document** action may create only missing `Docs/` and `Docs/GameDesign/` parents for its selected Markdown document and project manifest. This exception is owned by the Game Design Documentation Technique and does not invoke a generic folder-creation profile, expand the native-entry manager, or grant the Documentation Companion any project-design access. Preserve every existing directory and file. Validate containment and the complete path chain for reparse points before accepting or creating either parent. This optional import does not alter the required Build Forge setup steps.
 
 ---
 

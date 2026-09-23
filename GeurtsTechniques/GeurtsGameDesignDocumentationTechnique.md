@@ -2,13 +2,13 @@
 # Geurts Game Design Documentation Technique
 
 **Game Design Documentation Discovery - AI and Human Developer Reference**  
-**Version:** 0.10.0
+**Version:** 0.11.0
 **Status:** Draft normative technique
 **Primary audience:** AI coding agents and automated development systems
 **Secondary audience:** Human developers
 **Required package path:** `GeurtsTechniques/GeurtsGameDesignDocumentationTechnique.md`
 
-> `GeurtsTechniqueManifest.md` selects this file and version from one validated package commit. This technique defines GDD discovery and maintenance boundaries only.
+> `GeurtsTechniqueManifest.md` selects this file and version from one validated package commit. This technique defines primary game-context routing, explicit GDD import, discovery and maintenance boundaries.
 
 ---
 
@@ -40,7 +40,7 @@ The managed copy is outside the independent Documentation Companion's Unity Pack
 
 Never put Geurts source-package files in `Docs/GameDesign/` or project-specific GDD files in `GeurtsGameForgeDocumentation/`.
 
-After one confirmation, the companion's `Update Geurts Game Forge Documentation` action may replace the complete managed documentation folder and only the four project AI-route files declared by `GeurtsDocumentationCompanionContract.json`. It must not enumerate, inspect, create, validate, hash, modify, or delete any path under `Docs/GameDesign/`. Copying the exact scoped game-design route template to `.github/instructions/geurts-game-design.instructions.md` grants no access to the paths that template may later route an AI tool toward. GDD scaffolding and bounded manifest maintenance remain separate optional manual operations under this technique and the AI Agent Setup Technique.
+After one confirmation, the companion's `Update Geurts Game Forge Documentation` action may replace the complete managed documentation folder and only the three project AI-route files declared by `GeurtsDocumentationCompanionContract.json`. It must not enumerate, inspect, create, validate, hash, modify, or delete any path under `Docs/GameDesign/`. Copying the exact scoped game-design route template to `.github/instructions/geurts-game-design.instructions.md` grants no access to the paths that template may later route an AI tool toward. GDD import, scaffolding and bounded manifest maintenance remain separate explicit operations under this technique and the AI Agent Setup Technique.
 
 ---
 
@@ -60,6 +60,48 @@ Use this manifest as the design index when it exists:
 
 ---
 
+## Primary Game Context
+
+The documentation routing chain is `GeurtsGameForgeDocumentation/AI_READ_FIRST.md`, then `GeurtsTechniqueManifest.md`, then this technique, then `Docs/GameDesign/GameDesignManifest.md`. The project manifest may declare one primary document using this separately managed section outside the existing `GEURTS-GDD-MANIFEST-BEGIN` table:
+
+```markdown
+<!-- GEURTS-GDD-PRIMARY-BEGIN version="1.0.0" -->
+## Primary Game Design Document
+
+**Primary document:** `Docs/GameDesign/SelectedDocument.md`
+
+This document is the primary source of context about the game.
+Technical design and implementation guidance remains authoritative in `GeurtsGameForgeDocumentation/`, entered through `AI_READ_FIRST.md` and its manifest.
+<!-- GEURTS-GDD-PRIMARY-END -->
+```
+
+`SelectedDocument.md` is a format example, not a required filename or a design fact. Apart from that selected path and the existing manifest's newline convention, the block above is the exact v1.0.0 payload. The importer rejects a modified payload rather than discarding user text. The actual path must identify a visible regular Markdown (`.md`) file inside `Docs/GameDesign/`, use `/` separators, and be relative to the Unity project root. Reject absolute paths, traversal, hidden path segments, the manifest itself, and symbolic links, junctions or other reparse points.
+
+The declared primary document is the primary source of context about the game. Read it when game context or player-facing design facts are needed, together with other relevant documents selected by the index. This explicit primary selection takes precedence over the managed table's `Authority` field for choosing primary game context only. A document does not need a table row to be the declared primary source. Do not infer mechanics, approval status or design facts from the import action or filename. Existing scoped design facts and material conflicts still follow the manifest's conflict-resolution rules.
+
+Technical design and implementation guidance remains authoritative in the manifest-selected techniques from `GeurtsGameForgeDocumentation/`. Technical passages in the imported GDD do not replace those techniques. Surface a material conflict between game requirements and technical guidance instead of silently changing either authority.
+
+A missing primary section preserves existing manifest-driven discovery. A missing primary file, malformed or duplicated primary markers, unsupported primary-section version, ambiguous pointer, or primary section nested inside the managed table is a conflict; do not silently select another document. A purely technical task may still proceed without unrelated game context. Project-specific pointers and GDD content must never be written into the replaceable `GeurtsGameForgeDocumentation/` snapshot.
+
+## Explicit Build Forge Import
+
+Build Forge may provide a separate, user-selected **Import primary Game Design Document** action. Selecting a Markdown file explicitly authorizes copying that document and setting its primary game-context pointer. This is not the Documentation Companion's Update, ordinary startup discovery, native-entry installation, or general manifest maintenance.
+
+The import must:
+
+- Create only missing `Docs/` and `Docs/GameDesign/` directories needed for this explicit import, under the Folder Structure Technique's narrow exception. Preserve existing folders and do not run general project setup.
+- Accept `.md` only and preserve the selected source bytes without adding metadata, converting content, or inventing game facts.
+- Copy the selected file into `Docs/GameDesign/` without overwriting any existing file. Selecting an existing safe document in that directory uses its current project-relative path. An existing destination with identical bytes is an idempotent reuse; different bytes at the same destination are a conflict.
+- Create a missing `GameDesignManifest.md` from the installed documentation's existing create-if-missing scaffold. Preserve existing manifest text, encoding, and bytes outside the primary section. Support UTF-8, UTF-8-BOM, UTF-16LE-BOM and UTF-16BE-BOM; reject invalid text and UTF-32 without mutation.
+- Add the primary section when absent or replace only one valid supported primary section. Preserve every existing managed table row and all other project notes. Duplicate, malformed, unsupported or nested primary markers are conflicts and must not be repaired by discarding content.
+- Keep the existing managed document table format at v0.7.0. Do not scan unrelated design documents or invoke `UpdateGameDesignManifest.ps1` or native-entry setup as an import side effect. The explicit primary section is sufficient registration for this import.
+- Validate source and target containment, regular-file status and reparse-point boundaries before mutation. Revalidate destination absence or exact expected bytes and the manifest's original raw bytes immediately before writing, rejecting concurrent changes. Preserve the original source and existing project files on failure, and report any newly copied document retained after a later routing failure.
+- Report the selected project-relative path and current primary selection on success, or the failure and any retained newly copied content. Display why an unavailable import action is unavailable and how to resolve it.
+
+The generic manifest maintainer owns only its existing managed table and preserves the primary section byte-for-byte outside that table. It must not retarget the primary pointer merely because it detects a rename, move or removal; choosing a different primary document requires an explicit import or authorized primary-selection edit. When the pointer becomes stale, report the missing primary source before work that needs game context.
+
+---
+
 ## Lightweight Session-Start Discovery
 
 At Unity-project opening or AI-session initialization:
@@ -68,7 +110,7 @@ At Unity-project opening or AI-session initialization:
 2. Read it once when it exists.
 3. Record its declared version plus either a content hash or last-modified timestamp as the session fingerprint.
 4. Re-read it when that fingerprint changes.
-5. Use its metadata to route later work without loading every full design document.
+5. Use its primary section and index metadata to route later work without loading every full design document.
 
 A missing manifest does not block a purely technical task. A technical task may proceed without unrelated full GDD files.
 
@@ -206,7 +248,7 @@ The managed table is bounded by matching `GEURTS-GDD-MANIFEST-BEGIN` and `GEURTS
 
 New documents without reliable metadata receive `RequiresClassification`. Unsupported files are reported and must not be silently treated as design authority. Duplicate identifiers are conflicts: do not choose a winner or overwrite the manifest silently.
 
-A compatible host may detect imports or debounced file-watcher events, invalidate cached discovery data, report manifest drift, and offer a user-approved handoff to the external maintainer. It must not invoke the maintainer automatically or write project GDD content. The Documentation Companion is not such a host: its startup metadata check and confirmed Update must not inspect `Docs/GameDesign/` at all.
+A compatible host may detect imports or debounced file-watcher events, invalidate cached discovery data, report manifest drift, and offer a user-approved handoff to the external maintainer. Those passive events must not invoke the maintainer automatically or write project GDD content. The separately user-selected Build Forge import above has its own limited copy and primary-pointer authority. The Documentation Companion is not such a host: its startup metadata check and confirmed Update must not inspect `Docs/GameDesign/` at all.
 
 ### Design Document Conflicts
 

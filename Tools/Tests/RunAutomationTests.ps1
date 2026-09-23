@@ -1,5 +1,5 @@
 # RunAutomationTests.ps1
-# Version: 0.16.6
+# Version: 0.17.0
 
 [CmdletBinding()]
 param(
@@ -274,7 +274,7 @@ try {
     $draftManifestText = [System.IO.File]::ReadAllText((Join-Path $RepositoryRoot "GeurtsTechniqueManifest.md"))
     $draftReadmeText = [System.IO.File]::ReadAllText((Join-Path $RepositoryRoot "README.md"))
     $targetMigrationText = [System.IO.File]::ReadAllText((Join-Path $RepositoryRoot "Migrations/v0.11.0.md"))
-    Assert-True ($draftManifestText -match '(?im)^\*\*Version:\*\*\s*0\.16\.6\s*$' -and $draftManifestText -match '(?im)^\*\*Status:\*\*\s*Draft normative package manifest\s*$' -and $draftReadmeText -match '(?im)^\*\*Status:\*\*\s*Draft technique package\s*$' -and $targetMigrationText -match '(?i)planned transition' -and $targetMigrationText -match '(?i)target-release snapshot' -and $targetMigrationText -notmatch '(?i)(?:v0\.16\.6|package v0\.16\.6)[^\r\n]{0,80}(?:is|was|has been) released') "v0.16.6 remains a Draft target release with a planned snapshot rather than a completed-release claim"
+    Assert-True ($draftManifestText -match '(?im)^\*\*Version:\*\*\s*0\.17\.0\s*$' -and $draftManifestText -match '(?im)^\*\*Status:\*\*\s*Draft normative package manifest\s*$' -and $draftReadmeText -match '(?im)^\*\*Status:\*\*\s*Draft technique package\s*$' -and $targetMigrationText -match '(?i)planned transition' -and $targetMigrationText -match '(?i)target-release snapshot' -and $targetMigrationText -notmatch '(?i)(?:v0\.17\.0|package v0\.17\.0)[^\r\n]{0,80}(?:is|was|has been) released') "v0.17.0 remains a Draft target release with a planned snapshot rather than a completed-release claim"
 
     $gfiContractText = [System.IO.File]::ReadAllText((Join-Path $RepositoryRoot "GeurtsTechniques/GeurtsGameForgeIntelligenceTechnique.md"))
     Assert-True ($gfiContractText -match '(?i)sole primary source and authority for all Geurts Game Forge documentation' -and $gfiContractText.Contains("<PluginPackageRoot>/Documentation~/") -and $gfiContractText -match '(?i)must not ship a bundled or fallback copy of Geurts documentation') "Frozen GFI v2 keeps this repository authoritative and plugin Documentation~ plugin-specific"
@@ -311,9 +311,9 @@ try {
         ".github/instructions/geurts-unity.instructions.md|replace-complete-file",
         ".github/instructions/geurts-game-design.instructions.md|replace-complete-file"
     )
-    Assert-True ([string]$companionContract.schemaVersion -ceq "2.0.0" -and [string]$companionContract.packageVersion -ceq "0.16.6" -and [string]$companionContract.source.repository -ceq "https://github.com/Geurtsy/GeurtsGameForge_Documentation.git" -and [string]$companionContract.source.branch -ceq "main" -and [string]$companionContract.source.selection -ceq "exact-resolved-head-commit-archive") "Companion contract identifies schema 2.0.0, package v0.16.6, and the official exact-main-commit archive source"
+    Assert-True ([string]$companionContract.schemaVersion -ceq "2.0.0" -and [string]$companionContract.packageVersion -ceq "0.17.0" -and [string]$companionContract.source.repository -ceq "https://github.com/Geurtsy/GeurtsGameForge_Documentation.git" -and [string]$companionContract.source.branch -ceq "main" -and [string]$companionContract.source.selection -ceq "exact-resolved-head-commit-archive") "Companion contract identifies schema 2.0.0, package v0.17.0, and the official exact-main-commit archive source"
     Assert-True ([string]$companionContract.destination.projectRelativePath -ceq "GeurtsGameForgeDocumentation" -and [string]$companionContract.destination.replacement -ceq "complete-directory" -and [string]$companionContract.destination.access -ceq "logically-read-only") "Companion contract names the one logically-read-only complete documentation destination"
-    Assert-True ((@($companionContract.validationEntries) -join "|") -ceq ($expectedCompanionValidationEntries -join "|") -and @($companionContract.validationEntries | Select-Object -Unique).Count -eq 8) "Current companion contract names the exact eight unique package-v0.16.6 source-validation entries"
+    Assert-True ((@($companionContract.validationEntries) -join "|") -ceq ($expectedCompanionValidationEntries -join "|") -and @($companionContract.validationEntries | Select-Object -Unique).Count -eq 8) "Current companion contract names the exact eight unique package-v0.17.0 source-validation entries"
     Assert-True (($actualCompanionRoutes -join "|") -ceq ($expectedCompanionRoutes -join "|") -and ($actualConfirmationTargets -join "|") -ceq ($expectedConfirmationTargets -join "|") -and [string]$companionContract.updateUi.actionLabel -ceq "Update Geurts Game Forge Documentation" -and [string]$companionContract.updateUi.confirmationDefault -ceq "cancel" -and [string]$companionContract.updateUi.cancelResult -ceq "no-network-or-filesystem-change") "Companion contract fixes three template routes and one cancel-default four-target Update confirmation"
     Assert-True ($companionTechniqueText -match '(?i)one confirmation dialog' -and $companionTechniqueText -match '(?i)no earlier preview, dry run[^\r\n]{0,100}second confirmation' -and $companionTechniqueText -match '(?i)confirmation occurs before archive acquisition' -and $companionTechniqueText -match '(?i)earlier approval does not authorize a changed or expanded managed target set') "Confirmation uses the built-in schema-2.0.0 target set before acquisition and cannot authorize a changed downloaded target set"
     Assert-True ($companionTechniqueText -match '(?i)`packageVersion` is source-release metadata, not a companion compatibility gate' -and $companionTechniqueText -match '(?i)later package version alone must not require a companion release' -and $companionTechniqueText -match '(?i)schema-2\.0\.0 consumer may read a later list rather than pinning v0\.11\.0' -and $companionTechniqueText -match '(?i)every entry must be unique, safe, readable, and archive-root-relative') "Schema 2.0.0 keeps package versions and safe validation entries forward-compatible while mutation routes remain fixed"
@@ -734,6 +734,17 @@ try {
     Assert-True ($modifiedLegacyRun.Code -eq 2 -and (Get-FileSha -Path $modifiedLegacyPath) -eq $modifiedLegacyHash -and $modifiedLegacyRun.Output.Contains("user-modified legacy")) "Modified legacy native entry is preserved and reported as conflicted"
 
     # GDD managed-region writes preserve supported encodings and exact bytes outside the region.
+    $primaryGddBlock = @'
+<!-- GEURTS-GDD-PRIMARY-BEGIN version="1.0.0" -->
+## Primary Game Design Document
+
+**Primary document:** `Docs/GameDesign/Encoding.md`
+
+This document is the primary source of context about the game.
+Technical design and implementation guidance remains authoritative in `GeurtsGameForgeDocumentation/`, entered through `AI_READ_FIRST.md` and its manifest.
+<!-- GEURTS-GDD-PRIMARY-END -->
+'@
+    $primaryGddBlock = ($primaryGddBlock -replace "`r`n", "`n") + "`n"
     $gddEncodingCases = @(
         @{ Name = "gdd-utf8-bom"; Label = "UTF-8 BOM"; Encoding = (New-Object System.Text.UTF8Encoding($true, $true)); PreambleLength = 3 },
         @{ Name = "gdd-utf16le"; Label = "UTF-16LE"; Encoding = (New-Object System.Text.UnicodeEncoding($false, $true, $true)); PreambleLength = 2 },
@@ -752,7 +763,7 @@ try {
         if (-not $encodingBaseRegion.Success) { throw "Unable to locate GDD managed region for $($encodingCase.Label)." }
         $encodingPrefixText = $encodingBaseText.Substring(0, $encodingBaseRegion.Index).Replace("`n", "`r`n") + "<!-- exact user prefix -->`n"
         $encodingRegionText = ((($encodingBaseRegion.Value -replace "`r`n", "`n") -replace "`r", "`n").Replace("`n", "`r`n"))
-        $encodingSuffixText = "`r`n<!-- exact user suffix -->`n" + $encodingBaseText.Substring($encodingBaseRegion.Index + $encodingBaseRegion.Length)
+        $encodingSuffixText = "`r`n<!-- exact user suffix -->`n" + $primaryGddBlock + $encodingBaseText.Substring($encodingBaseRegion.Index + $encodingBaseRegion.Length)
         [System.IO.File]::WriteAllText($encodingManifestPath, ($encodingPrefixText + $encodingRegionText + $encodingSuffixText), $encodingCase.Encoding)
         $encodingRun = Invoke-TestScript -Path $gddScript -Arguments @("-ProjectRoot", $encodingProject)
         $encodingAfterBytes = [System.IO.File]::ReadAllBytes($encodingManifestPath)
@@ -761,6 +772,7 @@ try {
         $encodingAfterText = $encodingCase.Encoding.GetString($encodingAfterBytes, [int]$encodingCase.PreambleLength, $encodingAfterBytes.Length - [int]$encodingCase.PreambleLength)
         $encodingAfterRegion = [regex]::Match($encodingAfterText, $gddManagedPattern)
         Assert-True ($encodingRun.Code -eq 0 -and $encodingRun.Output.Contains("Updated: Docs/GameDesign/GameDesignManifest.md") -and (Test-BytePrefix -Bytes $encodingAfterBytes -Expected $encodingExpectedPrefix) -and (Test-ByteSuffix -Bytes $encodingAfterBytes -Expected $encodingExpectedSuffix) -and $encodingAfterRegion.Success -and (Test-CrLfOnly -Text $encodingAfterRegion.Value)) "GDD $($encodingCase.Label) update preserves exact outside-region bytes, BOM/encoding, mixed outer newlines, and CRLF region convention"
+        Assert-True ($encodingAfterText.Contains($primaryGddBlock) -and $encodingAfterRegion.Value.IndexOf('GEURTS-GDD-PRIMARY', [System.StringComparison]::Ordinal) -lt 0) "GDD $($encodingCase.Label) maintenance preserves the explicit primary pointer outside the managed table"
     }
 
     foreach ($invalidEncodingCase in @(
@@ -834,10 +846,20 @@ try {
     Assert-True ($gddAdd.Code -eq 0 -and $gddAdd.Output.Contains("Added: Docs/GameDesign/Core.md") -and $gddText.Contains("core-design") -and $gddText.Contains("Defines approved core play.")) "GDD document metadata is added without filename inference"
     $gddUnchanged = Invoke-TestScript -Path $gddScript -Arguments @("-ProjectRoot", $gddProject)
     Assert-True ($gddUnchanged.Code -eq 0 -and $gddUnchanged.Output.Contains("Unchanged: Docs/GameDesign/Core.md")) "GDD rerun reports unchanged documents deterministically"
+    $corePrimaryBlock = $primaryGddBlock.Replace('Docs/GameDesign/Encoding.md', 'Docs/GameDesign/Core.md')
+    Write-Utf8 -Path $gddManifestPath -Text ([System.IO.File]::ReadAllText($gddManifestPath) + "`n" + $corePrimaryBlock)
+    Write-Utf8 -Path $designDoc -Text ([System.IO.File]::ReadAllText($designDoc).Replace('authority: Primary', 'authority: Supporting'))
+    $primaryPointerRun = Invoke-TestScript -Path $gddScript -Arguments @("-ProjectRoot", $gddProject)
+    $primaryPointerText = [System.IO.File]::ReadAllText($gddManifestPath)
+    Assert-True ($primaryPointerRun.Code -eq 0 -and $primaryPointerText.Contains($corePrimaryBlock) -and $primaryPointerText.Contains('| Supporting |') -and [regex]::Matches($primaryPointerText, 'GEURTS-GDD-PRIMARY-BEGIN').Count -eq 1) "Explicit primary pointer survives ordinary maintenance when source metadata supplies a different table authority"
+    $primaryPointerHash = Get-FileSha -Path $gddManifestPath
+    $primaryPointerAgain = Invoke-TestScript -Path $gddScript -Arguments @("-ProjectRoot", $gddProject)
+    Assert-True ($primaryPointerAgain.Code -eq 0 -and (Get-FileSha -Path $gddManifestPath) -ceq $primaryPointerHash) "Maintenance with an explicit primary pointer remains byte-idempotent"
     $renamedDoc = Join-Path $gddProject "Docs/GameDesign/CoreRenamed.md"
     Move-Item -LiteralPath $designDoc -Destination $renamedDoc
     $gddRename = Invoke-TestScript -Path $gddScript -Arguments @("-ProjectRoot", $gddProject)
     Assert-True ($gddRename.Code -eq 0 -and $gddRename.Output.Contains("Renamed: Docs/GameDesign/CoreRenamed.md")) "GDD same-directory rename is reported distinctly"
+    Assert-True ([System.IO.File]::ReadAllText($gddManifestPath).Contains($corePrimaryBlock)) "Generic discovery does not silently retarget an explicit primary pointer after a rename"
     $movedDoc = Join-Path $gddProject "Docs/GameDesign/Systems/CoreRenamed.md"
     New-Item -ItemType Directory -Path (Split-Path -Parent $movedDoc) | Out-Null
     Move-Item -LiteralPath $renamedDoc -Destination $movedDoc
@@ -847,6 +869,7 @@ try {
     Remove-Item -LiteralPath $movedDoc -Force
     $gddRemove = Invoke-TestScript -Path $gddScript -Arguments @("-ProjectRoot", $gddProject)
     Assert-True ($gddRemove.Code -eq 0 -and -not [System.IO.File]::ReadAllText($gddManifestPath).Contains("core-design")) "Removed GDD record is deleted after same-run rename matching"
+    Assert-True ([System.IO.File]::ReadAllText($gddManifestPath).Contains($corePrimaryBlock)) "Generic discovery preserves an explicit primary selection after its source is removed for a later missing-primary report"
 
     $importedDoc = Join-Path $gddProject "Docs/GameDesign/Imported.md"
     Write-Utf8 -Path $importedDoc -Text "# Imported design notes`n"
@@ -916,7 +939,7 @@ try {
     $folderDefinitionContract = Get-Content -LiteralPath $definitionPath -Raw | ConvertFrom-Json
     $folderToolContractText = [System.IO.File]::ReadAllText($folderScript)
     $managerToolContractText = [System.IO.File]::ReadAllText($manageScript)
-    Assert-True ($folderTechniqueContractText -match '(?im)^\*\*Version:\*\*\s*0\.12\.0\s*$' -and [string]$folderDefinitionContract.definitionVersion -ceq "0.11.0" -and [string]$folderDefinitionContract.packageVersion -ceq "0.16.6" -and $folderToolContractText.Contains('[string]$definition.definitionVersion -ne "0.11.0"') -and $managerToolContractText.Contains('[string]$definition.definitionVersion -ne "0.11.0"')) "Folder technique, definition, creator, and native manager agree on definition v0.11.0 in package v0.16.6"
+    Assert-True ($folderTechniqueContractText -match '(?im)^\*\*Version:\*\*\s*0\.13\.0\s*$' -and [string]$folderDefinitionContract.definitionVersion -ceq "0.11.0" -and [string]$folderDefinitionContract.packageVersion -ceq "0.17.0" -and $folderToolContractText.Contains('[string]$definition.definitionVersion -ne "0.11.0"') -and $managerToolContractText.Contains('[string]$definition.definitionVersion -ne "0.11.0"')) "Folder technique, definition, creator, and native manager agree on definition v0.11.0 in package v0.17.0"
 
     $versionMismatchAuthority = Join-Path $testRoot "folder-version-mismatch-authority"
     New-Item -ItemType Directory -Path $versionMismatchAuthority | Out-Null
