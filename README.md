@@ -5,13 +5,13 @@
 
 Adds the manifest-selected [brick contract](GeurtsTechniques/GeurtsBrickContract.md) and [machine-readable catalogue](GeurtsTechniques/GeurtsBrickCatalogue.json). AI-assisted Unity development must use a suitable available Geurts brick before recreating its functionality. God owns package management, lifecycle, shared contracts and settings. The current user's mandatory Odin Inspector and Quantum Console requirement supersedes older Unity companion tool exemptions. Documentation-interface implementation remains in its separately maintained repository.
 
-God 0.7.1 is maintained in its own [com.geurts.gameforge.god repository](https://github.com/Geurtsy/com.geurts.gameforge.god). The complete standalone Diagnostics 0.4.2 and Documentation Companion 0.8.1 are also available from their merged Git sources. The catalogue pins the exact verified revisions for all three packages. God 0.7.1 requires Documentation Companion 0.8.1 for the Build Forge setup checklist and its shared installers. Six roadmap bricks are listed as **Planned**: Settings System; Scene Loading and Bootstrap; Save and Load; Audio; User Interface Foundations; Object Pooling. These entries have no release version or installation source and do not represent published packages.
+God is maintained in its own [com.geurts.gameforge.god repository](https://github.com/Geurtsy/com.geurts.gameforge.god). God 0.8.0 is an unreleased update that removes the Documentation prerequisite and names its package-management interface **Game Forge God**. Its catalogue entry has no installation source until the release is verified. Documentation Companion 0.9.0 is the unreleased update that adds the public Editor API for the optional integration. The catalogue retains the verified Diagnostics 0.4.2 and Documentation Companion 0.8.1 release pins; the earlier companion remains separately usable. Six roadmap bricks are listed as **Planned**: Settings System; Scene Loading and Bootstrap; Save and Load; Audio; User Interface Foundations; Object Pooling. These entries have no release version or installation source and do not represent published packages.
 
 God 0.5.0 and standalone Diagnostics are governed by the [Diagnostics Technique](GeurtsTechniques/GeurtsDiagnosticsTechnique.md). Diagnostics 0.4.2 provides the resizable performance overlay with a font-safe ASCII resize grip and formats Help so every command name has its own line with indented details. Diagnostics requires God 0.5.0; install or update God before Diagnostics.
 
-Brick Manager distinguishes **Planned**, **Available** and **Installed** independently of update status. `released: false` marks a planned catalogue entry; `released: true` marks a published release. Installed is determined from the actual Unity project. Planned entries carry no installation actions or update checks. Their package identifiers reserve catalogue identities; release versions, sources and verified compatibility are selected when the packages are implemented and published.
+Game Forge God distinguishes **Planned**, **Available** and **Installed** independently of update status. `released: false` marks an unreleased catalogue entry; `released: true` marks a published release. Installed is determined from the actual Unity project. Unreleased entries carry no installation actions or update checks. Their package identifiers reserve catalogue identities; release versions, sources and verified compatibility are selected when the packages are implemented and published.
 
-**Version:** 0.17.1
+**Version:** 0.18.0
 **Unity target:** Unity 6.3 LTS (6000.3)
 **Status:** Draft technique package
 **Primary audience:** Human developers
@@ -20,9 +20,13 @@ Brick Manager distinguishes **Planned**, **Available** and **Installed** indepen
 
 ## Installing God or switching an existing installation
 
-After importing licensed Odin Inspector and Quantum Console and installing the Documentation Companion, select **Add package from Git URL** in Unity Package Manager and use the exact `source` for `com.geurts.gameforge.god` from the [current catalogue](GeurtsTechniques/GeurtsBrickCatalogue.json). God is now the package at the repository root, so its new source has no `?path=/Packages/...` suffix. The package identifier, assembly names and asset GUIDs remain unchanged.
+For God 0.8.0 or later, import licensed Odin Inspector and Quantum Console, then install God through Unity Package Manager. Documentation is optional and does not need to be installed first. When the God release is published, select **Add package from Git URL** and use its verified exact `source` from the [current catalogue](GeurtsTechniques/GeurtsBrickCatalogue.json); an unreleased entry intentionally has no source. God is the package at its repository root, so its source has no `?path=/Packages/...` suffix. The package identifier, assembly names and asset GUIDs remain unchanged.
 
-Existing immutable pins to God in `Geurtsy/GeurtsGameForge` remain valid in that repository's history. Existing clients check the Git repository from which they were installed and do not automatically cross repository boundaries; refreshing the catalogue alone does not switch that source. Switch an existing installation once through Unity Package Manager using the new exact catalogue source, then verify that the resolved package is God 0.7.1 from `Geurtsy/com.geurts.gameforge.god`.
+Open **Game Forge God** to install the Documentation Companion from its package card. Package **Update** updates the Unity companion; **Update Geurts Game Forge Documentation** separately installs or replaces the actual `GeurtsGameForgeDocumentation/` content through the companion. The content action keeps the companion's one cancel-default confirmation covering the documentation folder and three AI routes. Updating a package or selecting package **Update All** does not silently replace documentation content. If a compatible companion is missing, the interface explains which package to install or update. God remains usable without it.
+
+The forge image has a visible outline and puffs smoke while bouncing gently during active work. It rests when work ends. The adjacent stage and result text describe the actual operation; the animation is an activity indicator rather than a completion percentage.
+
+Existing immutable pins to God in `Geurtsy/GeurtsGameForge` remain valid in that repository's history. Existing clients check the Git repository from which they were installed and do not automatically cross repository boundaries; refreshing the catalogue alone does not switch that source. Switch an existing installation once through Unity Package Manager using the verified exact catalogue source, then verify the resolved identity, version and commit from `Geurtsy/com.geurts.gameforge.god`. God 0.7.1 and earlier retain their historical Documentation dependency until upgraded.
 
 ## Audience tags
 
@@ -40,7 +44,7 @@ New and modified Unity code and examples target **Unity 6.3 LTS (6000.3)**. The 
 
 Within its declared implementation scope, the Technical Technique requires licensed, Unity 6.3-compatible Odin Inspector and Quantum Console dependencies and requires meaningful use of their authoring, validation, inspection, command, logging, and diagnostics capabilities. Missing dependencies are implementation blockers. The manifest-selected Brick Contract extends that requirement to the independent Documentation Companion; this documentation source repository contains no commercial tool assets.
 
-This repository contains documentation, C# fragments, and host-side PowerShell utilities. It contains no Unity project or companion implementation. Its checks validate the documentation package and tools; actual Unity compilation and player compatibility must be verified in the consuming project. The package remains the v0.17.1 draft; the Technical Technique remains v0.11.0.
+This repository contains documentation, C# fragments, and host-side PowerShell utilities. It contains no Unity project or companion implementation. Its checks validate the documentation package and tools; actual Unity compilation and player compatibility must be verified in the consuming project. The package remains the v0.18.0 draft; the Technical Technique remains v0.11.0.
 
 ## Source and Ownership Boundary
 
@@ -74,7 +78,7 @@ Those are the current tracked top-level entries, not an installation allowlist. 
 
 ## Independent Unity Editor Companion
 
-The Windows-only, Editor-only companion is installed into an existing Unity project from its separate Git repository through Unity Package Manager. That is the only companion installation mechanism. It requires licensed Odin Inspector and Quantum Console installations. There is no external installer, Windows bootstrap, batch-driven setup, separate setup action, or dependency on Geurts Game Forge God or Game Forge Intelligence.
+The Windows-only, Editor-only companion is installed into an existing Unity project from its separate Git repository through Unity Package Manager, either directly or through Game Forge God's package card. That is the only companion installation mechanism. It requires licensed Odin Inspector and Quantum Console installations. There is no external installer, Windows bootstrap, batch-driven setup, separate setup action, or dependency on Geurts Game Forge God or Game Forge Intelligence.
 
 After importing the licensed tools, in Unity Package Manager choose **Add package from Git URL** and use the companion repository's merged Windows package source:
 
@@ -167,6 +171,14 @@ PowerShell 7 may replace `powershell` with `pwsh`. The validator checks package,
 Update the companion package to 0.7.0 before updating documentation to 0.13.1 (contract schema 2.0.0). In Geurts Documentation, select **Install Codex guide**, choose a location and confirm the displayed entry point. The installer creates AGENTS.md for automatic Codex discovery. The template exists only in GeurtsAgentTechnique.md. Normal documentation updates no longer manage a root Codex guide; replace an old guide by selecting its location in the new installer.
 
 ## Changelog
+
+### v0.18.0 — Install God first and manage Documentation through Game Forge God
+
+- Removes Documentation as a required God package or assembly dependency. God stays usable without the optional companion and offers installation through its catalogue interface.
+- Separates companion package updates from updates of the actual documentation content. The content action delegates to the companion and preserves its schema-2.0.0 confirmation, source and exact four-target boundary.
+- Renames the package-management interface to **Game Forge God** and specifies an outlined forge with smoke-puff and bounce activity animation.
+- Advances Brick Contract to 1.3.0 and Companion Technique to 2.1.0; preserves the prior Build Forge step 5 guidance, independent GDD authority, route templates, payloads and contract schemas.
+- Marks God 0.8.0 as unreleased without an invented install source; keeps existing verified companion and Diagnostics pins until new releases are verified.
 
 ### v0.17.1 — Count game design context as Build Forge step 5
 

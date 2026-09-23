@@ -1,9 +1,9 @@
 <!-- GEURTS-AUDIENCE: AI-READ -->
 # Geurts Documentation Companion Technique
 
-**Version:** 2.0.0
+**Version:** 2.1.0
 **Contract schema:** 2.0.0
-**Package version:** 0.17.1
+**Package version:** 0.18.0
 **Status:** Draft normative technique
 **Primary audience:** Geurts Documentation Companion implementers and package maintainers
 **Secondary audience:** AI coding agents and human developers
@@ -26,6 +26,14 @@ GeurtsTechniques/GeurtsDocumentationCompanionContract.json
 This repository contains no Documentation Companion plugin code. A Geurts documentation release does not require a companion-package release unless the companion must add support for a changed contract schema.
 
 There is no external installer, Windows bootstrap, batch-driven setup, or separate companion setup action. Installing the Editor package through Unity Package Manager is the only companion installation route defined here.
+
+### Optional Game Forge God integration
+
+God may be installed before this companion. Its **Game Forge God** interface may install or update the optional companion through Unity Package Manager and separately expose **Update Geurts Game Forge Documentation** through the companion's public Editor integration. God must remain usable when the companion is absent or its integration API is incompatible. The companion remains independent of God; no reverse dependency, duplicate updater, or bundled generic documentation is introduced.
+
+The package and documentation content have independent versions and update actions. A companion package update does not replace the project-local documentation content. A content Update invoked from Game Forge God uses this technique's same exact action, confirmation, source, validation and closed mutation boundary. It must show the one cancel-default confirmation before archive acquisition, including on the first content installation. God does not add an earlier preview, another confirmation, additional automatic checks, or an automatic content Update after package installation or Update All.
+
+The companion may expose its current busy state and explanatory operation status to Game Forge God so both interfaces report the same work and prevent conflicting package/content operations. A missing integration API must produce an actionable companion-update message, not a second implementation of this lifecycle. Neither the integration nor busy-state presentation grants access to any additional project path or script.
 
 ## 2. Closed Data Contract
 

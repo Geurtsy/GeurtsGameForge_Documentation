@@ -1,5 +1,5 @@
 # RunAutomationTests.ps1
-# Version: 0.17.1
+# Version: 0.18.0
 
 [CmdletBinding()]
 param(
@@ -274,7 +274,7 @@ try {
     $draftManifestText = [System.IO.File]::ReadAllText((Join-Path $RepositoryRoot "GeurtsTechniqueManifest.md"))
     $draftReadmeText = [System.IO.File]::ReadAllText((Join-Path $RepositoryRoot "README.md"))
     $targetMigrationText = [System.IO.File]::ReadAllText((Join-Path $RepositoryRoot "Migrations/v0.11.0.md"))
-    Assert-True ($draftManifestText -match '(?im)^\*\*Version:\*\*\s*0\.17\.1\s*$' -and $draftManifestText -match '(?im)^\*\*Status:\*\*\s*Draft normative package manifest\s*$' -and $draftReadmeText -match '(?im)^\*\*Status:\*\*\s*Draft technique package\s*$' -and $targetMigrationText -match '(?i)planned transition' -and $targetMigrationText -match '(?i)target-release snapshot' -and $targetMigrationText -notmatch '(?i)(?:v0\.17\.1|package v0\.17\.1)[^\r\n]{0,80}(?:is|was|has been) released') "v0.17.1 remains a Draft target release with a planned snapshot rather than a completed-release claim"
+    Assert-True ($draftManifestText -match '(?im)^\*\*Version:\*\*\s*0\.18\.0\s*$' -and $draftManifestText -match '(?im)^\*\*Status:\*\*\s*Draft normative package manifest\s*$' -and $draftReadmeText -match '(?im)^\*\*Status:\*\*\s*Draft technique package\s*$' -and $targetMigrationText -match '(?i)planned transition' -and $targetMigrationText -match '(?i)target-release snapshot' -and $targetMigrationText -notmatch '(?i)(?:v0\.18\.0|package v0\.18\.0)[^\r\n]{0,80}(?:is|was|has been) released') "v0.18.0 remains a Draft target release with a planned snapshot rather than a completed-release claim"
 
     $gfiContractText = [System.IO.File]::ReadAllText((Join-Path $RepositoryRoot "GeurtsTechniques/GeurtsGameForgeIntelligenceTechnique.md"))
     Assert-True ($gfiContractText -match '(?i)sole primary source and authority for all Geurts Game Forge documentation' -and $gfiContractText.Contains("<PluginPackageRoot>/Documentation~/") -and $gfiContractText -match '(?i)must not ship a bundled or fallback copy of Geurts documentation') "Frozen GFI v2 keeps this repository authoritative and plugin Documentation~ plugin-specific"
@@ -311,9 +311,9 @@ try {
         ".github/instructions/geurts-unity.instructions.md|replace-complete-file",
         ".github/instructions/geurts-game-design.instructions.md|replace-complete-file"
     )
-    Assert-True ([string]$companionContract.schemaVersion -ceq "2.0.0" -and [string]$companionContract.packageVersion -ceq "0.17.1" -and [string]$companionContract.source.repository -ceq "https://github.com/Geurtsy/GeurtsGameForge_Documentation.git" -and [string]$companionContract.source.branch -ceq "main" -and [string]$companionContract.source.selection -ceq "exact-resolved-head-commit-archive") "Companion contract identifies schema 2.0.0, package v0.17.1, and the official exact-main-commit archive source"
+    Assert-True ([string]$companionContract.schemaVersion -ceq "2.0.0" -and [string]$companionContract.packageVersion -ceq "0.18.0" -and [string]$companionContract.source.repository -ceq "https://github.com/Geurtsy/GeurtsGameForge_Documentation.git" -and [string]$companionContract.source.branch -ceq "main" -and [string]$companionContract.source.selection -ceq "exact-resolved-head-commit-archive") "Companion contract identifies schema 2.0.0, package v0.18.0, and the official exact-main-commit archive source"
     Assert-True ([string]$companionContract.destination.projectRelativePath -ceq "GeurtsGameForgeDocumentation" -and [string]$companionContract.destination.replacement -ceq "complete-directory" -and [string]$companionContract.destination.access -ceq "logically-read-only") "Companion contract names the one logically-read-only complete documentation destination"
-    Assert-True ((@($companionContract.validationEntries) -join "|") -ceq ($expectedCompanionValidationEntries -join "|") -and @($companionContract.validationEntries | Select-Object -Unique).Count -eq 8) "Current companion contract names the exact eight unique package-v0.17.1 source-validation entries"
+    Assert-True ((@($companionContract.validationEntries) -join "|") -ceq ($expectedCompanionValidationEntries -join "|") -and @($companionContract.validationEntries | Select-Object -Unique).Count -eq 8) "Current companion contract names the exact eight unique package-v0.18.0 source-validation entries"
     Assert-True (($actualCompanionRoutes -join "|") -ceq ($expectedCompanionRoutes -join "|") -and ($actualConfirmationTargets -join "|") -ceq ($expectedConfirmationTargets -join "|") -and [string]$companionContract.updateUi.actionLabel -ceq "Update Geurts Game Forge Documentation" -and [string]$companionContract.updateUi.confirmationDefault -ceq "cancel" -and [string]$companionContract.updateUi.cancelResult -ceq "no-network-or-filesystem-change") "Companion contract fixes three template routes and one cancel-default four-target Update confirmation"
     Assert-True ($companionTechniqueText -match '(?i)one confirmation dialog' -and $companionTechniqueText -match '(?i)no earlier preview, dry run[^\r\n]{0,100}second confirmation' -and $companionTechniqueText -match '(?i)confirmation occurs before archive acquisition' -and $companionTechniqueText -match '(?i)earlier approval does not authorize a changed or expanded managed target set') "Confirmation uses the built-in schema-2.0.0 target set before acquisition and cannot authorize a changed downloaded target set"
     Assert-True ($companionTechniqueText -match '(?i)`packageVersion` is source-release metadata, not a companion compatibility gate' -and $companionTechniqueText -match '(?i)later package version alone must not require a companion release' -and $companionTechniqueText -match '(?i)schema-2\.0\.0 consumer may read a later list rather than pinning v0\.11\.0' -and $companionTechniqueText -match '(?i)every entry must be unique, safe, readable, and archive-root-relative') "Schema 2.0.0 keeps package versions and safe validation entries forward-compatible while mutation routes remain fixed"
@@ -939,7 +939,7 @@ Technical design and implementation guidance remains authoritative in `GeurtsGam
     $folderDefinitionContract = Get-Content -LiteralPath $definitionPath -Raw | ConvertFrom-Json
     $folderToolContractText = [System.IO.File]::ReadAllText($folderScript)
     $managerToolContractText = [System.IO.File]::ReadAllText($manageScript)
-    Assert-True ($folderTechniqueContractText -match '(?im)^\*\*Version:\*\*\s*0\.13\.0\s*$' -and [string]$folderDefinitionContract.definitionVersion -ceq "0.11.0" -and [string]$folderDefinitionContract.packageVersion -ceq "0.17.1" -and $folderToolContractText.Contains('[string]$definition.definitionVersion -ne "0.11.0"') -and $managerToolContractText.Contains('[string]$definition.definitionVersion -ne "0.11.0"')) "Folder technique, definition, creator, and native manager agree on definition v0.11.0 in package v0.17.1"
+    Assert-True ($folderTechniqueContractText -match '(?im)^\*\*Version:\*\*\s*0\.13\.0\s*$' -and [string]$folderDefinitionContract.definitionVersion -ceq "0.11.0" -and [string]$folderDefinitionContract.packageVersion -ceq "0.18.0" -and $folderToolContractText.Contains('[string]$definition.definitionVersion -ne "0.11.0"') -and $managerToolContractText.Contains('[string]$definition.definitionVersion -ne "0.11.0"')) "Folder technique, definition, creator, and native manager agree on definition v0.11.0 in package v0.18.0"
 
     $versionMismatchAuthority = Join-Path $testRoot "folder-version-mismatch-authority"
     New-Item -ItemType Directory -Path $versionMismatchAuthority | Out-Null
@@ -1060,6 +1060,8 @@ Technical design and implementation guidance remains authoritative in `GeurtsGam
         "Documentation companion closed contract",
         "Companion schema forward compatibility",
         "Documentation companion architecture boundary",
+        "God-first optional Documentation boundary",
+        "God documentation content integration",
         "No Unity companion implementation in documentation source",
         "Companion metadata-only startup",
         "Companion confirmation and complete update",
@@ -1071,6 +1073,27 @@ Technical design and implementation guidance remains authoritative in `GeurtsGam
     Assert-True ($staticJsonValidation.Code -eq 0 -and $staticJsonObject -and $staticJsonObject.status -eq "VALID" -and @($staticJsonObject.checks | Where-Object { -not $_.passed }).Count -eq 0 -and $missingLifecycleChecks.Count -eq 0) "Repository validation JSON output is parseable and contains every passing companion and frozen-GFI boundary check"
 
     # Mutated package fixtures must fail without changing the source checkout or any Unity project.
+    $godDependencyFixture = New-StaticValidationFixture -Parent $testRoot -Name "static-god-required-documentation"
+    $godCataloguePath = Join-Path $godDependencyFixture "GeurtsTechniques/GeurtsBrickCatalogue.json"
+    $godCatalogue = [System.IO.File]::ReadAllText($godCataloguePath) | ConvertFrom-Json
+    $godEntry = @($godCatalogue.bricks | Where-Object { $_.id -ceq "com.geurts.gameforge.god" })[0]
+    $godEntry.dependencies = @([pscustomobject]@{ id = "com.geurts.gameforge.documentation"; minimumVersion = "0.8.1" })
+    Write-Utf8 -Path $godCataloguePath -Text ($godCatalogue | ConvertTo-Json -Depth 10)
+    $godDependencyRun = Invoke-TestScript -Path $validatorScript -Arguments @('-RepositoryRoot', $godDependencyFixture)
+    Assert-True ($godDependencyRun.Code -ne 0 -and $godDependencyRun.Output.Contains('[FAIL] God-first optional Documentation boundary')) "Validator rejects reintroducing Documentation as a required God catalogue dependency"
+
+    $godContentFixture = New-StaticValidationFixture -Parent $testRoot -Name "static-god-content-confirmation"
+    $godContentPath = Join-Path $godContentFixture "GeurtsTechniques/GeurtsDocumentationCompanionTechnique.md"
+    Write-Utf8 -Path $godContentPath -Text ([System.IO.File]::ReadAllText($godContentPath).Replace('one cancel-default confirmation before archive acquisition, including on the first content installation', 'confirmation only after the first content installation'))
+    $godContentRun = Invoke-TestScript -Path $validatorScript -Arguments @('-RepositoryRoot', $godContentFixture)
+    Assert-True ($godContentRun.Code -ne 0 -and $godContentRun.Output.Contains('[FAIL] God documentation content integration')) "Validator rejects exempting the first content installation from the companion confirmation"
+
+    $godPackageFixture = New-StaticValidationFixture -Parent $testRoot -Name "static-god-package-content-coupling"
+    $godPackagePath = Join-Path $godPackageFixture "GeurtsTechniques/GeurtsBrickContract.md"
+    Write-Utf8 -Path $godPackagePath -Text ([System.IO.File]::ReadAllText($godPackagePath).Replace('Package Update All must not silently acquire or replace documentation content', 'Package Update All automatically replaces documentation content'))
+    $godPackageRun = Invoke-TestScript -Path $validatorScript -Arguments @('-RepositoryRoot', $godPackageFixture)
+    Assert-True ($godPackageRun.Code -ne 0 -and $godPackageRun.Output.Contains('[FAIL] God documentation content integration')) "Validator rejects silently coupling package Update All to content replacement"
+
     foreach ($audienceCase in @('hidden-entry', 'missing-tag', 'unclosed-section')) {
         $audienceFixture = New-StaticValidationFixture -Parent $testRoot -Name ("static-audience-" + $audienceCase)
         $audiencePath = Join-Path $audienceFixture 'AI_READ_FIRST.md'

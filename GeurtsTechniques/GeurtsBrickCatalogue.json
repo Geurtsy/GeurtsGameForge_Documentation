@@ -1,7 +1,6 @@
 {
   "schemaVersion": 1,
-  "packageVersion": "0.17.1",
-  "publishedUtc": "2026-09-23T10:41:06Z",
+  "packageVersion": "0.18.0",
   "bricks": [
     {
       "id": "com.geurts.gameforge.documentation",
@@ -24,25 +23,20 @@
     {
       "id": "com.geurts.gameforge.god",
       "name": "Geurts Game Forge God",
-      "description": "Build Forge project setup, Brick Manager, lifecycle, settings and optional brick cooperation.",
+      "description": "Game Forge God package management, Build Forge setup, optional Documentation integration, lifecycle and settings.",
       "website": "https://github.com/Geurtsy/com.geurts.gameforge.god",
-      "version": "0.7.1",
-      "released": true,
+      "version": "0.8.0",
+      "released": false,
       "developmentOnly": false,
-      "sourceKind": "git",
-      "source": "https://github.com/Geurtsy/com.geurts.gameforge.god.git#9569fba55886e6de51c408b2ba90df5ba6610d9c",
+      "sourceKind": "",
+      "source": "",
       "minimumUnity": "6000.3",
       "maximumUnity": "6000.3",
       "requiredTools": [
         "Odin Inspector",
         "Quantum Console"
       ],
-      "dependencies": [
-        {
-          "id": "com.geurts.gameforge.documentation",
-          "minimumVersion": "0.8.1"
-        }
-      ]
+      "dependencies": []
     },
     {
       "id": "com.geurts.gameforge.diagnostics",
