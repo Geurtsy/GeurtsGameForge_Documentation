@@ -1,9 +1,9 @@
 <!-- GEURTS-AUDIENCE: AI-READ -->
 # Geurts Diagnostics Technique
 
-**Version:** 0.2.3
+**Version:** 0.2.4
 **Required package path:** `GeurtsTechniques/GeurtsDiagnosticsTechnique.md`
-**Implementation baseline:** God 0.9.1 and Diagnostics 0.5.1, published at the immutable commits in the catalogue; verify the actual installed package. Diagnostics' minimum God dependency remains 0.9.0. The shared Editor theme is governed by the manifest-selected Editor UI Theme Technique.
+**Implementation baseline:** God 0.9.1 and Diagnostics 0.5.2, published at the immutable commits in the catalogue; verify the actual installed package. Diagnostics' minimum God dependency remains 0.9.0. The shared Editor theme is governed by the manifest-selected Editor UI Theme Technique.
 
 The manifest selects this technique for Diagnostics integration, logging, console policy, runtime metrics, health checks, inspection and gameplay cheat-session hooks. Technical trade-offs remain owned by the Technical Technique; the Brick Contract owns general lifecycle/settings and the catalogue. This file does not authorize installing packages or replacing project design facts.
 
@@ -126,6 +126,8 @@ Do not add frame-time or error-count overlays. Sample native Windows metrics awa
 
 The performance overlay automatically fits its current enabled metric content and refits when that content or its canvas dimensions change. It exposes a visible drag strip for runtime positioning and a resize grip for manual sizing. Beginning a manual resize disables automatic sizing; manual size and top-right-relative position persist through the shared brick settings. Clamp both dimensions and position so the controls remain reachable inside the current canvas. Runtime controls and Odin preferences expose the auto-fit setting, and runtime controls provide one reset action that restores automatic sizing and the default top-right position.
 
+The runtime **Metrics** view exposes a **Background transparency** slider with a visible percentage: **0% is solid** and **100% is clear**. The default is **12%**, preserving the earlier background alpha of **0.88**. Change only the performance overlay background; metric text, the drag strip and the resize grip retain their existing opacity and remain usable. Expose the same persisted preference in the Editor's Odin settings and use the shared brick settings store across sessions. The layout reset continues to reset only sizing and position; it must not reset background transparency.
+
 ## Validation and migration
 
 The package's importable Basic Diagnostics Setup sample demonstrates actual game-owned coins, inspection, health checks, three session policies, failed/committed zone transitions and saved cheat provenance. It does not automatically start gameplay or install a framework. Legacy `GeurtsDiagnosticsManager`, `GeurtsLogger` and sink APIs are compatibility surfaces only; the old manager cannot start/stop the shared service. Legacy settings assets retain serialized data but no longer control active behavior.
@@ -133,5 +135,7 @@ The package's importable Basic Diagnostics Setup sample demonstrates actual game
 Validate exact-once logging/fallback, exceptions/context, worker bursts larger than a frame budget, malformed preferences, repeated enable/disable, domain-reload modes, real QC help/autocomplete/denials, Player responses while paused, scene/EventSystem/input persistence, large filtered history, save/zone/authority hooks and actual Windows counters. Exercise release builds and relevant scripting backends, recording unavailable modules honestly. Compilation alone is not behavioral, visual or player validation.
 
 For runtime control presentation, inspect Channel, Window controls, Views and Logs actions at normal and reduced console sizes. Verify visible selection and focus, readable green accents and semantic log colors, access to the command input, audience/filter persistence, pause/resume and history navigation. Exercise Fullscreen/Restore, native zoom, windowed dragging and the diagonal resize grip, display shrink while fullscreen, minimum width and automatic height growth, and a large metrics overlay that returns to the foreground without covering fullscreen controls. Changing presentation must preserve actual help, autocomplete, execution denial and cheat/host checks.
+
+For overlay transparency, verify 0%, 12% and 100%, the visible percentage and persisted runtime/Odin preference, unchanged text and handle opacity, and layout reset preserving the chosen transparency. Confirm that moving and resizing the overlay still work at both slider endpoints.
 
 No diagnostic report-export feature is part of this scope. Build/test evidence belongs to development tooling, not a runtime export command.
