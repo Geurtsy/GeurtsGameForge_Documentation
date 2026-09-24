@@ -5,17 +5,19 @@
 
 Adds the manifest-selected [brick contract](GeurtsTechniques/GeurtsBrickContract.md) and [machine-readable catalogue](GeurtsTechniques/GeurtsBrickCatalogue.json). AI-assisted Unity development must use a suitable available Geurts brick before recreating its functionality. God owns package management, lifecycle, shared contracts and settings. God, dependent bricks and the optional Documentation Companion require separately installed licensed Odin Inspector and Quantum Console assemblies. The companion remains independent without God or other Unity Package Manager package dependencies. Documentation-interface implementation remains in its separately maintained repository.
 
-God is maintained in its own [com.geurts.gameforge.god repository](https://github.com/Geurtsy/com.geurts.gameforge.god). The catalogue publishes verified immutable sources for **God 0.9.1**, **Documentation Companion 0.9.1** and **Diagnostics 0.5.2**. God 0.9.0 adds the shared Editor theme to God-first installation, optional Documentation integration and the **Game Forge God** interface. Diagnostics 0.5.2 requires God 0.9.0. Six roadmap bricks remain **Planned**: Settings System; Scene Loading and Bootstrap; Save and Load; Audio; User Interface Foundations; Object Pooling. These entries have no release version or installation source and do not represent published packages.
+God is maintained in its own [com.geurts.gameforge.god repository](https://github.com/Geurtsy/com.geurts.gameforge.god). The catalogue publishes verified immutable sources for **God 0.9.1**, **Documentation Companion 0.9.1** and **Diagnostics 0.6.0**. God 0.9.0 adds the shared Editor theme to God-first installation, optional Documentation integration and the **Game Forge God** interface. Diagnostics 0.6.0 requires God 0.9.0. Six roadmap bricks remain **Planned**: Settings System; Scene Loading and Bootstrap; Save and Load; Audio; User Interface Foundations; Object Pooling. These entries have no release version or installation source and do not represent published packages.
 
-God 0.9.1 and standalone Diagnostics 0.5.2 are governed by the [Diagnostics Technique](GeurtsTechniques/GeurtsDiagnosticsTechnique.md). Diagnostics retains the resizable performance overlay with a font-safe ASCII resize grip and formats Help so every command name has its own line with indented details. Its Editor window and owned inspectors reuse God's shared theme; install or update God to 0.9.0 or newer before Diagnostics 0.5.2.
+God 0.9.1 and standalone Diagnostics 0.6.0 are governed by the [Diagnostics Technique](GeurtsTechniques/GeurtsDiagnosticsTechnique.md). Diagnostics retains the resizable performance overlay with a font-safe ASCII resize grip and formats Help so every command name has its own line with indented details. Its Editor window and owned inspectors reuse God's shared theme; install or update God to 0.9.0 or newer before Diagnostics 0.6.0.
 
-Diagnostics 0.5.2 separates runtime Quantum Console **Channel** (Player/Developer), **Window controls** (Fullscreen/Restore), **Views** and **Logs** actions, with dark surfaces and green interaction accents. Views are Logs, Filters, Health, Inspect, Metrics, History and Session; the renamed Filters and Metrics controls retain their existing topic/severity and overlay behavior. Fullscreen keeps native zoom available, and Restore returns to the previous window layout within the current display. Audience classification, command permissions and the separate Editor-only theme standard remain unchanged.
+Diagnostics 0.6.0 separates runtime Quantum Console **Channel** (Player/Developer), **Window controls** (Fullscreen/Restore), **Views** and **Logs** actions, with dark surfaces and green interaction accents. Views are Logs, Filters, Health, Inspect, Metrics, History and Session; the renamed Filters and Metrics controls retain their existing topic/severity and overlay behavior. Fullscreen keeps native zoom available, and Restore returns to the previous window layout within the current display. Audience classification, command permissions and the separate Editor-only theme standard remain unchanged.
 
-Diagnostics 0.5.2 adds **Background transparency** in Metrics and the same saved preference in Odin settings: 0% is solid, 100% is clear, and the 12% default preserves the previous appearance. Only the overlay background fades; text and movement/resize handles retain their opacity. Layout reset leaves transparency unchanged.
+Diagnostics 0.6.0 includes **Background transparency** in Metrics and the same saved preference in Odin settings: 0% is solid, 100% is clear, and the 12% default preserves the previous appearance. Only the overlay background fades; text and movement/resize handles retain their opacity. Layout reset leaves transparency unchanged.
+
+Diagnostics 0.6.0 adds **Select text** / **Exit selection** to runtime and Editor Logs. Select and copy across the current loaded page with pointer/Shift selection and Ctrl+A/C while capture continues; the snapshot is read-only and clears when its display scope changes. Ctrl+V remains in the existing runtime command input without automatically executing pasted text. Runtime selection refuses pages exceeding 12,000 rendered visual lines and explains how to reduce the loaded page or collapse details; this renderer guard does not limit Editor selection or retained history.
 
 Game Forge God distinguishes **Planned**, **Available** and **Installed** independently of update status. `released: false` marks an unreleased catalogue entry; `released: true` marks a published release. Installed is determined from the actual Unity project. Unreleased entries carry no installation actions or update checks. Their package identifiers reserve catalogue identities; release versions, sources and verified compatibility are selected when the packages are implemented and published.
 
-**Version:** 0.19.2
+**Version:** 0.20.0
 **Unity target:** Unity 6.3 LTS (6000.3)
 **Status:** Draft technique package
 **Primary audience:** Human developers
@@ -48,7 +50,7 @@ New and modified Unity code and examples target **Unity 6.3 LTS (6000.3)**. The 
 
 Within its declared implementation scope, the Technical Technique requires licensed, Unity 6.3-compatible Odin Inspector and Quantum Console dependencies and requires meaningful use of their authoring, validation, inspection, command, logging, and diagnostics capabilities. Missing dependencies are implementation blockers. The independent Documentation Companion also requires these separately installed licensed assemblies while retaining no God or other Unity Package Manager package dependency; this documentation source repository contains no commercial tool assets.
 
-This repository contains documentation, C# fragments, and host-side PowerShell utilities. It contains no Unity project or companion implementation. Its checks validate the documentation package and tools; actual Unity compilation and player compatibility must be verified in the consuming project. The package remains the v0.19.2 draft; the Technical Technique is v0.12.0.
+This repository contains documentation, C# fragments, and host-side PowerShell utilities. It contains no Unity project or companion implementation. Its checks validate the documentation package and tools; actual Unity compilation and player compatibility must be verified in the consuming project. The package remains the v0.20.0 draft; the Technical Technique is v0.12.0.
 
 ## Mandatory Forge Editor theme
 
@@ -182,6 +184,16 @@ PowerShell 7 may replace `powershell` with `pwsh`. The validator checks package,
 The current verified companion package is 0.9.1; use its immutable source from the catalogue. In Geurts Documentation, select **Install Codex guide**, choose a location and confirm the displayed entry point. The installer creates AGENTS.md for automatic Codex discovery. The template exists only in GeurtsAgentTechnique.md. Normal documentation updates do not manage a root Codex guide; replace an old guide by selecting its location in the installer. The content-update contract remains schema 2.0.0.
 
 ## Changelog
+
+### v0.20.0 — Select and copy console text
+
+- Advances Diagnostics Technique to 0.3.0 with an explicit Select text / Exit selection mode in runtime Quantum Console and the Forge Diagnostics Editor console, supporting selection across the current filtered, loaded log page and Ctrl+A/C.
+- Requires a stable read-only snapshot, plain literal message text, expanded-only source/context details, continued capture independent of log pause, and clearing selection when audience, view, page, settings or service scope changes.
+- Preserves native Quantum Console command-input paste without automatic execution and existing Editor clipboard destinations; adds no parallel command executor or retained-history export.
+- Defines the runtime-only 12,000-rendered-line selection capacity guard, checked again after width changes, with a persistent explanation to reduce the History loaded limit or collapse expanded records; snapshots are never silently truncated.
+- Publishes Diagnostics 0.6.0 in the catalogue at verified immutable main commit `ed5818781f034651ce55686f5cddade007940724`. Other package pins, Scene Loading and Bootstrap guidance, Editor theme rules and companion/folder schemas remain unchanged.
+- Diagnostics validation against the local release source passed 67 EditMode and 10 PlayMode tests. Mono and IL2CPP player builds each passed 140 runtime checks with no build warnings or errors, and screenshots of selected-text highlights were visually reviewed. The published source was separately verified through remote Git. These checks are separate from this repository's documentation validation and do not claim a consuming project's Git package upgrade.
+- Synchronizes documentation package metadata and tool guards for the new minor release.
 
 ### v0.19.2 — Add performance-overlay background transparency
 
