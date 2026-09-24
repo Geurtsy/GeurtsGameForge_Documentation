@@ -1,9 +1,9 @@
 <!-- GEURTS-AUDIENCE: AI-READ -->
 # Geurts Diagnostics Technique
 
-**Version:** 0.2.2
+**Version:** 0.2.3
 **Required package path:** `GeurtsTechniques/GeurtsDiagnosticsTechnique.md`
-**Implementation baseline:** God 0.9.1 and Diagnostics 0.5.0, published at the immutable commits in the catalogue; verify the actual installed package. Diagnostics' minimum God dependency remains 0.9.0. The shared Editor theme is governed by the manifest-selected Editor UI Theme Technique.
+**Implementation baseline:** God 0.9.1 and Diagnostics 0.5.1, published at the immutable commits in the catalogue; verify the actual installed package. Diagnostics' minimum God dependency remains 0.9.0. The shared Editor theme is governed by the manifest-selected Editor UI Theme Technique.
 
 The manifest selects this technique for Diagnostics integration, logging, console policy, runtime metrics, health checks, inspection and gameplay cheat-session hooks. Technical trade-offs remain owned by the Technical Technique; the Brick Contract owns general lifecycle/settings and the catalogue. This file does not authorize installing packages or replacing project design facts.
 
@@ -35,6 +35,21 @@ Capture is thread-safe; Unity object inspection and serialization occur on the m
 The full Diagnostics console is reachable with tilde/backquote in **all supported builds**, including release. Player and Developer tabs are freely switchable; this tab is not an authentication boundary. It is separate from God's package-development mode and from the restricted testing override. Do not expose secrets merely because a record or command is Developer-classified.
 
 Use the existing Quantum Console canvas, input, parser, execution, history suggestions and lifecycle. Embed Diagnostics controls and its paged/virtualized log presentation into that console. The scoped extension of QC's existing uGUI is intentional; it is not a new competing runtime UI framework. Keep exactly one console and one Input System EventSystem across scene changes. Opening the console suspends configured gameplay action maps but does not pause simulation. Closing it restores only the input maps that this integration suspended.
+
+Present the runtime controls as visibly separate groups with readable labels:
+
+- **Channel** contains only **Player** and **Developer**, the audience tabs that filter record visibility and available classified commands. Changing channels never reclassifies a record or command. Identify the current channel through a visible selected treatment as well as green emphasis.
+- **Window controls** contains **Fullscreen** / **Restore**, separate from audience selection. These change only the existing console's layout, not the application's display mode or command permissions.
+- **Views** contains **Logs**, **Filters**, **Health**, **Inspect**, **Metrics**, **History** and **Session**. **Filters** is the visible label for the former Topics view; **Metrics** is the visible label for the former Overlay view. These navigate diagnostic content within the current channel; selecting a view never changes audience classification or grants command permission. Session retains the existing gameplay status, cheat controls and simulation-pause policy.
+- **Logs** contains the log actions **Pause logs** / **Resume logs**, **Older**, **Newer**, **Latest** and **Help**. Keep these distinct from channel, window and view navigation, and make their current state and applicability clear. Log display pause is never labelled or presented as gameplay pause. Help uses the existing classified command route.
+
+Use dark layered surfaces and green accents for the Diagnostics runtime controls, including selected, hover and keyboard-focus states. Scope the treatment to the existing Quantum Console integration and retain readable labels, command input, log text, scrolling and navigation when the console is resized. Preserve Info white, Warning yellow, Error red and each topic's assigned color; green branding is not a replacement for severity or classification. This runtime presentation belongs to Diagnostics and does not extend the Editor-only theme standard into game-authored UI or introduce an Editor dependency into runtime code.
+
+Fullscreen fits the existing console container within its canvas, reserving 52 canvas units above it for Quantum Console's native zoom tab and 8-unit side and bottom margins, bounded by the available display. Native zoom remains active while fullscreen; native dragging and drag-resizing are temporarily suspended. Restore reinstates the previous window geometry and prior interaction states, shrinking or moving the window only when needed to keep it reachable after the display becomes smaller. The native diagonal resize grip remains a drag-resize control in windowed mode, not a fullscreen button.
+
+While the console is open fullscreen, draw the existing metrics overlay behind it so the overlay cannot obscure Channel or Restore controls. Return the overlay to the foreground when the console closes or restores, without changing its saved size or position.
+
+At narrow sizes, allow the grouped controls to wrap, maintain a 480-unit logical minimum width bounded by the available canvas, and grow the runtime console height when the header would leave too little history space. Re-evaluate this fit when native zoom changes so labels, command input and a usable log area remain reachable within the current canvas bounds. Do not edit licensed vendor assets, vendor resize settings or saved Diagnostics preferences to achieve the fit. Presentation and layout changes never alter command permissions or gameplay authority.
 
 Player shows only explicitly Player records. Developer shows both audiences. Each tab retains independent topic selections and severity overrides. The match rule is:
 
@@ -116,5 +131,7 @@ The performance overlay automatically fits its current enabled metric content an
 The package's importable Basic Diagnostics Setup sample demonstrates actual game-owned coins, inspection, health checks, three session policies, failed/committed zone transitions and saved cheat provenance. It does not automatically start gameplay or install a framework. Legacy `GeurtsDiagnosticsManager`, `GeurtsLogger` and sink APIs are compatibility surfaces only; the old manager cannot start/stop the shared service. Legacy settings assets retain serialized data but no longer control active behavior.
 
 Validate exact-once logging/fallback, exceptions/context, worker bursts larger than a frame budget, malformed preferences, repeated enable/disable, domain-reload modes, real QC help/autocomplete/denials, Player responses while paused, scene/EventSystem/input persistence, large filtered history, save/zone/authority hooks and actual Windows counters. Exercise release builds and relevant scripting backends, recording unavailable modules honestly. Compilation alone is not behavioral, visual or player validation.
+
+For runtime control presentation, inspect Channel, Window controls, Views and Logs actions at normal and reduced console sizes. Verify visible selection and focus, readable green accents and semantic log colors, access to the command input, audience/filter persistence, pause/resume and history navigation. Exercise Fullscreen/Restore, native zoom, windowed dragging and the diagonal resize grip, display shrink while fullscreen, minimum width and automatic height growth, and a large metrics overlay that returns to the foreground without covering fullscreen controls. Changing presentation must preserve actual help, autocomplete, execution denial and cheat/host checks.
 
 No diagnostic report-export feature is part of this scope. Build/test evidence belongs to development tooling, not a runtime export command.
