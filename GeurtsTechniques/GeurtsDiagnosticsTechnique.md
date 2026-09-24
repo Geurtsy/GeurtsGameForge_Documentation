@@ -1,9 +1,9 @@
 <!-- GEURTS-AUDIENCE: AI-READ -->
 # Geurts Diagnostics Technique
 
-**Version:** 0.2.4
+**Version:** 0.3.0
 **Required package path:** `GeurtsTechniques/GeurtsDiagnosticsTechnique.md`
-**Implementation baseline:** God 0.9.1 and Diagnostics 0.5.2, published at the immutable commits in the catalogue; verify the actual installed package. Diagnostics' minimum God dependency remains 0.9.0. The shared Editor theme is governed by the manifest-selected Editor UI Theme Technique.
+**Implementation baseline:** God 0.9.1 and Diagnostics 0.6.0, published at the immutable commits in the catalogue; verify the actual installed package. Diagnostics' minimum God dependency remains 0.9.0. The shared Editor theme is governed by the manifest-selected Editor UI Theme Technique.
 
 The manifest selects this technique for Diagnostics integration, logging, console policy, runtime metrics, health checks, inspection and gameplay cheat-session hooks. Technical trade-offs remain owned by the Technical Technique; the Brick Contract owns general lifecycle/settings and the catalogue. This file does not authorize installing packages or replacing project design facts.
 
@@ -41,7 +41,7 @@ Present the runtime controls as visibly separate groups with readable labels:
 - **Channel** contains only **Player** and **Developer**, the audience tabs that filter record visibility and available classified commands. Changing channels never reclassifies a record or command. Identify the current channel through a visible selected treatment as well as green emphasis.
 - **Window controls** contains **Fullscreen** / **Restore**, separate from audience selection. These change only the existing console's layout, not the application's display mode or command permissions.
 - **Views** contains **Logs**, **Filters**, **Health**, **Inspect**, **Metrics**, **History** and **Session**. **Filters** is the visible label for the former Topics view; **Metrics** is the visible label for the former Overlay view. These navigate diagnostic content within the current channel; selecting a view never changes audience classification or grants command permission. Session retains the existing gameplay status, cheat controls and simulation-pause policy.
-- **Logs** contains the log actions **Pause logs** / **Resume logs**, **Older**, **Newer**, **Latest** and **Help**. Keep these distinct from channel, window and view navigation, and make their current state and applicability clear. Log display pause is never labelled or presented as gameplay pause. Help uses the existing classified command route.
+- **Logs** contains the log actions **Pause logs** / **Resume logs**, **Older**, **Newer**, **Latest**, **Help** and **Select text** / **Exit selection**. Keep these distinct from channel, window and view navigation, and make their current state and applicability clear. Log display pause is never labelled or presented as gameplay pause. Help uses the existing classified command route.
 
 Use dark layered surfaces and green accents for the Diagnostics runtime controls, including selected, hover and keyboard-focus states. Scope the treatment to the existing Quantum Console integration and retain readable labels, command input, log text, scrolling and navigation when the console is resized. Preserve Info white, Warning yellow, Error red and each topic's assigned color; green branding is not a replacement for severity or classification. This runtime presentation belongs to Diagnostics and does not extend the Editor-only theme standard into game-authored UI or introduce an Editor dependency into runtime code.
 
@@ -64,6 +64,20 @@ Each topic receives a readable, distinct-as-practical random colour on first reg
 Log display pause freezes incoming ordinary records in the view while capture continues. Responses and the resume control remain available. Gameplay pause is a different, cheat-gated action and must not be confused with display pause.
 
 Allowed responses return runtime presentation to latest Logs even from another view or older history; hidden Developer responses do not navigate Player presentation. Ending a gameplay session restores only the simulation pause owned by Diagnostics, so a subsequent clean session is not stranded paused.
+
+## Console text selection and clipboard
+
+Both the runtime Quantum Console integration and the Forge Diagnostics Editor console expose an explicit **Select text** / **Exit selection** toggle for Logs. Select text creates a stable, read-only text snapshot of the current filtered, loaded log page. Allow native pointer selection and Shift-based keyboard selection across record boundaries, **Ctrl+A** for that snapshot and **Ctrl+C** to copy the selected text. Do not reread the complete application history or imply that selecting the loaded page selects every retained record. Never silently truncate the snapshot.
+
+The runtime TextMeshPro selection control rejects a snapshot that would exceed **12,000 rendered visual lines**. Keep a persistent, actionable explanation that tells the user to reduce the **History** loaded limit or collapse expanded records, and recheck the capacity when the selection control's width changes. This is a runtime renderer capacity guard, not an Editor selection limit or a limit on retained history.
+
+Copy the displayed log content as plain text. Preserve literal message characters, including text that resembles rich-text markup; presentation-only color tags must not become clipboard content. Include source, context and exception details only for records whose details were expanded when the snapshot was created. The snapshot follows the existing audience, topic/severity, grouping and page selection; it never reveals hidden Developer content in Player.
+
+Selection freezes only its own text snapshot. Incoming ordinary records continue to be captured and retained without rewriting the text under an active selection. Entering or leaving selection must not change **Pause logs** / **Resume logs** state or gameplay pause. An allowed command response exits selection before the usual latest-Logs presentation so responses remain visible; hidden Developer responses do not navigate Player.
+
+Exit selection and clear the displayed snapshot when the channel, view, page, filters or display settings change, when the service stops or is replaced, and when the owning console/window closes. A Developer snapshot must not remain visible or selectable after switching to Player. Release selection-owned state and focus through normal UI lifecycle cleanup; never change the user's system clipboard merely because selection ends or its scope changes.
+
+The snapshot is read-only: typing, cut or paste cannot alter output or stored records. At runtime, **Ctrl+V** remains available in Quantum Console's existing editable command input; pasting inserts text and never executes a command automatically. In the Editor, copied text can be pasted into an existing editable field or another application through the normal clipboard. Do not add a parallel Editor command executor or bypass Quantum Console's existing parser, audience classification, cheat checks or host/server authority to support clipboard use. Keyboard shortcuts act on the focused control.
 
 ## Application-session history
 
@@ -138,4 +152,6 @@ For runtime control presentation, inspect Channel, Window controls, Views and Lo
 
 For overlay transparency, verify 0%, 12% and 100%, the visible percentage and persisted runtime/Odin preference, unchanged text and handle opacity, and layout reset preserving the chosen transparency. Confirm that moving and resizing the overlay still work at both slider endpoints.
 
-No diagnostic report-export feature is part of this scope. Build/test evidence belongs to development tooling, not a runtime export command.
+For text selection, verify multi-record pointer/Shift selection, Ctrl+A/C, exact plain text including literal markup, expanded-only details, a stable snapshot while new logs arrive, unchanged log-pause state, allowed responses, and snapshot removal after every scope/lifecycle change. Specifically switch Developer to Player during selection and confirm no Developer snapshot remains. Verify that typing/cut/paste cannot mutate output and that Ctrl+V in the existing command input never executes on its own. Check the runtime 12,000-rendered-line capacity boundary, the persistent recovery explanation, and a width change that makes a previously valid snapshot exceed capacity; there must be no silent truncation or corresponding Editor limit. Exercise the runtime and Editor clipboard paths separately; source review and synthetic input tests must not be reported as verified native clipboard interaction.
+
+No diagnostic report-export feature is part of this scope. User-selected clipboard copy of the loaded log page is not a retained-history export or a file-writing feature. Build/test evidence belongs to development tooling, not a runtime export command.
