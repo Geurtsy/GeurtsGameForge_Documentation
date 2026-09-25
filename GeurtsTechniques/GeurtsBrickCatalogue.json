@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "packageVersion": "0.20.0",
-  "publishedUtc": "2026-09-24T09:23:07Z",
+  "packageVersion": "0.20.1",
+  "publishedUtc": "2026-09-25T13:56:06Z",
   "bricks": [
     {
       "id": "com.geurts.gameforge.documentation",
@@ -24,13 +24,13 @@
     {
       "id": "com.geurts.gameforge.god",
       "name": "Geurts Game Forge God",
-      "description": "Game Forge God package management, Build Forge setup, optional Documentation integration, lifecycle and settings.",
+      "description": "Game Forge God package management, Build Forge setup, optional Documentation integration, lifecycle, settings and optional scene-startup/input cooperation.",
       "website": "https://github.com/Geurtsy/com.geurts.gameforge.god",
-      "version": "0.9.1",
+      "version": "0.10.0",
       "released": true,
       "developmentOnly": false,
       "sourceKind": "git",
-      "source": "https://github.com/Geurtsy/com.geurts.gameforge.god.git#c623219020c425a38d7a082714354fa9e14d2f35",
+      "source": "https://github.com/Geurtsy/com.geurts.gameforge.god.git#a69af957400183d52afe3f4696740c13fafd2644",
       "minimumUnity": "6000.3",
       "maximumUnity": "6000.3",
       "requiredTools": [
@@ -88,15 +88,15 @@
     {
       "id": "com.geurts.gameforge.sceneloading",
       "name": "Geurts Game Forge Scene Loading and Bootstrap",
-      "description": "Shared scene loading and bootstrap support.",
-      "website": "https://github.com/Geurtsy/GeurtsGameForge#existing-work-and-scope",
-      "version": "",
-      "released": false,
+      "description": "Persistent bootstrap-first startup, scene groups, transitions, loading screens, readiness and recovery with framework-independent multiplayer integration points.",
+      "website": "https://github.com/Geurtsy/com.geurts.gameforge.sceneloading",
+      "version": "0.1.1",
+      "released": true,
       "developmentOnly": false,
-      "sourceKind": "",
-      "source": "",
-      "minimumUnity": "",
-      "maximumUnity": "",
+      "sourceKind": "git",
+      "source": "https://github.com/Geurtsy/com.geurts.gameforge.sceneloading.git#d0f8199ee85bdb2650fbec4206d3a289f1099bfb",
+      "minimumUnity": "6000.3",
+      "maximumUnity": "6000.3",
       "requiredTools": [
         "Odin Inspector",
         "Quantum Console"
@@ -104,7 +104,7 @@
       "dependencies": [
         {
           "id": "com.geurts.gameforge.god",
-          "minimumVersion": ""
+          "minimumVersion": "0.10.0"
         }
       ]
     },
