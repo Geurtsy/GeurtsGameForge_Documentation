@@ -1,9 +1,9 @@
 <!-- GEURTS-AUDIENCE: AI-READ -->
 # Geurts Diagnostics Technique
 
-**Version:** 0.3.0
+**Version:** 0.3.1
 **Required package path:** `GeurtsTechniques/GeurtsDiagnosticsTechnique.md`
-**Implementation baseline:** God 0.10.1 and Diagnostics 0.6.0, published at the immutable commits in the catalogue; verify the actual installed package. Diagnostics' minimum God dependency remains 0.9.0. The shared Editor theme is governed by the manifest-selected Editor UI Theme Technique.
+**Implementation baseline:** God 0.11.0 and Diagnostics 0.6.0, published at the immutable commits in the catalogue; verify the actual installed package. Diagnostics' minimum God dependency remains 0.9.0. The shared Editor theme is governed by the manifest-selected Editor UI Theme Technique.
 
 The manifest selects this technique for Diagnostics integration, logging, console policy, runtime metrics, health checks, inspection and gameplay cheat-session hooks. Technical trade-offs remain owned by the Technical Technique; the Brick Contract owns general lifecycle/settings and the catalogue. This file does not authorize installing packages or replacing project design facts.
 
@@ -32,7 +32,7 @@ Capture is thread-safe; Unity object inspection and serialization occur on the m
 
 ## Runtime console and filters
 
-The full Diagnostics console is reachable with tilde/backquote in **all supported builds**, including release. Player and Developer tabs are freely switchable; this tab is not an authentication boundary. It is separate from God's package-development mode and from the restricted testing override. Do not expose secrets merely because a record or command is Developer-classified.
+The full Diagnostics console is reachable with tilde/backquote in **all supported builds**, including release. Player and Developer tabs are freely switchable; this tab is not an authentication boundary. It is separate from the restricted testing override. Do not expose secrets merely because a record or command is Developer-classified.
 
 Use the existing Quantum Console canvas, input, parser, execution, history suggestions and lifecycle. Embed Diagnostics controls and its paged/virtualized log presentation into that console. The scoped extension of QC's existing uGUI is intentional; it is not a new competing runtime UI framework. Keep exactly one console and one Input System EventSystem across scene changes. Opening the console suspends configured gameplay action maps but does not pause simulation. Closing it restores only the input maps that this integration suspended.
 

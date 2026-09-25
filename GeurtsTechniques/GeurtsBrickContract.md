@@ -1,7 +1,7 @@
 <!-- GEURTS-AUDIENCE: AI-READ -->
 # Geurts Game Forge Brick Contract
 
-**Version:** 1.4.0
+**Version:** 1.5.0
 **Required package path:** `GeurtsTechniques/GeurtsBrickContract.md`
 
 This document owns the shared brick contract and catalogue schema. The manifest continues to own document selection and precedence. Catalogue entries become actionable only when their real installation sources are verified; appearance in this document alone does not publish a release.
@@ -50,7 +50,9 @@ The JSON contains data only: `schemaVersion`, `packageVersion`, optional `publis
 
 Only `released: true` entries with a real installable source receive installation actions. Production Git sources identify an immutable commit or released tag and may use Unity's `?path=/Packages/...` form. Registry sources use `id@version` and must exist in the project's configured registry. Controlled local tests may use absolute `file:...tgz` sources only with `sourceKind: tarball` and `developmentOnly: true`. Such archives are local fixtures, never public releases. Do not invent future brick URLs or publish fixtures as real versions.
 
-God loads cached data immediately, combines it with Unity's installed package state, and refreshes online only when Game Forge God opens or Refresh is selected. It does not request the catalogue at every Unity startup. Offline/unavailable/malformed data must retain useful cache contents and display an explanation. Unknown availability must not be labelled up to date. Local folder and embedded packages are development sources. Developer Mode is for Geurts Game Forge package developers only; it uses selected local source folders and exposes controlled test catalogues. Show a fixed Developer Mode banner and a red outline around Game Forge God while enabled. Published versions can be checked without claiming that local files match Git. Turning the mode off only exposes release-update options. A subsequent confirmed Update may overwrite the exact named local package source folder with the verified published package, losing local edits and extra files without a backup; its warning must say this explicitly. Preserve Git metadata and every path outside that package folder. Use Unity package operations to switch the active installation and report overwrite failures honestly. Embedded source folders require a development workflow to move them out of Packages before switching installations.
+God loads cached data immediately, combines it with Unity's installed package state, and refreshes online only when Game Forge God opens or Refresh is selected. It does not request the catalogue at every Unity startup. Offline/unavailable/malformed data must retain useful cache contents and display an explanation. Unknown availability must not be labelled up to date.
+
+Local folder and embedded packages are development sources identified by Unity Package Manager. Game Forge God has no Developer Mode toggle or mode-specific test-catalogue and local-source UI controls. Use Unity Package Manager to install a package from disk for development. Published versions can be checked without claiming that local files match Git. A confirmed Update may overwrite the exact named local package source folder with the verified published package, losing local edits and extra files without a backup; its warning must say this explicitly and cancellation must leave the source unchanged. Preserve Git metadata and every path outside that package folder. Use Unity package operations to switch the active installation and report overwrite failures honestly. Embedded source folders require a development workflow to move them out of Packages before switching installations.
 
 ## Operations and visibility
 

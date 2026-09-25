@@ -1,7 +1,7 @@
 <!-- GEURTS-AUDIENCE: AI-READ -->
 # Geurts Game Forge AI Entry Point
 
-**Version:** 0.20.3
+**Version:** 0.21.0
 **Purpose:** First documentation entry and session boundary, before manifest resolution.
 **Required package path:** `AI_READ_FIRST.md`
 
@@ -28,7 +28,7 @@ Use `MAJOR.MINOR.PATCH` (for example, `1.4.2`):
 | Part | Increment for | Example |
 |---|---|---|
 | Major | Incompatible changes that break the existing public contract. | Replace the package architecture with an incompatible API. |
-| Minor | New functionality that keeps the existing public contract compatible. | Add a save system or Developer Mode. |
+| Minor | New functionality that keeps the existing public contract compatible. | Add a save system or scene loading. |
 | Patch | Bug fixes, documentation corrections and small compatible improvements. | Fix a version display or clarify instructions. |
 
 Reset the lower components when increasing a higher component. For pre-1.0 packages, continue to increment versions and clearly document breaking changes.

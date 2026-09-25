@@ -1,7 +1,7 @@
 <!-- GEURTS-AUDIENCE: AI-READ -->
 # Geurts Editor UI Theme Technique
 
-**Version:** 1.0.0
+**Version:** 1.1.0
 **Status:** Normative mandatory standard
 **Primary audience:** Geurts Game Forge brick and Editor-tool maintainers
 **Secondary audience:** AI coding agents and human developers
@@ -30,11 +30,11 @@ Use these shared tokens consistently. A brick must not substitute its own brand 
 | Muted | `#8FA8A1` | Secondary descriptions and supporting metadata. |
 | Info | `#FFFFFF` | Informational severity. |
 | Warning | `#FFE66D` | Warning severity and caution. |
-| Error | `#FF6B6B` | Error severity, destructive emphasis and Developer Mode warning. |
+| Error | `#FF6B6B` | Error severity and destructive emphasis. |
 
 Dark layered panels, restrained borders and green accents provide the sci-fi character. Keep meaningful content dominant. Do not add scanline overlays, glow, tiny decorative labels, excessive all-capital text, flashing effects or invented telemetry that obstruct reading or imply nonexistent functionality. Derived hover, pressed, disabled and selected treatments must come from the shared theme and retain readable labels.
 
-Severity colors remain semantic: Info is white, Warning is yellow and Error is red. Green branding must never turn an error, warning or Developer Mode indicator green. Topic colors and other data-defined colors remain independently meaningful where the owning feature requires them; use the shared surfaces around them and retain readable text.
+Severity colors remain semantic: Info is white, Warning is yellow and Error is red. Green branding must never turn an error or warning green. Topic colors and other data-defined colors remain independently meaningful where the owning feature requires them; use the shared surfaces around them and retain readable text.
 
 ## Layout and interaction
 
@@ -52,8 +52,6 @@ Severity colors remain semantic: Info is white, Warning is yellow and Error is r
 Display actual operation state, current stage, useful results and failure details. An unknown or unchecked condition must remain **Unknown**, **Not checked** or **Unavailable**, as appropriate; theme colors must not imply success. A queued or ongoing package operation must not look complete before the actual operation and required verification have succeeded.
 
 Show a numeric percentage only when the operation supplies measurable progress. A Unity package request without a percentage uses an activity indicator and stage text. Decorative animation, including the Game Forge God furnace, may indicate activity or identity but must never be presented as a measured progress value, proof of successful setup or evidence of a running service. Keep animation unobtrusive and release its repaint/update work when the owning UI is no longer active.
-
-**Developer Mode must retain a fixed, explicitly labelled warning and a red outline around Game Forge God while enabled.** The green base theme does not replace or weaken this warning. It remains separate from Diagnostics' Player/Developer tabs and any restricted testing override.
 
 <!-- GEURTS-SECTION:BEGIN FORGE-DEVELOPMENT-ONLY -->
 ## Shared implementation and dependency boundary
@@ -80,7 +78,7 @@ An Editor UI change is conforming only when the following evidence is recorded f
 2. Compile and run relevant focused Editor checks in the exact Unity version required by the Technical Technique. No runtime assembly may acquire a theme or `UnityEditor` dependency.
 3. Inspect the actual UI at its normal size and a narrow docked size, and check floating/docked behavior, scrolling, long labels and expanded messages. Controls and explanations must remain reachable without clipping or overlapping content.
 4. Check readability with Unity's light and dark host skins and at normal and high display scaling. The Forge content remains dark in both skins; neighboring native/Odin controls remain legible. Record unavailable visual environments instead of claiming they passed.
-5. Exercise the affected enabled, disabled, selected, hover, keyboard-focus, busy, success, warning and failure states. Verify the visible disabled reason and next step, semantic severity labels and Developer Mode warning wherever applicable.
+5. Exercise the affected enabled, disabled, selected, hover, keyboard-focus, busy, success, warning and failure states. Verify the visible disabled reason and next step and semantic severity labels wherever applicable.
 6. Confirm the real actions, settings persistence, Undo/serialized authoring behavior, cancellation, operation reporting and existing animation still work where touched. A visual change must not fabricate results, hide a failure, change package lifecycle or overwrite an open scene.
 7. Preserve representative visual evidence and report any unchecked surface honestly. Source review or a passing compilation is not evidence that the rendered layout passed visual inspection.
 
