@@ -1,7 +1,7 @@
 <!-- GEURTS-AUDIENCE: AI-READ -->
 # Geurts Game Forge Brick Contract
 
-**Version:** 1.5.0
+**Version:** 1.6.0
 **Required package path:** `GeurtsTechniques/GeurtsBrickContract.md`
 
 This document owns the shared brick contract and catalogue schema. The manifest continues to own document selection and precedence. Catalogue entries become actionable only when their real installation sources are verified; appearance in this document alone does not publish a release.
@@ -53,6 +53,20 @@ Only `released: true` entries with a real installable source receive installatio
 God loads cached data immediately, combines it with Unity's installed package state, and refreshes online only when Game Forge God opens or Refresh is selected. It does not request the catalogue at every Unity startup. Offline/unavailable/malformed data must retain useful cache contents and display an explanation. Unknown availability must not be labelled up to date.
 
 Local folder and embedded packages are development sources identified by Unity Package Manager. Game Forge God has no Developer Mode toggle or mode-specific test-catalogue and local-source UI controls. Use Unity Package Manager to install a package from disk for development. Published versions can be checked without claiming that local files match Git. A confirmed Update may overwrite the exact named local package source folder with the verified published package, losing local edits and extra files without a backup; its warning must say this explicitly and cancellation must leave the source unchanged. Preserve Git metadata and every path outside that package folder. Use Unity package operations to switch the active installation and report overwrite failures honestly. Embedded source folders require a development workflow to move them out of Packages before switching installations.
+
+## Installed brick menus
+
+Game Forge God provides an **Installed Brick Menus** section for actual installed Geurts packages. Hide uninstalled and planned-only bricks from this section; their catalogue installation controls remain separate. Include installed disabled bricks and installed packages absent from the catalogue. A running lifecycle registration is not required to open a brick's Editor tools or information.
+
+God's entry opens **Build Forge**. The current Documentation, Diagnostics and Scene Loading and Bootstrap entries open their existing primary Editor windows. Opening a menu must not install packages or change project content; existing window-owned read-only checks may still run. Package installation, setup and documentation replacement retain their own explicit actions and confirmations.
+
+Every installed brick must have a usable destination. When a primary Editor menu is missing, invalid, duplicated, unavailable or throws, open the shared themed **Information** page with its installed version, identity, description, status and a useful explanation. Recheck actual package installation before opening a menu. Removing a package removes its menu entry; an already open information page must show that the package is no longer installed. Catalogue names and descriptions are display data only, never executable menu metadata.
+
+<!-- GEURTS-SECTION:BEGIN FORGE-DEVELOPMENT-ONLY -->
+For a future brick's primary menu, reference the `Geurts.GameForge.God.Editor` assembly only from its Editor-only assembly and apply the public `BrickEditorMenuAttribute`, in namespace `Geurts.GameForge.God.Editor`, to one synchronous static, parameterless `void` method. Supply the exact installed package identity, for example `[BrickEditorMenu("com.geurts.gameforge.example")]`. A brick adopting this API must declare a minimum God dependency of **0.12.0**. This requirement does not change an existing released brick's minimum dependency merely because God can open its current menu.
+
+God caches local attribute discovery through Unity `TypeCache` and invokes a provider only after explicit menu selection. Reject ambiguous or invalid providers and report opener failures through information instead of silently hiding an installed brick. Compatibility routes for existing releases use only the fixed known read-only window openers and respect any matching Unity menu validation callback. Never resolve executable types, methods or menu paths from remote catalogue fields. Do not add mandatory God dependencies on optional bricks or a reverse dependency from the independent Documentation Companion to God; its existing window is supported without adopting the attribute.
+<!-- GEURTS-SECTION:END -->
 
 ## Operations and visibility
 
