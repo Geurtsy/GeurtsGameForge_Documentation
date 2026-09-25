@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "packageVersion": "0.20.1",
-  "publishedUtc": "2026-09-25T13:56:06Z",
+  "packageVersion": "0.20.2",
+  "publishedUtc": "2026-09-25T15:44:57Z",
   "bricks": [
     {
       "id": "com.geurts.gameforge.documentation",
@@ -90,11 +90,11 @@
       "name": "Geurts Game Forge Scene Loading and Bootstrap",
       "description": "Persistent bootstrap-first startup, scene groups, transitions, loading screens, readiness and recovery with framework-independent multiplayer integration points.",
       "website": "https://github.com/Geurtsy/com.geurts.gameforge.sceneloading",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "released": true,
       "developmentOnly": false,
       "sourceKind": "git",
-      "source": "https://github.com/Geurtsy/com.geurts.gameforge.sceneloading.git#d0f8199ee85bdb2650fbec4206d3a289f1099bfb",
+      "source": "https://github.com/Geurtsy/com.geurts.gameforge.sceneloading.git#459a5b00a31ec1971f55f24c2cd97b085fe941b7",
       "minimumUnity": "6000.3",
       "maximumUnity": "6000.3",
       "requiredTools": [
