@@ -23,7 +23,7 @@ Diagnostics 0.6.0 adds **Select text** / **Exit selection** to runtime and Edito
 
 Game Forge God distinguishes **Planned**, **Available** and **Installed** independently of update status. `released: false` marks an unreleased catalogue entry; `released: true` marks a published release. Installed is determined from the actual Unity project. Unreleased entries carry no installation actions or update checks. Their package identifiers reserve catalogue identities; release versions, sources and verified compatibility are selected when the packages are implemented and published.
 
-**Version:** 0.22.0
+**Version:** 0.22.1
 **Unity target:** Unity 6.3 LTS (6000.3)
 **Status:** Draft technique package
 **Primary audience:** Human developers
@@ -56,7 +56,7 @@ New and modified Unity code and examples target **Unity 6.3 LTS (6000.3)**. The 
 
 Within its declared implementation scope, the Technical Technique requires licensed, Unity 6.3-compatible Odin Inspector and Quantum Console dependencies and requires meaningful use of their authoring, validation, inspection, command, logging, and diagnostics capabilities. Missing dependencies are implementation blockers. The independent Documentation Companion also requires these separately installed licensed assemblies while retaining no God or other Unity Package Manager package dependency; this documentation source repository contains no commercial tool assets.
 
-This repository contains documentation, C# fragments, and host-side PowerShell utilities. It contains no Unity project or companion implementation. Its checks validate the documentation package and tools; actual Unity compilation and player compatibility must be verified in the consuming project. The package remains the v0.22.0 draft; the Technical Technique is v0.12.2.
+This repository contains documentation, C# fragments, and host-side PowerShell utilities. It contains no Unity project or companion implementation. Its checks validate the documentation package and tools; actual Unity compilation and player compatibility must be verified in the consuming project. The package remains the v0.22.1 draft; the Technical Technique is v0.12.3.
 
 ## Mandatory Forge Editor theme
 
@@ -190,6 +190,14 @@ PowerShell 7 may replace `powershell` with `pwsh`. The validator checks package,
 The current verified companion package is 0.9.1; use its immutable source from the catalogue. In Geurts Documentation, select **Install Codex guide**, choose a location and confirm the displayed entry point. The installer creates AGENTS.md for automatic Codex discovery. The template exists only in GeurtsAgentTechnique.md. Normal documentation updates do not manage a root Codex guide; replace an old guide by selecting its location in the installer. The content-update contract remains schema 2.0.0.
 
 ## Changelog
+
+### v0.22.1 — Prioritize Codex compatibility across Geurts code
+
+- Requires all first-party Geurts code to support efficient Codex authoring through clear supported interfaces, predictable structure, discoverable configuration, useful examples, documentation and repeatable checks, within the existing technical priorities and multiplayer override.
+- Makes extendibility-first priorities and Codex compatibility apply explicitly to every brick and all first-party code Codex creates or materially updates while following Forge documentation, including ordinary project-specific/game code; the narrower reusable-framework compliance header remains unchanged.
+- Requires all existing and future bricks to be designed and maintained with Codex in mind. Codex and other AI agents proactively inspect and reuse suitable available bricks, explaining concrete capability gaps or incompatibilities before custom substitutes.
+- Keeps God as the shared required Geurts brick, peer integrations optional and the Documentation Companion independent. No live connector, Codex runtime dependency, plugin installation, source-code implementation or completed audit of all existing components is implied.
+- Advances Technical to 0.12.3 and Brick Contract to 1.6.1, selects brick guidance during planning and synchronizes package metadata at 0.22.1. Published brick versions and contract schemas are unchanged.
 
 ### v0.22.0 — Installed brick menus
 
