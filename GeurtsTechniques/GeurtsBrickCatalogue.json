@@ -1,18 +1,18 @@
 {
   "schemaVersion": 1,
-  "packageVersion": "0.22.8",
-  "publishedUtc": "2026-09-26T11:16:53Z",
+  "packageVersion": "0.23.0",
+  "publishedUtc": "2026-09-26T12:04:04Z",
   "bricks": [
     {
       "id": "com.geurts.gameforge.documentation",
       "name": "Geurts Game Forge Documentation",
       "description": "Documentation dashboard and explicit updates of the authoritative AI development guidance.",
       "website": "https://github.com/Geurtsy/com.geurts.gameforge.documentation",
-      "version": "0.9.1",
+      "version": "0.9.2",
       "released": true,
       "developmentOnly": false,
       "sourceKind": "git",
-      "source": "https://github.com/Geurtsy/com.geurts.gameforge.documentation.git#066d5e8755394ddfa480acd2f53674d14207ec4f",
+      "source": "https://github.com/Geurtsy/com.geurts.gameforge.documentation.git#0387d0279068efe3a3c270d25857fc7945ba817a",
       "minimumUnity": "6000.3",
       "maximumUnity": "6000.3",
       "requiredTools": [
@@ -26,11 +26,11 @@
       "name": "Geurts Game Forge God",
       "description": "Game Forge God package management, installed brick menus, Build Forge setup, optional Documentation integration, lifecycle, settings and optional scene-startup/input cooperation.",
       "website": "https://github.com/Geurtsy/com.geurts.gameforge.god",
-      "version": "0.13.2",
+      "version": "0.14.0",
       "released": true,
       "developmentOnly": false,
       "sourceKind": "git",
-      "source": "https://github.com/Geurtsy/com.geurts.gameforge.god.git#d29dc4f6c9a9a88d27c9b7f5991959736a07979c",
+      "source": "https://github.com/Geurtsy/com.geurts.gameforge.god.git#80690bb69c627daa7a1de78cde27c293fddf81bc",
       "minimumUnity": "6000.3",
       "maximumUnity": "6000.3",
       "requiredTools": [
@@ -44,11 +44,11 @@
       "name": "Geurts Game Forge Diagnostics",
       "description": "God-owned runtime logging, Quantum Console channels and commands, session history, health checks, read-only inspection, Windows performance metrics and Odin Editor tooling.",
       "website": "https://github.com/Geurtsy/com.geurts.gameforge.diagnostics",
-      "version": "0.6.0",
+      "version": "0.6.1",
       "released": true,
       "developmentOnly": false,
       "sourceKind": "git",
-      "source": "https://github.com/Geurtsy/com.geurts.gameforge.diagnostics.git#ed5818781f034651ce55686f5cddade007940724",
+      "source": "https://github.com/Geurtsy/com.geurts.gameforge.diagnostics.git#833e19c009da54632cf64157ba3469f6488b1635",
       "minimumUnity": "6000.3",
       "maximumUnity": "6000.3",
       "requiredTools": [
@@ -58,7 +58,7 @@
       "dependencies": [
         {
           "id": "com.geurts.gameforge.god",
-          "minimumVersion": "0.9.0"
+          "minimumVersion": "0.14.0"
         }
       ]
     },
@@ -90,11 +90,11 @@
       "name": "Geurts Game Forge Scene Loading and Bootstrap",
       "description": "Persistent bootstrap-first startup, scene groups, transitions, loading screens, readiness and recovery with framework-independent multiplayer integration points.",
       "website": "https://github.com/Geurtsy/com.geurts.gameforge.sceneloading",
-      "version": "0.1.2",
+      "version": "0.1.3",
       "released": true,
       "developmentOnly": false,
       "sourceKind": "git",
-      "source": "https://github.com/Geurtsy/com.geurts.gameforge.sceneloading.git#459a5b00a31ec1971f55f24c2cd97b085fe941b7",
+      "source": "https://github.com/Geurtsy/com.geurts.gameforge.sceneloading.git#c928ce2b589092f2ec9824870b5d1c6fddadfb95",
       "minimumUnity": "6000.3",
       "maximumUnity": "6000.3",
       "requiredTools": [
@@ -104,7 +104,7 @@
       "dependencies": [
         {
           "id": "com.geurts.gameforge.god",
-          "minimumVersion": "0.10.0"
+          "minimumVersion": "0.14.0"
         }
       ]
     },
@@ -159,11 +159,11 @@
       "name": "Geurts Game Forge User Interface Foundations",
       "description": "Preview: editable UI Toolkit menus, modal navigation and shared appearance with corrected heading, body and button font choices. Native input and visual validation remain pending.",
       "website": "https://github.com/Geurtsy/com.geurts.gameforge.userinterface",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "released": true,
       "developmentOnly": false,
       "sourceKind": "git",
-      "source": "https://github.com/Geurtsy/com.geurts.gameforge.userinterface.git#b6a88cd91bbd1a7058327aa51f256d50a3e4ac0a",
+      "source": "https://github.com/Geurtsy/com.geurts.gameforge.userinterface.git#fb5f2a6f179cb4b8e4f888cfa784fa625fb99ba4",
       "minimumUnity": "6000.3",
       "maximumUnity": "6000.3",
       "requiredTools": [
@@ -173,7 +173,7 @@
       "dependencies": [
         {
           "id": "com.geurts.gameforge.god",
-          "minimumVersion": "0.12.0"
+          "minimumVersion": "0.14.0"
         }
       ]
     },

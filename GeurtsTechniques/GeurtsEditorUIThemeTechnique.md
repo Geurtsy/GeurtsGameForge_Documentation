@@ -1,7 +1,7 @@
 <!-- GEURTS-AUDIENCE: AI-READ -->
 # Geurts Editor UI Theme Technique
 
-**Version:** 1.1.0
+**Version:** 1.2.0
 **Status:** Normative mandatory standard
 **Primary audience:** Geurts Game Forge brick and Editor-tool maintainers
 **Secondary audience:** AI coding agents and human developers
@@ -38,6 +38,7 @@ Severity colors remain semantic: Info is white, Warning is yellow and Error is r
 
 ## Layout and interaction
 
+- Open each primary brick or tool interface in its own resizable Editor window. New floating windows target **1000 × 760 Editor points**, reduced to fit the main Editor area where space permits. Each window's supported minimum takes precedence; a main Editor area smaller than that minimum cannot fully contain the window. Reopening an existing window preserves its size, position, docking layout and constraints; do not resize or undock a user-arranged window.
 - Give each window a clear title and short purpose. Group related work into consistently padded section cards with descriptive headings, and place the most relevant action beside its context.
 - Use a deliberate hierarchy of title, section heading, body and supporting text. Use readable Editor fonts and the shared typography definitions; decorative sci-fi fonts must not replace ordinary controls or diagnostic content. Long values, paths and messages must wrap, scroll or expose their complete value.
 - Use shared spacing and control dimensions. Align related labels and buttons; keep card padding, section gaps and navigation consistent across bricks. Do not create one-off spacing systems for each window.
@@ -59,6 +60,8 @@ Show a numeric percentage only when the operation supplies measurable progress. 
 God's Editor assembly owns the canonical public **`ForgeEditorTheme`** API and **`ForgeEditorTheme.uss`** stylesheet. All bricks that depend on God must reuse those shared tokens, styles and components for their Forge-owned Editor presentation. Extend that shared implementation when a reusable state or control is missing instead of copying a palette, recreating a private theme class or adding a second shared theme package. Keep Editor-only dependencies out of runtime assemblies and player builds.
 
 The canonical files are `Editor/ForgeEditorTheme.cs` and `Editor/ForgeEditorTheme.uss` in the God package; the API namespace is `Geurts.GameForge.God.Editor`. Use a cached `ForgeEditorTheme` instance's `Scope()` around existing IMGUI/Odin drawing and static `ForgeEditorTheme.ApplyToolkit(root)` for a Forge-owned UI Toolkit root. God 0.9.0 introduces this public shared theme; a dependent package that adopts it must declare the corresponding compatible God minimum instead of compiling against an older release without the API. Verify actual release availability through the catalogue before installation.
+
+Use the public static `ForgeEditorTheme.OpenWindow<T>(Vector2 minimumSize, string title = null)` for primary window openers, where `T : EditorWindow`. Pass the window's existing supported minimum and its optional title. God **0.14.0** introduces this API; adopting dependent packages must declare that minimum. The helper reuses an existing window, while only a newly created floating window receives the larger initial geometry. The independent companion uses its generated `DocumentationEditorTheme.OpenWindow<T>` equivalent without a God dependency. Confirmation dialogs retain their existing modal behavior and subject-owned consent rules.
 
 God's public `ForgeThemedEditor` is the shared `OdinEditor` base for Forge-owned custom inspectors. It applies the theme while preserving Odin's property tree, serialized configuration and validation. Retain base drawing and cleanup when extending it. Theme instances belong to the window or inspector, are initialized within an active IMGUI draw context, and are disposed when their owner disables or closes.
 
