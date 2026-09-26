@@ -1,9 +1,9 @@
 <!-- GEURTS-AUDIENCE: AI-READ -->
 # Geurts Diagnostics Technique
 
-**Version:** 0.3.8
+**Version:** 0.3.9
 **Required package path:** `GeurtsTechniques/GeurtsDiagnosticsTechnique.md`
-**Implementation baseline:** God 0.14.0 and Diagnostics 0.6.1, published at the immutable commits in the catalogue; verify the actual installed package. Diagnostics 0.6.1 requires God 0.14.0 for the shared larger-window opener. The shared Editor theme is governed by the manifest-selected Editor UI Theme Technique.
+**Implementation baseline:** God 0.14.1 and Diagnostics 0.6.1, published at the immutable commits in the catalogue; verify the actual installed package. Diagnostics 0.6.1 requires God 0.14.0 for the shared larger-window opener. The shared Editor theme is governed by the manifest-selected Editor UI Theme Technique.
 
 The manifest selects this technique for Diagnostics integration, logging, console policy, runtime metrics, health checks, inspection and gameplay cheat-session hooks. Technical trade-offs remain owned by the Technical Technique; the Brick Contract owns general lifecycle/settings and the catalogue. This file does not authorize installing packages or replacing project design facts.
 
