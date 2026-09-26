@@ -1,7 +1,7 @@
 <!-- GEURTS-AUDIENCE: AI-READ -->
 # Geurts Game Forge Brick Contract
 
-**Version:** 1.6.1
+**Version:** 1.6.2
 **Required package path:** `GeurtsTechniques/GeurtsBrickContract.md`
 
 This document owns the shared brick contract and catalogue schema. The manifest continues to own document selection and precedence. Catalogue entries become actionable only when their real installation sources are verified; appearance in this document alone does not publish a release.
@@ -94,4 +94,4 @@ Use Unity Package Manager APIs, serialize operations, prevent conflicting clicks
 
 Show current package, stage, clear success/cancellation/failure and Retry directly in the Odin manager. Use progress percentages only when measurable. `Client.Add` has no percentage, so use an activity indicator and explanatory stage text. Quantum Console output supplements the manager.
 
-The outlined forge image is an activity indicator. While package operations, catalogue refresh, update checks, or companion documentation work are active, animate a repeating smoke puff and gentle vertical bounce; stop at a still resting frame when work completes or fails. A GIF asset and its supported Editor playback frames may supply the same animation. Keep truthful stage text visible, stop repaint work when idle or the window closes, and release animation resources on teardown. The animation never implies a measurable percentage or substitutes for a reported outcome.
+The compact forge icon is an activity indicator and must have a clean silhouette without a decorative outline. While package operations, catalogue refresh, update checks, or companion documentation work are active, animate a repeating smoke puff and gentle vertical bounce; stop at a still resting frame when work completes or fails. A GIF asset and its supported Editor playback frames may supply the same animation. Keep truthful stage text visible, stop repaint work when idle or the window closes, and release animation resources on teardown. The animation never implies a measurable percentage or substitutes for a reported outcome.
