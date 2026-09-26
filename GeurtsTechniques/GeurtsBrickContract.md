@@ -1,19 +1,26 @@
 <!-- GEURTS-AUDIENCE: AI-READ -->
 # Geurts Game Forge Brick Contract
 
-**Version:** 1.6.0
+**Version:** 1.6.1
 **Required package path:** `GeurtsTechniques/GeurtsBrickContract.md`
 
 This document owns the shared brick contract and catalogue schema. The manifest continues to own document selection and precedence. Catalogue entries become actionable only when their real installation sources are verified; appearance in this document alone does not publish a release.
 
 ## Use existing bricks
 
-Before implementing game or software functionality in a Geurts Unity project, inspect the installed brick inventory and this package's `GeurtsTechniques/GeurtsBrickCatalogue.json`. Use a suitable available Geurts Game Forge brick instead of recreating its functionality. Explain a material incompatibility or missing capability when no suitable brick exists. Request installation as an explicit user action; do not silently install a dependency or treat a planned brick as available.
+Codex and other AI coding agents must proactively inspect the installed brick inventory and this package's `GeurtsTechniques/GeurtsBrickCatalogue.json` before planning or implementing a Geurts Unity solution. Read the relevant brick documentation and supported interfaces, then reuse or extend suitable available Geurts Game Forge bricks instead of recreating covered functionality. Identify the concrete missing capability or incompatibility before choosing a custom substitute. A planned or catalogued entry alone is not an installed, usable capability: verify the actual installed version and the availability required by the task. Request installation as an explicit user action; do not silently install or enable dependencies. This obligation applies across all bricks, but only suitable bricks needed for the solution should be used.
+
+## Design all bricks with Codex in mind
+
+All existing and future Geurts Game Forge bricks must be designed and maintained with Codex in mind, following the Technical Technique's Codex compatibility requirement. Make each brick's purpose, reusable components, supported interfaces, extension points, configuration and dependency boundaries easy to discover from its documentation and predictable package structure. Provide useful version-accurate examples and repeatable checks so Codex can reliably compose and validate solutions with the brick. These same surfaces must remain usable by humans and other AI agents. Apply the requirement during new development and maintenance; this policy does not assert that every existing brick has already been audited.
+
+Codex compatibility is an authoring and usability expectation. It does not require Codex, a live Unity connector, a plugin or AI calls at runtime, and it does not authorize installing every brick. Preserve the dependency rules below when composing a solution.
 
 ## Identity and dependencies
 
 - Full display names start with **Geurts Game Forge**. The foundation is **Geurts Game Forge God**, package `com.geurts.gameforge.god`.
 - God installs and opens without `com.geurts.gameforge.documentation`; Documentation is an optional companion, not a required package or assembly dependency. Other bricks directly declare God. The documentation companion stays independent of God to avoid a dependency cycle.
+- God is the only shared required Geurts brick. Integrations with peer bricks remain optional and use the optional-capability or separate integration-package boundaries below; Codex compatibility must not add mandatory peer-brick dependencies. The Documentation Companion retains its independent boundary above.
 - Odin Inspector and Quantum Console are required for God, its dependent Unity bricks and the independent Documentation Companion. These commercially distributed assets must be imported separately through their licensed distribution. Do not invent registry package identifiers, bundle their assets, or represent them as optional compile dependencies. Reference actual assemblies (`QFSW.QC` and installed Sirenix assemblies) and document setup. The companion has no God or other Unity Package Manager package dependency; its licensed external assembly requirements remain mandatory. This documentation-only repository and its PowerShell tools are excluded from those assembly requirements.
 - Unity package manifests use semantic versions for required package dependencies. Git URLs belong in the consuming project's manifest. Install God first from its real Git source, then install the optional Documentation package through Game Forge God's catalogue interface when needed. Never place a Git URL into `package.json.dependencies`.
 - God has no Disable action. Removal uses Unity's dependency graph: remove dependent bricks first. God does not recursively delete shared dependencies or embedded source folders.

@@ -2,7 +2,7 @@
 # Geurts Technical Technique
 
 **Unity Game Development - AI Instruction Manual**  
-**Version:** 0.12.2
+**Version:** 0.12.3
 **Unity target:** Unity 6.3 LTS (6000.3)
 **Status:** Draft normative technique
 **Primary audience:** AI coding agents and automated development systems
@@ -40,6 +40,8 @@ Interpret its requirements deterministically. Explicit rules, literal paths, sta
 ## Technical Priority Order
 
 The **Core Principles** are a strict priority order, not an unordered list of preferences.
+
+These priorities and the Codex compatibility requirements below apply to **every Geurts Game Forge brick and all first-party code Codex creates or materially updates while following Forge documentation**, including ordinary project-specific/game code, runtime systems, Editor tools, tests and automation. The narrower scope of the reusable-framework compliance header does not exempt ordinary game code from these requirements: extendibility remains the first technical priority, subject to the multiplayer exception below.
 
 When a decision requires a trade-off, apply this priority order:
 
@@ -181,6 +183,19 @@ The strict priorities and multiplayer exception defined above remain controlling
 Treat the user's request as the desired outcome, subject to explicit instructions and the Geurts hierarchy. Before implementation, inspect the relevant project structure, code, dependencies, APIs, assets, conventions, and affected systems. Search for suitable existing functionality and extend it where that best satisfies the strict priorities. Preserve working behaviour unless the requested outcome requires changing it.
 
 When multiple methods are viable, choose a proportionate method by applying the five priorities in their declared order, the multiplayer exception when applicable, the project's actual constraints, and the more specific Geurts authorities. Do not create a separate competing list of engineering priorities or add architecture merely because it is available.
+
+### Codex compatibility
+
+Prioritize **Codex compatibility** when designing, creating or maintaining all first-party code governed by Geurts guidance: ordinary game code, reusable bricks, runtime systems, Editor tools, tests and automation. Make the code and its associated assets easy for Codex to understand, use, author, extend, inspect and validate efficiently by reading the documentation and using supported interfaces. This is a mandatory design consideration within the existing Technical Priority Order and multiplayer network-efficiency override; it does not add or reorder priorities. Keep the same interfaces and documentation usable by humans and other AI agents.
+
+Provide, in proportion to the component's scope:
+
+- Predictable file, asset and component structure under the selected folder authority, with clear responsibilities, names and entry points.
+- Discoverable supported APIs, extension points and configuration, documenting ownership, lifecycle, dependencies, constraints and failure behavior so callers do not have to infer hidden conventions.
+- Concise usage and extension examples tied to the actual supported version, plus documentation that makes the relevant implementation and existing Geurts bricks easy to find.
+- Repeatable checks, tests and useful inspection or diagnostic output with prerequisites and expected results, so Codex can verify changes and report unavailable validation accurately.
+
+Apply this requirement to new and materially changed first-party code and assess affected existing components during maintenance. It is an ongoing framework expectation, not a claim that every existing component has already been audited. Do not rewrite unrelated working systems or vendor/generated code solely for Codex compatibility. It does not require a live Codex-to-Unity connector, a Codex plugin, runtime AI calls or a Codex dependency in shipped games, and it grants no tool-installation authority. Brick reuse and optional peer integration remain governed by the Brick Contract.
 
 ### Implement, integrate, and handle failure
 
@@ -514,6 +529,7 @@ The multiplayer network-efficiency override applies regardless of the selected n
 
 A generated or modified Unity C# script is complete only when it:
 
+- Addresses the applicable Codex compatibility requirements above through discoverable interfaces, documentation and proportionate repeatable verification.
 - Meets the Unity 6.3 LTS compatibility baseline above, with the exact Editor patch, resolved packages, and relevant compile/test/build evidence recorded; unavailable validation is explicitly reported.
 - Includes the compliance header only when it is a reusable cross-game Geurts Game Forge framework, library, or tooling component under the scope above.
 - Uses the correct folder location according to `GeurtsTechniques/GeurtsFolderStructureTechnique.md`.
